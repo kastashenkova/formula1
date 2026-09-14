@@ -10,3 +10,10 @@
 - Migrations: Liquibase 
 - Infrastructure: Docker 
 - Frontend: TypeScript, React
+
+## Commands
+- Run the whole project:
+  - `mvn clean install`
+  - `cd frontend`
+  - `npm run dev`
+- Check test coverage: `mvn clean verify`
