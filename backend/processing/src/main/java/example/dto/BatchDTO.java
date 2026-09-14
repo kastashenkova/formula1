@@ -19,7 +19,7 @@ public record BatchDTO(
         @JsonProperty("race_name")
         String raceName,
 
-        @NotNull
+        @NotNull(message = "{validation.batchYear.not-null}")
         @Min(value = 1950, message = "{validation.batchYear.min}")
         @Max(value = 2100, message = "{validation.batchYear.max}")
         Integer year,
