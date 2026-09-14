@@ -1,6 +1,6 @@
 package example.service;
 
-import example.dto.Batch;
+import example.dto.BatchDTO;
 import example.repository.BatchRepo;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +16,11 @@ public class BatchServiceImpl implements BatchService {
         this.batchRepo = batchRepo;
     }
 
-    public Batch upload(Batch batch) {
-        return new Batch(
+    public BatchDTO upload(BatchDTO batchDTO) {
+        return new BatchDTO(
                 UUID.randomUUID(),
-                batch.raceName(),
-                batch.year(),
+                batchDTO.raceName(),
+                batchDTO.year(),
                 LocalDateTime.now(),
                 null
         );

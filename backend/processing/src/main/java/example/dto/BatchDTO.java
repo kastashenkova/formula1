@@ -10,18 +10,18 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 
-public record Batch(
+public record BatchDTO(
 
         UUID batch_id,
 
-        @NotNull
-        @Size(min = 3, max = 100)
+        @NotNull(message = "{validation.raceName.not-null}")
+        @Size(min = 3, max = 100, message = "{validation.raceName.size}")
         @JsonProperty("race_name")
         String raceName,
 
         @NotNull
-        @Min(value = 1950)
-        @Max(value = 2100)
+        @Min(value = 1950, message = "{validation.batchYear.min}")
+        @Max(value = 2100, message = "{validation.batchYear.max}")
         Integer year,
 
         @JsonProperty("created_at")

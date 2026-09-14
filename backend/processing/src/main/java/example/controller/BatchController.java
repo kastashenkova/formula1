@@ -1,6 +1,6 @@
 package example.controller;
 
-import example.dto.Batch;
+import example.dto.BatchDTO;
 import example.service.BatchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,8 +24,8 @@ public class BatchController {
 
     @PostMapping
     @Operation(summary = "Create a new batch for the race")
-    public ResponseEntity<Batch> uploadRace(@Valid @RequestBody Batch batch) {
-        var newBatch = batchService.upload(batch);
+    public ResponseEntity<BatchDTO> uploadRace(@Valid @RequestBody BatchDTO batchDTO) {
+        var newBatch = batchService.upload(batchDTO);
         return ResponseEntity.ok(newBatch);
     }
 

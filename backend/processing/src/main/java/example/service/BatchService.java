@@ -1,7 +1,7 @@
 package example.service;
 
-import example.dto.Batch;
+import example.dto.BatchDTO;
 
 public interface BatchService {
-    Batch upload(Batch batch);
+    BatchDTO upload(BatchDTO batchDTO);
 }
