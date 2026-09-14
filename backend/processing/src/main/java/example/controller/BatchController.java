@@ -1,0 +1,32 @@
+package example.controller;
+
+import example.dto.BatchDTO;
+import example.service.BatchService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+
+@Tag(name = "Batch controller", description = "Controller for upload race info")
+@RestController
+@RequestMapping("/batches")
+public class BatchController {
+    private final BatchService batchService;
+
+    public BatchController(BatchService batchService) {
+        this.batchService = batchService;
+    }
+
+    @PostMapping
+    @Operation(summary = "Create a new batch for the race")
+    public ResponseEntity<BatchDTO> uploadRace(@Valid @RequestBody BatchDTO batchDTO) {
+        var newBatch = batchService.upload(batchDTO);
+        return ResponseEntity.ok(newBatch);
+    }
+
+}
