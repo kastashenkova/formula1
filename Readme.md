@@ -12,8 +12,6 @@
 - Frontend: TypeScript, React
 
 ## Commands
-- Run the whole project:
-  - `mvn clean install`
-  - `cd frontend`
-  - `npm run dev`
+- Compile the whole project: `mvn clean install`
+- Run backend modules: `mvn spring-boot:run` (inside necessary module directory)
 - Check test coverage: `mvn clean verify`

@@ -1,6 +1,7 @@
 package example.controller;
 
-import example.dto.BatchDTO;
+import example.dto.BatchRequestDto;
+import example.dto.BatchResponseDto;
 import example.service.BatchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
-@Tag(name = "Batch controller", description = "Controller for upload race info")
+@Tag(name = "Batch controller",
+        description = "Controller for upload race info")
 @RestController
 @RequestMapping("/batches")
 public class BatchController {
@@ -23,9 +24,10 @@ public class BatchController {
     }
 
     @PostMapping
-    @Operation(summary = "Create a new batch for the race")
-    public ResponseEntity<BatchDTO> uploadRace(@Valid @RequestBody BatchDTO batchDTO) {
-        var newBatch = batchService.upload(batchDTO);
+    @Operation(summary = "Create a new race batch",
+            description = "Create a new batch for the race")
+    public ResponseEntity<BatchResponseDto> uploadRace(@Valid @RequestBody BatchRequestDto requestDto) {
+        var newBatch = batchService.upload(requestDto);
         return ResponseEntity.ok(newBatch);
     }
 

@@ -1,14 +1,14 @@
 package example.repository;
 
-import example.dto.BatchDTO;
+import example.dto.BatchRequestDto;
 import example.entity.BatchEntity;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class BatchRepoInMemory implements BatchRepo{
+public class BatchRepositoryInMemory implements BatchRepository {
     @Override
-    public BatchEntity upload(BatchDTO batchDTO) {
+    public BatchEntity upload(BatchRequestDto batchDTO) {
         throw new NotImplementedException();
     }
 }
