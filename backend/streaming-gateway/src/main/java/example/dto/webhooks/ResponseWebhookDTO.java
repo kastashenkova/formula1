@@ -20,7 +20,7 @@ public record ResponseWebhookDTO(
         @JsonProperty("created_at")
         LocalDateTime createdAt,
 
-        @JsonProperty("updated_t")
+        @JsonProperty("updated_at")
         LocalDateTime updatedAt
 ) {
 
