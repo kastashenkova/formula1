@@ -1,9 +1,9 @@
 package example.dto.webhooks;
 
 import example.enums.WebhookTypes;
+import example.validation.OnCreate;
+import example.validation.OnUpdate;
 import jakarta.validation.constraints.*;
-import org.example.validation.OnCreate;
-import org.example.validation.OnUpdate;
 import org.hibernate.validator.constraints.URL;
 
 public record RequestWebhookDTO(
