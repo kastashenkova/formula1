@@ -1,6 +1,6 @@
 package org.example.dto.user.registration;
 
-import org.example.entity.Role;
+import org.example.enums.Role;
 
 public record UserRegistrationResponseDto(
         Long id,

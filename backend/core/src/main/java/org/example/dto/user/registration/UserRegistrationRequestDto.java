@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import org.example.validation.FieldMatch;
-import org.example.entity.Role;
+import org.example.enums.Role;
 import org.example.validation.OnCreate;
 import org.example.validation.OnUpdate;
 import org.hibernate.validator.constraints.Length;
