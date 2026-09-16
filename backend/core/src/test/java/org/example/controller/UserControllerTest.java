@@ -11,8 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.dto.user.registration.UserRegistrationRequestDto;
 import org.example.dto.user.registration.UserRegistrationResponseDto;
-import org.example.entity.Role;
-import org.example.service.user.UsersService;
+import org.example.enums.Role;
+import org.example.service.user.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +21,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(UsersController.class)
-public class UsersControllerTest {
+@WebMvcTest(UserController.class)
+public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
-    private UsersService userService;
+    private UserService userService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
