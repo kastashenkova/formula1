@@ -21,11 +21,6 @@ public class WebhookServiceImpl implements WebhookService {
         long id = ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
         var now = LocalDateTime.now();
 
-        // if (userRepository.findById(request.userID()) == null) {
-        //     throw new EntityNotFoundException (
-        //          "User with id " + request.userID() + "does not exist")
-        // }
-
         var entity = new WebhookEntity(
                 id,
                 request.webhookURL(),
