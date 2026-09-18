@@ -22,6 +22,15 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(DuplicateWebhookException.class)
+    public ProblemDetail handleDuplicateWebhook(DuplicateWebhookException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Resource Duplicate Conflict");
+        problem.setType(URI.create("https://streaming-gateway.ukma.edu/errors/duplicate"));
+        problem.setProperty("timestamp", Instant.now());
+        return problem;
+    }
+
     @ExceptionHandler(NoResourceFoundException.class)
     public ProblemDetail handleNoResourceFound(NoResourceFoundException ex) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(

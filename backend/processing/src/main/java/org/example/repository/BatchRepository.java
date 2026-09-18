@@ -1,10 +1,14 @@
 package org.example.repository;
 
-import org.example.dto.BatchRequestDto;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.example.entity.BatchEntity;
-import org.springframework.stereotype.Repository;
+import org.example.enums.BatchStatus;
 
-@Repository
 public interface BatchRepository {
-    BatchEntity upload(BatchRequestDto batchDTO);
+    BatchEntity save(BatchEntity batch);
+    Optional<BatchEntity> findById(UUID id);
+    List<BatchEntity> findAll();
+    BatchEntity updateStatusById(UUID id, BatchStatus status);
 }

@@ -1,11 +1,10 @@
-package org.example.entity;
+package org.example.event;
 
 import org.example.enums.BatchStatus;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record BatchEntity(
+public record BatchCreatedEvent(
         UUID batchId,
         String raceName,
         Integer year,

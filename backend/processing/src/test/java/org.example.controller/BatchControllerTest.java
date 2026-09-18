@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.example.dto.BatchRequestDto;
 import org.example.dto.BatchResponseDto;
+import org.example.enums.BatchStatus;
 import org.example.service.BatchService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,7 +52,8 @@ public class BatchControllerTest {
                 "exampleRace",
                 2025,
                 LocalDateTime.now(),
-                null
+                null,
+                BatchStatus.UPLOADED
         );
 
         when(batchService.getBatches(0, 10)).thenReturn(List.of(batchExample));
@@ -105,7 +107,8 @@ public class BatchControllerTest {
                 newBatchRequestDto.raceName(),
                 newBatchRequestDto.year(),
                 newBatchRequestDto.createdAt(),
-                newBatchRequestDto.deletedAt()
+                newBatchRequestDto.deletedAt(),
+                BatchStatus.UPLOADED
         );
 
         when(batchService.uploadBatch(newBatchRequestDto)).thenReturn(newBatchResponseDto);
@@ -114,11 +117,11 @@ public class BatchControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newBatchRequestDto)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.batch_id").value(newBatchResponseDto.batch_id().toString()))
+                .andExpect(jsonPath("$.batch_id").value(newBatchResponseDto.batchId().toString()))
                 .andExpect(header().exists("Location"))
                 .andExpect(header().string("Location",
                         org.hamcrest.Matchers.containsString("/batches/"
-                                + newBatchResponseDto.batch_id())));
+                                + newBatchResponseDto.batchId())));
 
         verify(batchService, times(1)).uploadBatch(newBatchRequestDto);
     }

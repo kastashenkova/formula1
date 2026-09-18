@@ -1,14 +1,32 @@
 package org.example.repository;
 
-import org.example.dto.BatchRequestDto;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.example.entity.BatchEntity;
 import org.apache.commons.lang3.NotImplementedException;
+import org.example.enums.BatchStatus;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class BatchRepositoryInMemory implements BatchRepository {
     @Override
-    public BatchEntity upload(BatchRequestDto batchDTO) {
+    public BatchEntity save(BatchEntity batch) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Optional<BatchEntity> findById(UUID id) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public List<BatchEntity> findAll() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public BatchEntity updateStatusById(UUID id, BatchStatus status) {
         throw new NotImplementedException();
     }
 }

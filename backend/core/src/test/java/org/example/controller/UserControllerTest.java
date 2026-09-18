@@ -43,6 +43,7 @@ public class UserControllerTest {
         UserRegistrationRequestDto newUserRequestDto = new UserRegistrationRequestDto(
                 null,
                 "k.astashenkova@ukma.edu.ua",
+                "+380980137037",
                 Role.USER,
                 "user1234",
                 "user1234"
@@ -51,6 +52,7 @@ public class UserControllerTest {
         UserRegistrationResponseDto newUserResponseDto = new UserRegistrationResponseDto(
                 1L,
                 newUserRequestDto.email(),
+                newUserRequestDto.phoneNumber(),
                 newUserRequestDto.role()
         );
 
@@ -72,6 +74,7 @@ public class UserControllerTest {
         UserRegistrationRequestDto invalidRequest = new UserRegistrationRequestDto(
                 null,
                 "invalid-email-format",
+                "+380980137037",
                 Role.USER,
                 "user1234",
                 "user1234"
@@ -91,6 +94,7 @@ public class UserControllerTest {
         UserRegistrationRequestDto invalidRequest = new UserRegistrationRequestDto(
                 null,
                 "d.dzhos@ukma.edu.ua",
+                "+380980137037",
                 Role.ADMIN,
                 "admin123",
                 "user1234"
@@ -110,6 +114,7 @@ public class UserControllerTest {
         UserRegistrationRequestDto invalidRequest = new UserRegistrationRequestDto(
                 null,
                 "d.dzhos@ukma.edu.ua",
+                "+380980137037",
                 Role.ADMIN,
                 "admin12",
                 "admin12"
@@ -129,6 +134,7 @@ public class UserControllerTest {
         UserRegistrationRequestDto invalidRequest = new UserRegistrationRequestDto(
                 null,
                 "d.dzhos@ukma.edu.ua",
+                "+380980137037",
                 Role.ADMIN,
                 "admin1234567890_admin1234567890_admin1234567890",
                 "admin1234567890_admin1234567890_admin1234567890"

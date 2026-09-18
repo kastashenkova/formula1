@@ -4,7 +4,6 @@ import org.example.dto.webhooks.WebhookRequestDto;
 import org.example.dto.webhooks.WebhookResponseDto;
 import org.springframework.stereotype.Service;
 
-@Service
 public interface WebhookService {
 
     WebhookResponseDto create(WebhookRequestDto request);
