@@ -11,6 +11,8 @@
 
     <artifactId>streaming-gateway</artifactId>
 
+    <properties><spring-modulith.version>2.1.1</spring-modulith.version></properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -57,12 +59,24 @@
             <scope>test</scope>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.example</groupId>-->
-<!--            <artifactId>core</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-core</artifactId>
+            <version>${spring-modulith.version}</version>
+        </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.modulith</groupId>
+                <artifactId>spring-modulith-bom</artifactId>
+                <version>${spring-modulith.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
