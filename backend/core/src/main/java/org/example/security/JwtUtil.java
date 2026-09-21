@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -15,6 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class JwtUtil {
@@ -54,16 +54,19 @@ public class JwtUtil {
     }
 
     public boolean isValidToken(String token) {
+        if (!StringUtils.hasText(token)) {
+            return false;
+        }
         try {
-            Jws<Claims> claimsJws = Jwts.parser()
+            Jwts.parser()
                     .verifyWith(secretKey)
                     .requireIssuer(issuer)
                     .requireAudience(audience)
                     .build()
                     .parseSignedClaims(token);
-            return !claimsJws.getPayload().getExpiration().before(new Date());
+            return true;
         } catch (JwtException | IllegalArgumentException e) {
-            throw new JwtException("Expired or invalid JWT token: " + token, e);
+            return false;
         }
     }
 
