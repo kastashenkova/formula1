@@ -1,20 +1,21 @@
-package org.example.service.user.verification_token;
+package org.example.service.verification;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 import org.example.entity.VerificationToken;
 import org.example.enums.TokenType;
+import org.example.enums.UserStatus;
+import org.example.exception.InvalidUserStateException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class PhoneVerificationTokenStrategy implements VerificationTokenStrategy {
+public class PhoneVerificationStrategy implements VerificationStrategy {
 
     @Value("${phone.token.expiry.date}")
     private long expiryHours;
@@ -33,7 +34,7 @@ public class PhoneVerificationTokenStrategy implements VerificationTokenStrategy
 
     private final RestTemplate restTemplate;
 
-    public PhoneVerificationTokenStrategy(RestTemplate restTemplate) {
+    public PhoneVerificationStrategy(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
@@ -43,7 +44,7 @@ public class PhoneVerificationTokenStrategy implements VerificationTokenStrategy
     }
 
     @Override
-    public VerificationToken createVerificationToken(Long userId) {
+    public VerificationToken createVerificationToken(UUID userId) {
         String token = UUID.randomUUID().toString();
 
         LocalDateTime expirationTime = LocalDateTime.now().plusHours(expiryHours);
@@ -57,7 +58,6 @@ public class PhoneVerificationTokenStrategy implements VerificationTokenStrategy
     }
 
     @Override
-    @Async
     public void sendMessage(String to, VerificationToken token) {
         String confirmationUrl = frontendUrl + "/auth/confirm-phone-number?token=" + token.token();
         String messageBody = "Click the link to confirm your phone number to use account in Formula1 App: " + confirmationUrl;
@@ -77,5 +77,17 @@ public class PhoneVerificationTokenStrategy implements VerificationTokenStrategy
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
         restTemplate.postForEntity(url, request, String.class);
+    }
+
+    @Override
+    public UserStatus getNextStatus(UserStatus currentStatus) {
+        if (currentStatus == UserStatus.PENDING_VERIFICATION) {
+            return UserStatus.PHONE_VERIFIED;
+        }
+        if (currentStatus == UserStatus.EMAIL_VERIFIED) {
+            return UserStatus.ACTIVE;
+        }
+
+        throw new InvalidUserStateException("Phone cannot be verified from status: " + currentStatus);
     }
 }

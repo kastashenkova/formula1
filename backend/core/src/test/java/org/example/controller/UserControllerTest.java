@@ -14,14 +14,19 @@ import org.example.dto.user.UserRegistrationRequestDto;
 import org.example.dto.user.UserResponseDto;
 import org.example.enums.Role;
 import org.example.enums.UserStatus;
-import org.example.service.user.management.UserService;
+import org.example.security.JwtUtil;
+import org.example.service.authentication.AuthenticationService;
+import org.example.service.user.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.UUID;
 
 @WebMvcTest(UserController.class)
 @TestConstructor(autowireMode = ALL)
@@ -31,6 +36,15 @@ public class UserControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private AuthenticationService authenticationService;
+
+    @MockitoBean
+    private JwtUtil jwtUtil;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -51,7 +65,7 @@ public class UserControllerTest {
         );
 
         UserResponseDto newUserResponseDto = new UserResponseDto(
-                1L,
+                UUID.randomUUID(),
                 newUserRequestDto.email(),
                 newUserRequestDto.phoneNumber(),
                 newUserRequestDto.role(),
@@ -60,11 +74,11 @@ public class UserControllerTest {
 
         when(userService.addUser(newUserRequestDto)).thenReturn(newUserResponseDto);
 
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/users/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newUserRequestDto)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.id").value(newUserResponseDto.id().toString()))
                 .andExpect(jsonPath("$.email").value(newUserRequestDto.email()));
 
         verify(userService, times(1)).addUser(newUserRequestDto);
@@ -82,7 +96,7 @@ public class UserControllerTest {
                 "user1234"
         );
 
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/users/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -102,7 +116,7 @@ public class UserControllerTest {
                 "user1234"
         );
 
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/users/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -122,7 +136,7 @@ public class UserControllerTest {
                 "admin12"
         );
 
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/users/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -142,7 +156,7 @@ public class UserControllerTest {
                 "admin1234567890_admin1234567890_admin1234567890"
         );
 
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/users/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -153,7 +167,7 @@ public class UserControllerTest {
     @Test
     @DisplayName("Should return 400 Bad Request when role is not USER or ADMIN")
     void register_notExistingRole_ReturnsBadRequest() throws Exception {
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/users/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 { "email": "k.astashenkova@ukma.edu.ua",

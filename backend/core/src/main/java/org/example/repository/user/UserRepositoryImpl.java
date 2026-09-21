@@ -2,13 +2,14 @@ package org.example.repository.user;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.example.entity.UserEntity;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
-    private final Map<Long, UserEntity> storage = new ConcurrentHashMap<>();
+    private final static Map<UUID, UserEntity> storage = new ConcurrentHashMap<>();
 
     @Override
     public UserEntity save(UserEntity user) {
@@ -17,7 +18,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<UserEntity> findById(Long id) {
+    public Optional<UserEntity> findById(UUID id) {
         return Optional.ofNullable(storage.get(id));
     }
 
@@ -36,7 +37,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public UserEntity updateById(Long id, UserEntity request) {
+    public UserEntity updateById(UUID id, UserEntity request) {
         if (storage.containsKey(id)) {
             storage.put(id, request);
             return request;
