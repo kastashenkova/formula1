@@ -1,4 +1,4 @@
-package org.example.dto.telemetry_point;
+package org.example.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

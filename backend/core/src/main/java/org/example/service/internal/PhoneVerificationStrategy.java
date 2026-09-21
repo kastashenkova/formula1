@@ -1,6 +1,9 @@
-package org.example.service.verification;
+package org.example.service.internal;
+
+import static reactor.netty.http.HttpConnectionLiveness.log;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.example.entity.VerificationToken;
@@ -12,6 +15,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
@@ -19,9 +23,6 @@ public class PhoneVerificationStrategy implements VerificationStrategy {
 
     @Value("${phone.token.expiry.date}")
     private long expiryHours;
-
-    @Value("${app.frontend.url}")
-    private String frontendUrl;
 
     @Value("${whatsapp.api.token}")
     private String whatsappToken;
@@ -59,24 +60,39 @@ public class PhoneVerificationStrategy implements VerificationStrategy {
 
     @Override
     public void sendMessage(String to, VerificationToken token) {
-        String confirmationUrl = frontendUrl + "/auth/confirm-phone-number?token=" + token.token();
-        String messageBody = "Click the link to confirm your phone number to use account in Formula1 App: " + confirmationUrl;
-
         String url = String.format("%s/%s/messages", whatsappApiUrl, phoneNumberId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(whatsappToken);
 
+        String recipient = to.replaceAll("[^0-9]", "");
+
         Map<String, Object> payload = Map.of(
                 "messaging_product", "whatsapp",
-                "to", to,
-                "type", "text",
-                "text", Map.of("body", messageBody)
+                "to", recipient,
+                "type", "template",
+                "template", Map.of(
+                        "name", "verificationlink",
+                        "language", Map.of("code", "en"),
+                        "components", List.of(Map.of(
+                                "type", "button",
+                                "sub_type", "url",
+                                "index", "0",
+                                "parameters", List.of(Map.of(
+                                        "type", "text",
+                                        "text", token.token()
+                                ))
+                        ))
+                )
         );
 
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
-        restTemplate.postForEntity(url, request, String.class);
+        try {
+            restTemplate.postForEntity(url, new HttpEntity<>(payload, headers), String.class);
+        } catch (RestClientResponseException e) {
+            log.error("WhatsApp API error {}: {}", e.getStatusCode(), e.getResponseBodyAsString());
+            throw e;
+        }
     }
 
     @Override

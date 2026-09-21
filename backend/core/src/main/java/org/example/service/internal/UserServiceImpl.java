@@ -1,4 +1,4 @@
-package org.example.service.user;
+package org.example.service.internal;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
@@ -9,19 +9,19 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.example.command.UpdateUserStatusCommand;
-import org.example.dto.user.UserResponseDto;
-import org.example.dto.user.UserRegistrationRequestDto;
+import org.example.dto.UserResponseDto;
+import org.example.dto.UserRegistrationRequestDto;
 import org.example.entity.UserEntity;
 import org.example.entity.VerificationToken;
 import org.example.enums.TokenType;
 import org.example.enums.UserStatus;
-import org.example.dto.event.UserRegisteredEvent;
+import org.example.dto.UserRegisteredEvent;
 import org.example.exception.DuplicateUserException;
 import org.example.exception.InvalidTokenException;
 import org.example.exception.InvalidUserStateException;
-import org.example.repository.token.TokenRepository;
-import org.example.repository.user.UserRepository;
-import org.example.service.verification.VerificationStrategy;
+import org.example.repository.TokenRepository;
+import org.example.repository.UserRepository;
+import org.example.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -162,7 +162,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void confirmByToken(String token) {
         VerificationToken verificationToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new InvalidTokenException("Invalid token: " + token));
+                .orElseThrow(() -> new InvalidTokenException("Invalid token"));
 
         if (verificationToken.expiryDate().isBefore(LocalDateTime.now())) {
             String message = String.format("Token %s has expired", token);
@@ -197,7 +197,7 @@ public class UserServiceImpl implements UserService {
 
         tokenRepository.delete(verificationToken);
 
-        log.info("Token {} confirmed. User status {} transitioned to {}", token, user.id(), nextStatus);
+        log.info("Token confirmed. User status {} transitioned to {}", user.id(), nextStatus);
     }
 
     private UserResponseDto mapToResponse(UserEntity entity) {

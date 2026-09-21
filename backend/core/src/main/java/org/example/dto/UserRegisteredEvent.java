@@ -1,4 +1,4 @@
-package org.example.dto.event;
+package org.example.dto;
 
 import org.example.enums.Role;
 import org.example.enums.UserStatus;

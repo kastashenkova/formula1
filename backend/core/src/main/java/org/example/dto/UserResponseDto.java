@@ -1,4 +1,4 @@
-package org.example.dto.user;
+package org.example.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.example.enums.Role;

@@ -1,9 +1,10 @@
-package org.example.repository.token;
+package org.example.repository.internal;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.example.entity.VerificationToken;
+import org.example.repository.TokenRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

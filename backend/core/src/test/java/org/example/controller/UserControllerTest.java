@@ -10,13 +10,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.dto.user.UserRegistrationRequestDto;
-import org.example.dto.user.UserResponseDto;
+import org.example.dto.UserRegistrationRequestDto;
+import org.example.dto.UserResponseDto;
 import org.example.enums.Role;
 import org.example.enums.UserStatus;
 import org.example.security.JwtUtil;
-import org.example.service.authentication.AuthenticationService;
-import org.example.service.user.UserService;
+import org.example.service.AuthenticationService;
+import org.example.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;

@@ -1,4 +1,4 @@
-package org.example.dto.driver;
+package org.example.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,11 +1,12 @@
-package org.example.service.authentication;
+package org.example.service.internal;
 
-import org.example.dto.user.login.UserLoginRequestDto;
-import org.example.dto.user.login.UserLoginResponseDto;
+import org.example.dto.UserLoginRequestDto;
+import org.example.dto.UserLoginResponseDto;
 import org.example.entity.UserEntity;
 import org.example.enums.UserStatus;
-import org.example.repository.user.UserRepository;
+import org.example.repository.UserRepository;
 import org.example.security.JwtUtil;
+import org.example.service.AuthenticationService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;

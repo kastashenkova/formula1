@@ -1,7 +1,7 @@
 package org.example.security;
 
 import org.example.entity.UserEntity;
-import org.example.repository.user.UserRepository;
+import org.example.repository.UserRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

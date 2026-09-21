@@ -1,4 +1,4 @@
-package org.example.repository.token;
+package org.example.repository;
 
 import java.util.Optional;
 import org.example.entity.VerificationToken;

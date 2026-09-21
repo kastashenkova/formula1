@@ -1,4 +1,4 @@
-package org.example.repository.user;
+package org.example.repository;
 
 import java.util.Optional;
 import java.util.UUID;

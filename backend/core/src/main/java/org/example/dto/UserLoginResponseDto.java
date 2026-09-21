@@ -1,4 +1,4 @@
-package org.example.dto.user.login;
+package org.example.dto;
 
 public record UserLoginResponseDto(String token) {
 }

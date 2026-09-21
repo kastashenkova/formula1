@@ -1,4 +1,4 @@
-package org.example.service.verification;
+package org.example.service.internal;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

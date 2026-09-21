@@ -1,4 +1,4 @@
-package org.example.service.verification;
+package org.example.service.internal;
 
 import java.util.UUID;
 import org.example.entity.VerificationToken;

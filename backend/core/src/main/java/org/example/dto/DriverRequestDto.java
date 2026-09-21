@@ -1,4 +1,4 @@
-package org.example.dto.driver;
+package org.example.dto;
 
 import jakarta.validation.constraints.*;
 import org.example.validation.OnCreate;

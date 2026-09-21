@@ -1,9 +1,9 @@
-package org.example.service.verification;
+package org.example.service.internal;
 
 import org.example.entity.VerificationToken;
 import org.example.exception.InvalidTokenException;
-import org.example.repository.token.TokenRepository;
-import org.example.dto.event.UserRegisteredEvent;
+import org.example.repository.TokenRepository;
+import org.example.dto.UserRegisteredEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.modulith.events.ApplicationModuleListener;
