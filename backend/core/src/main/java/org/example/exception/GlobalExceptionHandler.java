@@ -10,100 +10,106 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(DuplicateUserException.class)
-    public ProblemDetail handleDuplicateUser(DuplicateUserException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
-        problem.setTitle("Resource Duplicate Conflict");
-        problem.setType(URI.create("https://core.ukma.edu/errors/duplicate"));
-        problem.setProperty("timestamp", Instant.now());
-        return problem;
+    private ProblemDetail buildProblemDetail(HttpStatus status, String title, String uri, String detail) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(status, detail);
+        pd.setTitle(title);
+        pd.setType(URI.create(uri));
+        pd.setProperty("timestamp", Instant.now());
+        return pd;
+    }
+
+    @ExceptionHandler({DuplicateUserException.class, RegistrationException.class})
+    public ProblemDetail handleConflicts(RuntimeException ex) {
+        return buildProblemDetail(
+                HttpStatus.CONFLICT,
+                "Resource conflict",
+                "https://core.ukma.edu.ua/errors/conflict",
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler({InvalidTokenException.class,
+            IllegalArgumentException.class,
+            HttpMessageNotReadableException.class})
+    public ProblemDetail handleBadRequest(Exception ex) {
+        return buildProblemDetail(
+                HttpStatus.BAD_REQUEST,
+                "Bad request or business rule error",
+                "https://core.ukma.edu.ua/errors/bad-request",
+                ex.getMessage()
+        );
     }
 
     @ExceptionHandler(InvalidUserStateException.class)
     public ProblemDetail handleInvalidState(InvalidUserStateException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage());
-        problem.setTitle("Invalid Business State");
-        problem.setType(URI.create("https://core.ukma.edu/errors/invalid-state"));
-        problem.setProperty("timestamp", Instant.now());
-        return problem;
+        return buildProblemDetail(
+                HttpStatus.UNPROCESSABLE_CONTENT,
+                "Invalid business state",
+                "https://core.ukma.edu.ua/errors/invalid-state",
+                ex.getMessage()
+        );
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ProblemDetail handleNotFound(EntityNotFoundException ex) {
-        ProblemDetail pd = ProblemDetail.forStatusAndDetail(
-                HttpStatus.NOT_FOUND, ex.getMessage());
-        pd.setTitle("Entity not found");
-        pd.setType(URI.create("https://core.ukma.edu.ua/errors/not-found"));
-        pd.setProperty("timestamp", Instant.now());
-        return pd;
-    }
-
-    @ExceptionHandler(RegistrationException.class)
-    public ProblemDetail handleRegistrationException(RegistrationException ex) {
-        ProblemDetail pd = ProblemDetail.forStatusAndDetail(
-                HttpStatus.CONFLICT, ex.getMessage());
-        pd.setTitle("Registration failed");
-        pd.setType(URI.create("https://core.ukma.edu.ua/errors/conflict"));
-        pd.setProperty("timestamp", Instant.now());
-        return pd;
+    @ExceptionHandler({EntityNotFoundException.class, NoResourceFoundException.class})
+    public ProblemDetail handleNotFound(Exception ex) {
+        return buildProblemDetail(
+                HttpStatus.NOT_FOUND,
+                "Entity or resource not found",
+                "https://core.ukma.edu.ua/errors/not-found",
+                ex.getMessage()
+        );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidation(MethodArgumentNotValidException ex) {
-        ProblemDetail pd = ProblemDetail.forStatusAndDetail(
-                HttpStatus.BAD_REQUEST, "Validation failed for one or more fields");
-        pd.setTitle("Incorrect request");
-        pd.setType(URI.create("https://core.ukma.edu.ua/errors/validation-error"));
-        pd.setProperty("timestamp", Instant.now());
+        ProblemDetail pd = buildProblemDetail(
+                HttpStatus.BAD_REQUEST,
+                "Validation failed",
+                "https://core.ukma.edu.ua/errors/validation-error",
+                "Validation failed for one or more fields"
+        );
 
         Map<String, String> errors = ex.getBindingResult().getFieldErrors().stream()
                 .collect(Collectors.toMap(
                         FieldError::getField,
                         fe -> fe.getDefaultMessage()
-                                != null ? fe.getDefaultMessage() : "Not valid value",
-                        (first, second) -> first));
+                                != null ? fe.getDefaultMessage() : "Invalid value",
+                        (first, second) -> first
+                ));
 
         pd.setProperty("errors", errors);
         return pd;
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ProblemDetail handleIllegalArgument(IllegalArgumentException ex) {
-        ProblemDetail pd = ProblemDetail.forStatusAndDetail(
-                HttpStatus.BAD_REQUEST, ex.getMessage());
-        pd.setTitle("Business rules error");
-        pd.setType(URI.create("https://core.ukma.edu.ua/errors/illegal-argument"));
-        pd.setProperty("timestamp", Instant.now());
-        return pd;
-    }
-
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ProblemDetail handleMessageNotReadable(HttpMessageNotReadableException ex) {
-        ProblemDetail pd = ProblemDetail.forStatusAndDetail(
-                HttpStatus.BAD_REQUEST, ex.getMessage());
-        pd.setTitle("Accepted message not readable");
-        pd.setType(URI.create("https://core.ukma.edu.ua/errors/message-not-readable"));
-        pd.setProperty("timestamp", Instant.now());
-        return pd;
+    @ExceptionHandler({BadCredentialsException.class, DisabledException.class})
+    public ProblemDetail handleBadCredentials(Exception ex) {
+        return buildProblemDetail(
+                HttpStatus.UNAUTHORIZED,
+                "Bad credentials",
+                "https://core.ukma.edu.ua/errors/bad-credentials",
+                ex.getMessage()
+        );
     }
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGeneral(Exception ex) {
-        ProblemDetail pd = ProblemDetail.forStatusAndDetail(
-                HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected internal error occurred");
-        pd.setTitle("Internal server error");
-        pd.setType(URI.create("https://core.ukma.edu.ua/errors/internal-server-error"));
-        pd.setProperty("timestamp", Instant.now());
-        return pd;
+        return buildProblemDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Internal server error",
+                "https://core.ukma.edu.ua/errors/internal-server-error",
+                "An unexpected internal error occurred"
+        );
     }
 }
