@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.example.dto.BatchRequestDto;
 import org.example.dto.BatchResponseDto;
-import org.example.enums.BatchStatus;
 import org.example.service.BatchService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -52,8 +51,7 @@ public class BatchControllerTest {
                 "exampleRace",
                 2025,
                 LocalDateTime.now(),
-                null,
-                BatchStatus.UPLOADED
+                null
         );
 
         when(batchService.getBatches(0, 10)).thenReturn(List.of(batchExample));
@@ -107,8 +105,7 @@ public class BatchControllerTest {
                 newBatchRequestDto.raceName(),
                 newBatchRequestDto.year(),
                 newBatchRequestDto.createdAt(),
-                newBatchRequestDto.deletedAt(),
-                BatchStatus.UPLOADED
+                newBatchRequestDto.deletedAt()
         );
 
         when(batchService.uploadBatch(newBatchRequestDto)).thenReturn(newBatchResponseDto);

@@ -9,11 +9,9 @@ public enum UserStatus {
 
     public boolean canTransitionTo(UserStatus next) {
         return switch (this) {
-            case PENDING_VERIFICATION ->
-                    next == EMAIL_VERIFIED || next == PHONE_VERIFIED || next == DEACTIVATED;
+            case PENDING_VERIFICATION -> next == EMAIL_VERIFIED || next == PHONE_VERIFIED || next == DEACTIVATED;
 
-            case EMAIL_VERIFIED, PHONE_VERIFIED ->
-                    next == ACTIVE || next == DEACTIVATED;
+            case EMAIL_VERIFIED, PHONE_VERIFIED -> next == ACTIVE || next == DEACTIVATED;
 
             case ACTIVE -> next == DEACTIVATED;
 

@@ -1,7 +1,8 @@
 package org.example.security;
 
 import org.example.entity.UserEntity;
-import org.example.repository.user.UserRepository;
+import org.example.repository.UserRepository;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        return org.springframework.security.core.userdetails.User.builder()
+        return User.builder()
                 .username(user.email())
                 .password(user.password())
                 .roles(user.role().name())

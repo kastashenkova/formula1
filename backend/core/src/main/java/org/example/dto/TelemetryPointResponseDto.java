@@ -1,4 +1,4 @@
-package org.example.dto.telemetry_point;
+package org.example.dto;
 
 public record TelemetryPointResponseDto(
         Float x,

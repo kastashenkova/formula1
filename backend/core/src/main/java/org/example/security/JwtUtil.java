@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 @Component
 public class JwtUtil {
     private final SecretKey secretKey;
+
     private final UserDetailsService userDetailsService;
 
     @Value("${jwt.expiration}")
