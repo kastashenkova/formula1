@@ -1,58 +1,77 @@
 package org.example.service;
 
-import org.example.dto.BatchRequestDto;
-import org.example.dto.BatchResponseDto;
-import org.example.entity.BatchEntity;
-import org.example.repository.BatchRepository;
-import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
+import org.example.dto.BatchRequestDto;
+import org.example.dto.BatchResponseDto;
+import org.example.entity.BatchEntity;
+import org.example.event.BatchCreatedEvent;
+import org.example.exception.DuplicateBatchException;
+import org.example.repository.BatchRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BatchServiceImpl implements BatchService {
-
+    private static final Logger log = LoggerFactory.getLogger(BatchServiceImpl.class);
     private final BatchRepository batchRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    // temporary decision instead of the db and repository layer
-    private final List<BatchEntity> batchEntities = new CopyOnWriteArrayList<>();
-
-    public BatchServiceImpl(BatchRepository batchRepo) {
+    public BatchServiceImpl(BatchRepository batchRepo, ApplicationEventPublisher eventPublisher) {
         this.batchRepository = batchRepo;
+        this.eventPublisher = eventPublisher;
     }
 
+    @Override
+    @Transactional
     public BatchResponseDto uploadBatch(BatchRequestDto requestDto) {
+        UUID id = UUID.randomUUID();
+
+        if (batchRepository.findById(id).isPresent()) {
+            throw new DuplicateBatchException("Batch with id " + id + " already exists");
+        }
+
         BatchEntity newBatch = new BatchEntity(
-                UUID.randomUUID(),
+                id,
                 requestDto.raceName(),
                 requestDto.year(),
                 LocalDateTime.now(),
                 null);
 
-        batchEntities.add(newBatch);
+        BatchEntity savedBatch = batchRepository.save(newBatch);
 
-        return mapToResponse(newBatch);
+        eventPublisher.publishEvent(new BatchCreatedEvent(
+                savedBatch.batchId(),
+                savedBatch.raceName(),
+                savedBatch.year(),
+                savedBatch.createdAt(),
+                savedBatch.deletedAt()
+        ));
+
+        log.info("Created batch {}", savedBatch.batchId());
+
+        return mapToResponse(savedBatch);
     }
 
     @Override
     public List<BatchResponseDto> getBatches(int page, int size) {
-        return batchEntities
-                .stream()
-                .skip((long) Math.max(0, page) * Math.max(1, size))
-                .limit(Math.max(1, size))
+        return batchRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     private BatchResponseDto mapToResponse(BatchEntity batchEntity) {
         return new BatchResponseDto(
-                batchEntity.batch_id(),
+                batchEntity.batchId(),
                 batchEntity.raceName(),
                 batchEntity.year(),
-                LocalDateTime.now(),
-                null
+                batchEntity.createdAt(),
+                batchEntity.deletedAt()
         );
     }
 }

@@ -10,10 +10,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.dto.user.registration.UserRegistrationRequestDto;
-import org.example.dto.user.registration.UserRegistrationResponseDto;
+import org.example.dto.user.UserRegistrationRequestDto;
+import org.example.dto.user.UserResponseDto;
 import org.example.enums.Role;
-import org.example.service.user.UserService;
+import org.example.enums.UserStatus;
+import org.example.service.user.management.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -43,15 +44,18 @@ public class UserControllerTest {
         UserRegistrationRequestDto newUserRequestDto = new UserRegistrationRequestDto(
                 null,
                 "k.astashenkova@ukma.edu.ua",
+                "+380980137037",
                 Role.USER,
                 "user1234",
                 "user1234"
         );
 
-        UserRegistrationResponseDto newUserResponseDto = new UserRegistrationResponseDto(
+        UserResponseDto newUserResponseDto = new UserResponseDto(
                 1L,
                 newUserRequestDto.email(),
-                newUserRequestDto.role()
+                newUserRequestDto.phoneNumber(),
+                newUserRequestDto.role(),
+                UserStatus.PENDING_VERIFICATION
         );
 
         when(userService.addUser(newUserRequestDto)).thenReturn(newUserResponseDto);
@@ -72,6 +76,7 @@ public class UserControllerTest {
         UserRegistrationRequestDto invalidRequest = new UserRegistrationRequestDto(
                 null,
                 "invalid-email-format",
+                "+380980137037",
                 Role.USER,
                 "user1234",
                 "user1234"
@@ -91,6 +96,7 @@ public class UserControllerTest {
         UserRegistrationRequestDto invalidRequest = new UserRegistrationRequestDto(
                 null,
                 "d.dzhos@ukma.edu.ua",
+                "+380980137037",
                 Role.ADMIN,
                 "admin123",
                 "user1234"
@@ -110,6 +116,7 @@ public class UserControllerTest {
         UserRegistrationRequestDto invalidRequest = new UserRegistrationRequestDto(
                 null,
                 "d.dzhos@ukma.edu.ua",
+                "+380980137037",
                 Role.ADMIN,
                 "admin12",
                 "admin12"
@@ -129,6 +136,7 @@ public class UserControllerTest {
         UserRegistrationRequestDto invalidRequest = new UserRegistrationRequestDto(
                 null,
                 "d.dzhos@ukma.edu.ua",
+                "+380980137037",
                 Role.ADMIN,
                 "admin1234567890_admin1234567890_admin1234567890",
                 "admin1234567890_admin1234567890_admin1234567890"

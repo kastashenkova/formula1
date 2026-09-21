@@ -39,7 +39,7 @@ public class BatchController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(newBatch.batch_id())
+                .buildAndExpand(newBatch.batchId())
                 .toUri();
 
         return ResponseEntity.created(location).body(newBatch);

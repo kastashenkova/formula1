@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record BatchEntity(
-        UUID batch_id,
+        UUID batchId,
         String raceName,
         Integer year,
         LocalDateTime createdAt,

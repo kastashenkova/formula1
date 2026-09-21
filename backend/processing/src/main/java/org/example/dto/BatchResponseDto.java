@@ -5,7 +5,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record BatchResponseDto(
-        UUID batch_id,
+        @JsonProperty("batch_id")
+        UUID batchId,
         @JsonProperty("race_name")
         String raceName,
         Integer year,

@@ -13,7 +13,7 @@ import java.util.UUID;
 public record BatchRequestDto(
         @Null(groups = OnCreate.class, message = "{validation.batchId.creation.null}")
         @NotNull(groups = OnUpdate.class, message = "{validation.batchId.update.not-null}")
-        UUID batch_id,
+        UUID batchId,
 
         @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "{validation.raceName.not-null}")
         @Size(groups = {OnCreate.class, OnUpdate.class}, min = 3, max = 100, message = "{validation.raceName.size}")
