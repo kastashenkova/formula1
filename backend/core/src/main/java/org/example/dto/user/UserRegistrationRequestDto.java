@@ -11,6 +11,8 @@ import org.example.validation.OnCreate;
 import org.example.validation.OnUpdate;
 import org.hibernate.validator.constraints.Length;
 
+import java.util.UUID;
+
 @FieldMatch(groups = {OnCreate.class, OnUpdate.class},
         first = "password",
         second = "repeatPassword",
@@ -18,7 +20,7 @@ import org.hibernate.validator.constraints.Length;
 public record UserRegistrationRequestDto(
         @Null(groups = OnCreate.class, message = "{validation.userId.creation.null}")
         @NotNull(groups = OnUpdate.class, message = "{validation.userId.update.not-null}")
-        Long id,
+        UUID id,
 
         @Email(groups = {OnCreate.class, OnUpdate.class}, message = "{validation.email.format}")
         @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "{validation.email.not-blank}")

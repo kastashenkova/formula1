@@ -1,8 +1,8 @@
 package org.example.service.user.management;
 
 import jakarta.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.example.command.UpdateUserStatusCommand;
@@ -14,14 +14,16 @@ import org.example.enums.TokenType;
 import org.example.enums.UserStatus;
 import org.example.event.UserRegisteredEvent;
 import org.example.exception.DuplicateUserException;
+import org.example.exception.InvalidTokenException;
 import org.example.exception.InvalidUserStateException;
 import org.example.repository.token.TokenRepository;
 import org.example.repository.user.UserRepository;
-import org.example.service.user.verification_token.EmailVerificationTokenStrategy;
-import org.example.service.user.verification_token.PhoneVerificationTokenStrategy;
+import org.example.service.user.verification.VerificationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,25 +35,17 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final ApplicationEventPublisher eventPublisher;
-
-    private final Map<String, EmailVerificationTokenStrategy> emailTokenMap;
-    private final Map<String, PhoneVerificationTokenStrategy> phoneTokenMap;
+    private final Map<String, VerificationStrategy> strategyMap;
 
     public UserServiceImpl(PasswordEncoder passwordEncoder,
                            UserRepository userRepository, TokenRepository tokenRepository,
                            ApplicationEventPublisher eventPublisher,
-                           List<EmailVerificationTokenStrategy> emailTokenStrategyList,
-                           List <PhoneVerificationTokenStrategy> phoneTokenStrategyList) {
+                           List<VerificationStrategy> strategyList) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.eventPublisher = eventPublisher;
-        this.emailTokenMap = emailTokenStrategyList.stream()
-                .collect(Collectors.toMap(
-                        s -> s.getVerificationTokenType().toString(),
-                        Function.identity()
-                ));
-        this.phoneTokenMap = phoneTokenStrategyList.stream()
+        this.strategyMap = strategyList.stream()
                 .collect(Collectors.toMap(
                         s -> s.getVerificationTokenType().toString(),
                         Function.identity()
@@ -71,9 +65,9 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateUserException(message);
         }
 
-        Long id = (requestDto.id() != null)
+        UUID id = (requestDto.id() != null)
                 ? requestDto.id()
-                : Math.abs(new java.util.Random().nextLong());
+                : UUID.randomUUID();
 
         if (userRepository.findById(id).isPresent()) {
             String message = String.format("User with id %s already exists", id);
@@ -91,35 +85,27 @@ public class UserServiceImpl implements UserService {
 
         UserEntity savedUser = userRepository.save(newUser);
 
-        EmailVerificationTokenStrategy emailTokenStrategy
-                = emailTokenMap.get(TokenType.EMAIL_VERIFICATION.toString());
-        if (emailTokenStrategy == null) {
-            String message = String.format("Email verification token for %s not created", requestDto.email());
-            throw new InvalidUserStateException(message);
+        VerificationStrategy emailStrategy = strategyMap.get(TokenType.EMAIL_VERIFICATION.name());
+        VerificationStrategy phoneStrategy = strategyMap.get(TokenType.PHONE_VERIFICATION.name());
+
+        if (emailStrategy == null || phoneStrategy == null) {
+            throw new InvalidUserStateException("Verification strategies are not properly configured");
         }
 
-        PhoneVerificationTokenStrategy phoneTokenStrategy
-                = phoneTokenMap.get(TokenType.PHONE_VERIFICATION.toString());
-        if (phoneTokenStrategy == null) {
-            String message = String.format("Phone number verification token for %s not created", requestDto.phoneNumber());
-            throw new InvalidUserStateException(message);
-        }
-
-        VerificationToken emailToken = emailTokenStrategy.createVerificationToken(id);
-        VerificationToken phoneToken = phoneTokenStrategy.createVerificationToken(id);
+        VerificationToken emailToken = emailStrategy.createVerificationToken(savedUser.id());
+        VerificationToken phoneToken = phoneStrategy.createVerificationToken(savedUser.id());
 
         VerificationToken savedEmailToken = tokenRepository.save(emailToken);
         VerificationToken savedPhoneToken = tokenRepository.save(phoneToken);
-
-        emailTokenStrategy.sendMessage(savedUser.email(), savedEmailToken);
-        phoneTokenStrategy.sendMessage(savedUser.phoneNumber(), savedPhoneToken);
 
         eventPublisher.publishEvent(new UserRegisteredEvent(
                 savedUser.id(),
                 savedUser.email(),
                 savedUser.phoneNumber(),
                 savedUser.role(),
-                savedUser.userStatus()
+                savedUser.userStatus(),
+                savedEmailToken.token(),
+                savedPhoneToken.token()
         ));
 
         log.info("Registered user {}", savedUser.id());
@@ -129,7 +115,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponseDto updateStatus(Long id, UpdateUserStatusCommand command) {
+    public UserResponseDto updateStatus(UUID id, UpdateUserStatusCommand command) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()
+                && !Objects.equals(authentication.getPrincipal(), "anonymousUser")) {
+            String currentEmail = authentication.getName();
+            UserEntity currentUser = userRepository.findByEmail(currentEmail).orElse(null);
+            if (currentUser != null && currentUser.id().equals(id)) {
+                throw new InvalidUserStateException("You cannot change your own status");
+            }
+        }
+
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "User with ID '" + id + "' not found"));
@@ -157,6 +153,48 @@ public class UserServiceImpl implements UserService {
         log.info("Updated status for user {} to {}", id, targetStatus);
 
         return mapToResponse(updatedUser);
+    }
+
+    @Override
+    @Transactional
+    public void confirmByToken(String token) {
+        VerificationToken verificationToken = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new InvalidTokenException("Invalid token: " + token));
+
+        if (verificationToken.expiryDate().isBefore(LocalDateTime.now())) {
+            String message = String.format("Token %s has expired", token);
+            throw new InvalidTokenException(message);
+        }
+
+        UserEntity user = userRepository.findById(verificationToken.userId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        VerificationStrategy strategy = strategyMap.get(verificationToken.tokenType().name());
+        if (strategy == null) {
+            String message = String.format("Verification token for %s not found", verificationToken.tokenType());
+            throw new InvalidUserStateException(message);
+        }
+
+        UserStatus nextStatus = strategy.getNextStatus(user.userStatus());
+
+        if (!user.userStatus().canTransitionTo(nextStatus)) {
+            String message = String.format("Illegal transition from %s to %s", user.userStatus(), nextStatus);
+            throw new InvalidUserStateException(message);
+        }
+
+        UserEntity updatedUser = new UserEntity(
+                user.id(),
+                user.email(),
+                user.phoneNumber(),
+                user.role(),
+                user.password(),
+                nextStatus
+        );
+        userRepository.updateById(user.id(), updatedUser);
+
+        tokenRepository.delete(verificationToken);
+
+        log.info("Token {} confirmed. User status {} transitioned to {}", token, user.id(), nextStatus);
     }
 
     private UserResponseDto mapToResponse(UserEntity entity) {
