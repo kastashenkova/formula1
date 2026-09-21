@@ -1,4 +1,4 @@
-package org.example.service.user.verification;
+package org.example.service.verification;
 
 import java.time.LocalDateTime;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package org.example.service.user.authentication;
+package org.example.service.authentication;
 
 import org.example.dto.user.login.UserLoginRequestDto;
 import org.example.dto.user.login.UserLoginResponseDto;

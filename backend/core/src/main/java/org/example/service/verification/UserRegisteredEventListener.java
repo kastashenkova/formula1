@@ -1,14 +1,12 @@
-package org.example.event;
+package org.example.service.verification;
 
 import org.example.entity.VerificationToken;
 import org.example.exception.InvalidTokenException;
 import org.example.repository.token.TokenRepository;
-import org.example.service.user.verification.EmailVerificationStrategy;
-import org.example.service.user.verification.PhoneVerificationStrategy;
+import org.example.dto.event.UserRegisteredEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -26,9 +24,8 @@ public class UserRegisteredEventListener {
         this.phoneVerificationStrategy = phoneVerificationStrategy;
     }
 
-    @Async
-    @EventListener
-    public void handleUserRegistered(UserRegisteredEvent event) {
+    @ApplicationModuleListener
+    public void onUserRegistered(UserRegisteredEvent event) {
         log.info("UserRegisteredEvent received for user {}", event.id());
 
         try {

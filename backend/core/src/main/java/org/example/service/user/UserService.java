@@ -1,4 +1,4 @@
-package org.example.service.user.management;
+package org.example.service.user;
 
 import java.util.UUID;
 import org.example.command.UpdateUserStatusCommand;

@@ -1,4 +1,4 @@
-package org.example.service.user.verification;
+package org.example.service.verification;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -9,7 +9,6 @@ import org.example.exception.InvalidUserStateException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
