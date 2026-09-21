@@ -4,7 +4,6 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -25,16 +24,6 @@ public class GlobalExceptionHandler {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
         problem.setTitle("Resource Duplicate Conflict");
         problem.setType(URI.create("https://processing.ukma.edu/errors/duplicate"));
-        problem.setProperty("timestamp", Instant.now());
-        return problem;
-    }
-
-    @ExceptionHandler(InvalidBatchStateException.class)
-    public ProblemDetail handleInvalidState(InvalidBatchStateException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage());
-        problem.setTitle("Invalid Business State");
-        problem.setType(URI.create("https://processing.ukma.edu/errors/invalid-state"));
         problem.setProperty("timestamp", Instant.now());
         return problem;
     }

@@ -28,6 +28,16 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(InvalidUserStateException.class)
+    public ProblemDetail handleInvalidState(InvalidUserStateException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage());
+        problem.setTitle("Invalid Business State");
+        problem.setType(URI.create("https://core.ukma.edu/errors/invalid-state"));
+        problem.setProperty("timestamp", Instant.now());
+        return problem;
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ProblemDetail handleNotFound(EntityNotFoundException ex) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(

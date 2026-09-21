@@ -3,7 +3,6 @@ package org.example.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import org.example.enums.BatchStatus;
 
 public record BatchResponseDto(
         @JsonProperty("batch_id")
@@ -14,8 +13,6 @@ public record BatchResponseDto(
         @JsonProperty("created_at")
         LocalDateTime createdAt,
         @JsonProperty("deleted_at")
-        LocalDateTime deletedAt,
-        @JsonProperty("batch_status")
-        BatchStatus batchStatus
+        LocalDateTime deletedAt
 ) {
 }

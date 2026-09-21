@@ -1,7 +1,5 @@
 package org.example.entity;
 
-import org.example.enums.BatchStatus;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -10,7 +8,6 @@ public record BatchEntity(
         String raceName,
         Integer year,
         LocalDateTime createdAt,
-        LocalDateTime deletedAt,
-        BatchStatus batchStatus
+        LocalDateTime deletedAt
 ) {
 }

@@ -1,5 +1,6 @@
 package org.example.service.webhook;
 
+import jakarta.transaction.Transactional;
 import org.example.dto.webhooks.WebhookRequestDto;
 import org.example.dto.webhooks.WebhookResponseDto;
 import org.example.entity.webhooks.WebhookEntity;
@@ -17,6 +18,7 @@ public class WebhookServiceImpl implements WebhookService {
     private final Map<Long, WebhookEntity> storage = new ConcurrentHashMap<>();
 
     @Override
+    @Transactional
     public WebhookResponseDto create(WebhookRequestDto request) {
         long id = ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
         var now = LocalDateTime.now();
@@ -49,6 +51,7 @@ public class WebhookServiceImpl implements WebhookService {
     }
 
     @Override
+    @Transactional
     public WebhookResponseDto update(Long id, WebhookRequestDto request) {
         var existing = storage.get(id);
 
@@ -73,6 +76,7 @@ public class WebhookServiceImpl implements WebhookService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         var removed = storage.remove(id);
 

@@ -1,23 +1,20 @@
 package org.example.service;
 
-import jakarta.persistence.EntityNotFoundException;
-import org.example.command.UpdateBatchStatusCommand;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import org.example.dto.BatchRequestDto;
 import org.example.dto.BatchResponseDto;
 import org.example.entity.BatchEntity;
-import org.example.enums.BatchStatus;
 import org.example.event.BatchCreatedEvent;
 import org.example.exception.DuplicateBatchException;
-import org.example.exception.InvalidBatchStateException;
 import org.example.repository.BatchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BatchServiceImpl implements BatchService {
@@ -30,6 +27,8 @@ public class BatchServiceImpl implements BatchService {
         this.eventPublisher = eventPublisher;
     }
 
+    @Override
+    @Transactional
     public BatchResponseDto uploadBatch(BatchRequestDto requestDto) {
         UUID id = UUID.randomUUID();
 
@@ -42,8 +41,7 @@ public class BatchServiceImpl implements BatchService {
                 requestDto.raceName(),
                 requestDto.year(),
                 LocalDateTime.now(),
-                null,
-                BatchStatus.UPLOADED);
+                null);
 
         BatchEntity savedBatch = batchRepository.save(newBatch);
 
@@ -52,8 +50,7 @@ public class BatchServiceImpl implements BatchService {
                 savedBatch.raceName(),
                 savedBatch.year(),
                 savedBatch.createdAt(),
-                savedBatch.deletedAt(),
-                savedBatch.batchStatus()
+                savedBatch.deletedAt()
         ));
 
         log.info("Created batch {}", savedBatch.batchId());
@@ -68,36 +65,13 @@ public class BatchServiceImpl implements BatchService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public BatchResponseDto updateStatus(UUID id, UpdateBatchStatusCommand command) {
-        BatchEntity batch = batchRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Batch with ID '" + id + "' not found"));
-
-        BatchStatus currentStatus = batch.batchStatus();
-        BatchStatus targetStatus = command.batchStatus();
-
-        if (!currentStatus.canTransitionTo(targetStatus)) {
-            throw new InvalidBatchStateException(
-                    "Illegal state transition for batch '" + id
-                            + "' from " + currentStatus + " to " + targetStatus
-            );
-        }
-
-        BatchEntity updatedBatch = batchRepository.updateStatusById(id, targetStatus);
-
-        log.info("Updated status for batch {} to {}", id, targetStatus);
-        return mapToResponse(updatedBatch);
-    }
-
     private BatchResponseDto mapToResponse(BatchEntity batchEntity) {
         return new BatchResponseDto(
                 batchEntity.batchId(),
                 batchEntity.raceName(),
                 batchEntity.year(),
                 batchEntity.createdAt(),
-                batchEntity.deletedAt(),
-                batchEntity.batchStatus()
+                batchEntity.deletedAt()
         );
     }
 }

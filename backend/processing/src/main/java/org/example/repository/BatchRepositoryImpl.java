@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 import org.apache.commons.lang3.NotImplementedException;
 import org.example.entity.BatchEntity;
-import org.example.enums.BatchStatus;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -23,11 +22,6 @@ public class BatchRepositoryImpl implements BatchRepository {
 
     @Override
     public List<BatchEntity> findAll() {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public BatchEntity updateStatusById(UUID id, BatchStatus status) {
         throw new NotImplementedException();
     }
 }

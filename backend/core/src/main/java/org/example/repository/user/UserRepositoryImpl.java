@@ -1,4 +1,4 @@
-package org.example.repository;
+package org.example.repository.user;
 
 import java.util.Map;
 import java.util.Optional;
@@ -33,5 +33,14 @@ public class UserRepositoryImpl implements UserRepository {
         return storage.values().stream()
                 .filter(c -> c.phoneNumber().equalsIgnoreCase(phoneNumber))
                 .findFirst();
+    }
+
+    @Override
+    public UserEntity updateById(Long id, UserEntity request) {
+        if (storage.containsKey(id)) {
+            storage.put(id, request);
+            return request;
+        }
+        return null;
     }
 }

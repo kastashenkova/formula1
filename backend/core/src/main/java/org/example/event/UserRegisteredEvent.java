@@ -1,12 +1,13 @@
 package org.example.event;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.example.enums.Role;
+import org.example.enums.UserStatus;
 
 public record UserRegisteredEvent(
         Long id,
         String email,
         String phoneNumber,
-        Role role
+        Role role,
+        UserStatus userStatus
 ) {
 }

@@ -1,4 +1,4 @@
-package org.example.repository;
+package org.example.repository.user;
 
 import java.util.Optional;
 import org.example.entity.UserEntity;
@@ -8,4 +8,5 @@ public interface UserRepository {
     Optional<UserEntity> findById(Long id);
     Optional<UserEntity> findByEmail(String email);
     Optional<UserEntity> findByPhoneNumber(String phoneNumber);
+    UserEntity updateById(Long id, UserEntity user);
 }
