@@ -81,7 +81,6 @@
 | `InvalidUserStateException` | Illegal transition, self status change, or missing verification strategies |
 | `EntityNotFoundException` | User (or token owner) not found |
 
-
 ## Commands
 - Compile the whole project: `mvn clean install`
 - Run backend modules: `mvn spring-boot:run` (inside some module)
@@ -91,18 +90,8 @@
 ### Core module
 http://localhost:8080/api/v1/swagger-ui/index.html
 
-## Processing module
+### Processing module
 http://localhost:8082/api/v1/swagger-ui/index.html
 
-## Streaming Gateway module
-http://localhost:8081/api/v1/swagger-ui/index.html
-
-## Current Test Coverage (REST API interation tests)
-### Core module
-![img_1.png](img_1.png)
-
-### Processing module
-![img.png](img.png)
-
 ### Streaming Gateway module
-![img_2.png](img_2.png)
+http://localhost:8081/api/v1/swagger-ui/index.html
