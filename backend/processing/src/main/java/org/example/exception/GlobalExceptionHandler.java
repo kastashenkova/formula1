@@ -14,6 +14,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice
@@ -37,11 +39,13 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ProblemDetail handleNotFound(EntityNotFoundException ex) {
+    @ExceptionHandler({NoResourceFoundException.class,
+            EntityNotFoundException.class,
+            NoHandlerFoundException.class})
+    public ProblemDetail handleNotFound(Exception ex) {
         return buildProblemDetail(
                 HttpStatus.NOT_FOUND,
-                "Entity not found",
+                "Entity or resource not found",
                 "https://processing.ukma.edu.ua/errors/not-found",
                 ex.getMessage()
         );

@@ -10,10 +10,13 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice
@@ -59,11 +62,11 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ProblemDetail handleNotFound(EntityNotFoundException ex) {
+    @ExceptionHandler({EntityNotFoundException.class, NoResourceFoundException.class})
+    public ProblemDetail handleNotFound(Exception ex) {
         return buildProblemDetail(
                 HttpStatus.NOT_FOUND,
-                "Entity not found",
+                "Entity or resource not found",
                 "https://core.ukma.edu.ua/errors/not-found",
                 ex.getMessage()
         );
@@ -88,6 +91,16 @@ public class GlobalExceptionHandler {
 
         pd.setProperty("errors", errors);
         return pd;
+    }
+
+    @ExceptionHandler({BadCredentialsException.class, DisabledException.class})
+    public ProblemDetail handleBadCredentials(Exception ex) {
+        return buildProblemDetail(
+                HttpStatus.UNAUTHORIZED,
+                "Bad credentials",
+                "https://core.ukma.edu.ua/errors/bad-credentials",
+                ex.getMessage()
+        );
     }
 
     @ExceptionHandler(Exception.class)

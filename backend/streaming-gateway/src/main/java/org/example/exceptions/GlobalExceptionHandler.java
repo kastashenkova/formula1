@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({NoResourceFoundException.class,
             EntityNotFoundException.class,
             NoHandlerFoundException.class})
-    public ProblemDetail handleNotFound(EntityNotFoundException ex) {
+    public ProblemDetail handleNotFound(Exception ex) {
         return buildProblemDetail(
                 HttpStatus.NOT_FOUND,
                 "Entity or resource not found",
