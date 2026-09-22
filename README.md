@@ -56,17 +56,25 @@
 
 #### State diagram
 
-```text
-                       email token                 phone token
-                  ┌──────────────────► EMAIL_VERIFIED ───────────┐
-                  │                                              ▼
-[register] ─► PENDING_VERIFICATION                             ACTIVE
-                  │                                              ▲
-                  └──────────────────► PHONE_VERIFIED ───────────┘
-                       phone token                 email token
+## User State Machine
 
-  Any non-final state ──(deactivate)──► DEACTIVATED (final)
+```mermaid
+stateDiagram-v2
+    [*] --> PENDING_VERIFICATION: register
+
+    PENDING_VERIFICATION --> EMAIL_VERIFIED: email token
+    PENDING_VERIFICATION --> PHONE_VERIFIED: phone token
+
+    EMAIL_VERIFIED --> ACTIVE: phone token
+    PHONE_VERIFIED --> ACTIVE: email token
+
+    PENDING_VERIFICATION --> DEACTIVATED: deactivate
+    EMAIL_VERIFIED --> DEACTIVATED: deactivate
+    PHONE_VERIFIED --> DEACTIVATED: deactivate
+
+    DEACTIVATED --> [*]
 ```
+
 - **Registration** always creates the user as `PENDING_VERIFICATION` and sends verification tokens by email and WhatsApp.
 - **Token confirmation** moves the user forward. The next status is determined by the corresponding `VerificationStrategy`, and the transition is validated against the matrix above.
 - **Manual status update** (`updateStatus`) is subject to the same matrix. Users cannot change their own status.
