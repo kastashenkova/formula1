@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
@@ -63,5 +63,26 @@ public class BatchServiceTest {
         );
 
         verify(repo, never()).save(any(BatchEntity.class));
+    }
+
+    @Test
+    @DisplayName("Success case for batch upload")
+    void uploadSuccessCaseSetCreatedAt() {
+        var request = new BatchRequestDto(
+                null,
+                "Monaco",
+                2025,
+                null,
+                null
+        );
+        when(repo.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(repo.save(any(BatchEntity.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        var response = service.uploadBatch(request);
+
+        assertNotNull(response.batchId());
+        assertNotNull(response.createdAt());
+        verify(repo).save(any(BatchEntity.class));
     }
 }
