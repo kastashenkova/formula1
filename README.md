@@ -54,9 +54,7 @@
     }
 ```
 
-#### State diagram
-
-## User State Machine
+#### User State Machine
 
 ```mermaid
 stateDiagram-v2
