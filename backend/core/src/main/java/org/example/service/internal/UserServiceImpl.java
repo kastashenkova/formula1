@@ -19,12 +19,14 @@ import org.example.dto.UserRegisteredEvent;
 import org.example.exception.DuplicateUserException;
 import org.example.exception.InvalidTokenException;
 import org.example.exception.InvalidUserStateException;
+import org.example.exception.InvalidVerificationStrategyException;
 import org.example.repository.TokenRepository;
 import org.example.repository.UserRepository;
 import org.example.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,7 +43,8 @@ public class UserServiceImpl implements UserService {
     private final Map<String, VerificationStrategy> strategyMap;
 
     public UserServiceImpl(PasswordEncoder passwordEncoder,
-                           UserRepository userRepository, TokenRepository tokenRepository,
+                           UserRepository userRepository,
+                           TokenRepository tokenRepository,
                            ApplicationEventPublisher eventPublisher,
                            List<VerificationStrategy> strategyList) {
         this.passwordEncoder = passwordEncoder;
@@ -92,7 +95,8 @@ public class UserServiceImpl implements UserService {
         VerificationStrategy phoneStrategy = strategyMap.get(TokenType.PHONE_VERIFICATION.name());
 
         if (emailStrategy == null || phoneStrategy == null) {
-            throw new InvalidUserStateException("Verification strategies are not properly configured");
+            throw new InvalidVerificationStrategyException(
+                    "Verification strategies are not properly configured");
         }
 
         VerificationToken emailToken = emailStrategy.createVerificationToken(savedUser.id());
@@ -125,7 +129,7 @@ public class UserServiceImpl implements UserService {
             String currentEmail = authentication.getName();
             UserEntity currentUser = userRepository.findByEmail(currentEmail).orElse(null);
             if (currentUser != null && currentUser.id().equals(id)) {
-                throw new InvalidUserStateException("You cannot change your own status");
+                throw new AccessDeniedException("You cannot change your own status");
             }
         }
 
@@ -174,8 +178,9 @@ public class UserServiceImpl implements UserService {
 
         VerificationStrategy strategy = strategyMap.get(verificationToken.tokenType().name());
         if (strategy == null) {
-            String message = String.format("Verification token for %s not found", verificationToken.tokenType());
-            throw new InvalidUserStateException(message);
+            String message = String.format("Verification strategy for token %s not found",
+                    verificationToken.tokenType());
+            throw new InvalidVerificationStrategyException(message);
         }
 
         UserStatus nextStatus = strategy.getNextStatus(user.userStatus());
