@@ -10,6 +10,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.FieldError;
@@ -42,7 +43,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({InvalidTokenException.class,
             IllegalArgumentException.class,
-            HttpMessageNotReadableException.class})
+            HttpMessageNotReadableException.class,
+            InvalidVerificationStrategyException.class})
     public ProblemDetail handleBadRequest(Exception ex) {
         return buildProblemDetail(
                 HttpStatus.BAD_REQUEST,
@@ -99,6 +101,16 @@ public class GlobalExceptionHandler {
                 HttpStatus.UNAUTHORIZED,
                 "Bad credentials",
                 "https://core.ukma.edu.ua/errors/bad-credentials",
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ProblemDetail handleAccessDenied(Exception ex) {
+        return buildProblemDetail(
+                HttpStatus.FORBIDDEN,
+                "Access denied",
+                "https://core.ukma.edu.ua/errors/access-denied",
                 ex.getMessage()
         );
     }
