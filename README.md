@@ -101,3 +101,77 @@ http://localhost:8082/api/v1/swagger-ui/index.html
 
 ### Streaming Gateway module
 http://localhost:8081/api/v1/swagger-ui/index.html
+
+
+### 3-Party APIs
+
+**1. Fetch info about race by name and year:**
+
+```GET https://api.openf1.org/v1/sessions?year={year}&country_name={raceName}&session_name=Race```
+
+Race name == country name
+Response example:
+```json
+[
+  {
+    "session_key": 9523,
+    "session_type": "Race",
+    "session_name": "Race",
+    "date_start": "2024-05-26T13:00:00+00:00",
+    "date_end": "2024-05-26T15:00:00+00:00",
+    "meeting_key": 1236,
+    "circuit_key": 22,
+    "circuit_short_name": "Monte Carlo",
+    "country_key": 114,
+    "country_code": "MON",
+    "country_name": "Monaco",
+    "location": "Monaco",
+    "gmt_offset": "02:00:00",
+    "year": 2024,
+    "is_cancelled": false
+  }
+]
+```
+
+**2.Get drivers info:**
+```GET https://api.openf1.org/v1/drivers?session_key={session_key}```
+
+Response example:
+```json
+[
+    {
+        "meeting_key": 1236,
+        "session_key": 9523,
+        "driver_number": 1,
+        "broadcast_name": "M VERSTAPPEN",
+        "full_name": "Max VERSTAPPEN",
+        "name_acronym": "VER",
+        "team_name": "Red Bull Racing",
+        "team_colour": "3671C6",
+        "first_name": "Max",
+        "last_name": "Verstappen",
+        "headshot_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/M/MAXVER01_Max_Verstappen/maxver01.png.transform/1col/image.png",
+        "country_code": "NED"
+    },
+    ...
+]
+```
+
+**3. Get telemetry info by each driver**
+```GET https://api.openf1.org/v1/location?session_key={session_key}&driver_number={driver_number}```
+
+Response example
+```json
+[
+    {
+        "date": "2024-05-26T12:08:08.143000+00:00",
+        "session_key": 9523,
+        "y": 0,
+        "x": 0,
+        "z": 0,
+        "meeting_key": 1236,
+        "driver_number": 1
+    },
+    ...
+]
+```
