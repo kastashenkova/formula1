@@ -54,7 +54,7 @@ public class BatchControllerTest {
                 null
         );
 
-        when(batchService.getBatches(0, 10)).thenReturn(List.of(batchExample));
+        when(batchService.getBatches()).thenReturn(List.of(batchExample));
 
         mockMvc.perform(get("/batches")
                         .param("page", "0")
@@ -63,13 +63,13 @@ public class BatchControllerTest {
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(1));
 
-        verify(batchService, times(1)).getBatches(0, 10);
+        verify(batchService, times(1)).getBatches();
     }
 
     @Test
     @DisplayName("Should return empty list")
     void getRaces_emptyList_Success() throws Exception {
-        when(batchService.getBatches(0, 10)).thenReturn(List.of());
+        when(batchService.getBatches()).thenReturn(List.of());
 
         mockMvc.perform(get("/batches")
                         .param("page", "0")
@@ -78,7 +78,7 @@ public class BatchControllerTest {
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$").isEmpty());
 
-        verify(batchService, times(1)).getBatches(0, 10);
+        verify(batchService, times(1)).getBatches();
     }
 
     @Test
@@ -87,7 +87,7 @@ public class BatchControllerTest {
         mockMvc.perform(get("/batches"))
                 .andExpect(status().isOk());
 
-        verify(batchService, times(1)).getBatches(0, 10);
+        verify(batchService, times(1)).getBatches();
     }
 
     @Test

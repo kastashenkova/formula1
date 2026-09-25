@@ -1,4 +1,4 @@
-package org.example.repository;
+package org.example.repository.internal;
 
 import java.util.List;
 import java.util.Map;
@@ -6,12 +6,13 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.example.entity.BatchEntity;
+import org.example.repository.BatchRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @Primary
-public class BatchRepositoryInMemory implements BatchRepository {
+public class BatchRepositoryInMemoryImpl implements BatchRepository {
     private final Map<UUID, BatchEntity> storage = new ConcurrentHashMap<>();
 
     @Override

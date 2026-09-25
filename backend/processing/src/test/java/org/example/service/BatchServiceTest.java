@@ -1,11 +1,20 @@
-package org.example.controller;
+package org.example.service;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 import org.example.dto.BatchRequestDto;
 import org.example.entity.BatchEntity;
 import org.example.exception.DuplicateBatchException;
 import org.example.repository.BatchRepository;
-import org.example.service.BatchService;
-import org.example.service.BatchServiceImpl;
+import org.example.service.internal.BatchServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,14 +22,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 
 @ExtendWith(MockitoExtension.class)
 public class BatchServiceTest {

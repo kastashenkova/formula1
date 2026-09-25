@@ -1,4 +1,4 @@
-package org.example.entity.webhooks;
+package org.example.entity;
 
 import java.time.LocalDateTime;
 

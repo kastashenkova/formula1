@@ -1,8 +1,7 @@
-package org.example.service.webhook;
+package org.example.service;
 
-import org.example.dto.webhooks.WebhookRequestDto;
-import org.example.dto.webhooks.WebhookResponseDto;
-import org.springframework.stereotype.Service;
+import org.example.dto.WebhookRequestDto;
+import org.example.dto.WebhookResponseDto;
 
 public interface WebhookService {
 

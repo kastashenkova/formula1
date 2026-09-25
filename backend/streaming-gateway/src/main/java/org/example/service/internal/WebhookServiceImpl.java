@@ -1,15 +1,17 @@
-package org.example.service.webhook;
+package org.example.service.internal;
 
 import jakarta.transaction.Transactional;
-import org.example.dto.webhooks.WebhookRequestDto;
-import org.example.dto.webhooks.WebhookResponseDto;
-import org.example.entity.webhooks.WebhookEntity;
+import org.example.dto.WebhookRequestDto;
+import org.example.dto.WebhookResponseDto;
+import org.example.entity.WebhookEntity;
 import org.example.enums.WebhookTypes;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+
+import org.example.service.WebhookService;
 import org.springframework.stereotype.Service;
 
 @Service

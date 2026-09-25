@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface BatchService {
     BatchResponseDto uploadBatch(BatchRequestDto batchDTO);
-    List<BatchResponseDto> getBatches(int page, int size);
+    List<BatchResponseDto> getBatches();
 }
