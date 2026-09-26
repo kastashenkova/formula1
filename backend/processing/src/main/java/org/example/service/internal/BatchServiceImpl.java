@@ -59,8 +59,9 @@ public class BatchServiceImpl implements BatchService {
     }
 
     @Override
-    public List<BatchResponseDto> getBatches() {
-        return batchRepository.findAll().stream()
+    public List<BatchResponseDto> getBatches(int page, int size) {
+        return batchRepository.findAll(page, size)
+                .stream()
                 .map(this::mapToResponse)
                 .toList();
     }
