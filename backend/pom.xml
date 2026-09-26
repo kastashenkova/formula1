@@ -23,10 +23,9 @@
         <developer/>
     </developers>
     <modules>
-        <module>core</module>
-        <module>worker-pool</module>
+        <module>identity</module>
         <module>processing</module>
-        <module>streaming-gateway</module>
+        <module>streaming</module>
     </modules>
     <scm>
         <connection/>

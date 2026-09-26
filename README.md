@@ -202,11 +202,11 @@ Response example
 - Check test coverage: `mvn clean verify`
 
 ## Swagger
-### Core module
+### Identity module
 http://localhost:8080/api/v1/swagger-ui/index.html
 
 ### Processing module
 http://localhost:8082/api/v1/swagger-ui/index.html
 
-### Streaming Gateway module
+### Streaming module
 http://localhost:8081/api/v1/swagger-ui/index.html
