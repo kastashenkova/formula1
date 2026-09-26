@@ -1,4 +1,4 @@
-package org.example.dto.webhooks;
+package org.example.dto;
 
 import org.example.enums.WebhookTypes;
 import org.example.validation.OnCreate;

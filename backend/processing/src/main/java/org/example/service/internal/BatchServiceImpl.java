@@ -1,15 +1,15 @@
-package org.example.service;
+package org.example.service.internal;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.example.dto.BatchRequestDto;
 import org.example.dto.BatchResponseDto;
 import org.example.entity.BatchEntity;
 import org.example.event.BatchCreatedEvent;
 import org.example.exception.DuplicateBatchException;
 import org.example.repository.BatchRepository;
+import org.example.service.BatchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -60,9 +60,10 @@ public class BatchServiceImpl implements BatchService {
 
     @Override
     public List<BatchResponseDto> getBatches(int page, int size) {
-        return batchRepository.findAll().stream()
+        return batchRepository.findAll(page, size)
+                .stream()
                 .map(this::mapToResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private BatchResponseDto mapToResponse(BatchEntity batchEntity) {

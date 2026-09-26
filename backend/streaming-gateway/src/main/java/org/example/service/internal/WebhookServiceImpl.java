@@ -1,20 +1,24 @@
-package org.example.service.webhook;
+package org.example.service.internal;
 
 import jakarta.transaction.Transactional;
-import org.example.dto.webhooks.WebhookRequestDto;
-import org.example.dto.webhooks.WebhookResponseDto;
-import org.example.entity.webhooks.WebhookEntity;
+import org.example.dto.WebhookRequestDto;
+import org.example.dto.WebhookResponseDto;
+import org.example.entity.WebhookEntity;
 import org.example.enums.WebhookTypes;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+
+import org.example.service.WebhookService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class WebhookServiceImpl implements WebhookService {
-
+    private static final Logger log = LoggerFactory.getLogger(WebhookServiceImpl.class);
     private final Map<Long, WebhookEntity> storage = new ConcurrentHashMap<>();
 
     @Override
@@ -32,7 +36,11 @@ public class WebhookServiceImpl implements WebhookService {
                 now
         );
 
-        storage.put(id, entity);
+        WebhookEntity savedWebhook = storage.put(id, entity);
+
+        if (savedWebhook != null) {
+            log.info("Created webhook {}", savedWebhook.id());
+        }
 
         return toResponseDto(entity);
     }
@@ -70,7 +78,11 @@ public class WebhookServiceImpl implements WebhookService {
                 LocalDateTime.now()
         );
 
-        storage.put(id, updated);
+        WebhookEntity updatedWebhook =  storage.put(id, updated);
+
+        if (updatedWebhook != null) {
+            log.info("Updated webhook {}", updatedWebhook.id());
+        }
 
         return toResponseDto(updated);
     }

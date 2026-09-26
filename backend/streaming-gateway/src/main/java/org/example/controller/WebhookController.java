@@ -1,8 +1,8 @@
 package org.example.controller;
 
-import org.example.dto.webhooks.WebhookRequestDto;
-import org.example.dto.webhooks.WebhookResponseDto;
-import org.example.service.webhook.WebhookService;
+import org.example.dto.WebhookRequestDto;
+import org.example.dto.WebhookResponseDto;
+import org.example.service.WebhookService;
 import java.net.URI;
 import org.example.validation.OnCreate;
 import org.example.validation.OnUpdate;

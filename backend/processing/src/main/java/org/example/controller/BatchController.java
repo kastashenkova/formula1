@@ -49,8 +49,8 @@ public class BatchController {
     @Operation(summary = "All batches",
             description = "Information about all the race batches")
     public ResponseEntity<List<BatchResponseDto>> getRaces(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         List<BatchResponseDto> list = batchService.getBatches(page, size);
         return ResponseEntity.ok(list);
     }

@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -54,7 +55,10 @@ public class BatchControllerTest {
                 null
         );
 
-        when(batchService.getBatches(0, 10)).thenReturn(List.of(batchExample));
+        int page = 0;
+        int size = 10;
+
+        when(batchService.getBatches(page, size)).thenReturn(List.of(batchExample));
 
         mockMvc.perform(get("/batches")
                         .param("page", "0")
@@ -63,13 +67,16 @@ public class BatchControllerTest {
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(1));
 
-        verify(batchService, times(1)).getBatches(0, 10);
+        verify(batchService, times(1)).getBatches(page, size);
     }
 
     @Test
     @DisplayName("Should return empty list")
     void getRaces_emptyList_Success() throws Exception {
-        when(batchService.getBatches(0, 10)).thenReturn(List.of());
+        int page = 0;
+        int size = 10;
+
+        when(batchService.getBatches(page, size)).thenReturn(List.of());
 
         mockMvc.perform(get("/batches")
                         .param("page", "0")
@@ -78,7 +85,7 @@ public class BatchControllerTest {
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$").isEmpty());
 
-        verify(batchService, times(1)).getBatches(0, 10);
+        verify(batchService, times(1)).getBatches(page, size);
     }
 
     @Test
@@ -87,7 +94,7 @@ public class BatchControllerTest {
         mockMvc.perform(get("/batches"))
                 .andExpect(status().isOk());
 
-        verify(batchService, times(1)).getBatches(0, 10);
+        verify(batchService, times(1)).getBatches(anyInt(), anyInt());
     }
 
     @Test

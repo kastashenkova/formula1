@@ -8,5 +8,5 @@ import org.example.entity.BatchEntity;
 public interface BatchRepository {
     BatchEntity save(BatchEntity batch);
     Optional<BatchEntity> findById(UUID id);
-    List<BatchEntity> findAll();
+    List<BatchEntity> findAll(int page, int size);
 }
