@@ -5,7 +5,7 @@ import org.springframework.modulith.core.ApplicationModules;
 
 class ApplicationModulesTest {
 
-    private final ApplicationModules modules = ApplicationModules.of(StreamingGatewayApplication.class);
+    private final ApplicationModules modules = ApplicationModules.of(StreamingApplication.class);
 
     @Test
     void verifyModules() {

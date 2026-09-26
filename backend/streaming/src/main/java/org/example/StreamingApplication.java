@@ -2,12 +2,14 @@ package org.example;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-public class WorkerPoolApplication {
+@EnableScheduling
+public class StreamingApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(WorkerPoolApplication.class, args);
+        SpringApplication.run(StreamingApplication.class, args);
     }
 
 }
