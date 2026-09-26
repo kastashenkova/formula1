@@ -87,21 +87,41 @@ stateDiagram-v2
 | `InvalidUserStateException` | Illegal transition, self status change, or missing verification strategies |
 | `EntityNotFoundException` | User (or token owner) not found |
 
-## Commands
-- Compile the whole project: `mvn clean install`
-- Run backend modules: `mvn spring-boot:run` (inside some module)
-- Check test coverage: `mvn clean verify`
+### Webhook Management
 
-## Swagger
-### Core module
-http://localhost:8080/api/v1/swagger-ui/index.html
+#### Registration
+- Webhook `id` is generated server-side (random `Long`, not client-provided).
+- `webhookURL`, `userID`, and `webhookType` are required and validated at the controller level (valid URL, non-zero user id, known webhook type).
+- No uniqueness constraint is currently enforced — a user can register multiple webhooks with the same URL/type.
+- Storage is currently in-memory (`ConcurrentHashMap`), not yet persisted to the DB.
 
-### Processing module
-http://localhost:8082/api/v1/swagger-ui/index.html
+#### Lifecycle
+- `get` / `update` / `delete` by id throw `EntityNotFoundException` if the webhook does not exist.
+- `update` replaces `webhookURL`, `userID`, and `webhookType`; `createdAt` is preserved from the original entity, `updatedAt` is refreshed to the current time.
 
-### Streaming Gateway module
-http://localhost:8081/api/v1/swagger-ui/index.html
+#### Errors
 
+| Exception | Raised when |
+|---|---|
+| `EntityNotFoundException` | Webhook not found by id (get/update/delete) |
+
+---
+
+### Batch Management
+
+#### Upload
+- Batch `id` is a generated `UUID`.
+- On successful save, a `BatchCreatedEvent` (batchId, raceName, year, createdAt, deletedAt) is published for downstream/async processing (e.g. triggering telemetry ingestion from the 3rd-party API).
+- `deletedAt` is `null` on creation — reserved for a future soft-delete flow.
+
+#### Listing
+- `getBatches()` returns all batches.
+
+#### Errors
+
+| Exception | Raised when |
+|---|---|
+| `DuplicateBatchException` | Batch with the generated id already exists (not currently reachable) |
 
 ### 3-Party APIs
 
@@ -175,3 +195,18 @@ Response example
     ...
 ]
 ```
+
+## Commands
+- Compile the whole project: `mvn clean install`
+- Run backend modules: `mvn spring-boot:run` (inside some module)
+- Check test coverage: `mvn clean verify`
+
+## Swagger
+### Core module
+http://localhost:8080/api/v1/swagger-ui/index.html
+
+### Processing module
+http://localhost:8082/api/v1/swagger-ui/index.html
+
+### Streaming Gateway module
+http://localhost:8081/api/v1/swagger-ui/index.html
