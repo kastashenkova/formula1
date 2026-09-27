@@ -8,7 +8,10 @@ import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import org.identity.entity.UserEntity;
 import org.identity.entity.VerificationToken;
+import org.identity.enums.Role;
 import org.identity.enums.TokenType;
 import org.identity.enums.UserStatus;
 import org.identity.exception.InvalidUserStateException;
@@ -47,19 +50,35 @@ class EmailVerificationStrategyTest {
 
     @Test
     void shouldCreateTokenWithCorrectExpiry() {
-        UUID userId = UUID.randomUUID();
-        VerificationToken token = strategy.createVerificationToken(userId);
+        UserEntity testUser = new UserEntity(
+                UUID.randomUUID(),
+                "d.dzhos@ukma.edu.ua",
+                "+380980137037",
+                Role.ADMIN,
+                "admin123",
+                UserStatus.PHONE_VERIFIED);
 
-        assertEquals(TokenType.EMAIL_VERIFICATION, token.tokenType());
-        assertEquals(userId, token.userId());
-        assertNotNull(token.token());
-        assertTrue(token.expiryDate().isAfter(LocalDateTime.now().plusHours(23)));
+        VerificationToken token = strategy.createVerificationToken(testUser);
+
+        assertEquals(TokenType.EMAIL_VERIFICATION, token.getTokenType());
+        assertEquals(testUser, token.getUser());
+        assertNotNull(token.getToken());
+        assertTrue(token.getExpiryDate().isAfter(LocalDateTime.now().plusHours(23)));
     }
 
     @Test
     void shouldSendMessage() {
-        VerificationToken token = new VerificationToken(
+        UserEntity testUser = new UserEntity(
                 UUID.randomUUID(),
+                "d.dzhos@ukma.edu.ua",
+                "+380980137037",
+                Role.ADMIN,
+                "admin123",
+                UserStatus.PHONE_VERIFIED);
+
+        VerificationToken token = new VerificationToken(
+                1L,
+                testUser,
                 "test-token",
                 TokenType.EMAIL_VERIFICATION,
                 LocalDateTime.now());

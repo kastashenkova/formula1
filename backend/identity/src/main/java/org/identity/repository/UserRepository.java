@@ -2,12 +2,14 @@ package org.identity.repository;
 
 import java.util.Optional;
 import java.util.UUID;
-import org.identity.entity.UserEntity;
 
-public interface UserRepository {
-    UserEntity save(UserEntity user);
-    Optional<UserEntity> findById(UUID id);
+import org.identity.entity.UserEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByEmail(String email);
-    Optional<UserEntity> findByPhoneNumber(String phoneNumber);
-    UserEntity updateById(UUID id, UserEntity user);
+    boolean existsByEmail(String email);
+    boolean existsByPhoneNumber(String phoneNumber);
+
+    Optional<UserEntity> findById(UUID id);
 }

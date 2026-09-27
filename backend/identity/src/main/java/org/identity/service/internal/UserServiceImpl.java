@@ -61,12 +61,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponseDto addUser(UserRegistrationRequestDto requestDto) {
-        if (userRepository.findByEmail(requestDto.email()).isPresent()) {
+        if (userRepository.existsByEmail(requestDto.email())) {
             String message = String.format("User with email %s already exists", requestDto.email());
             throw new DuplicateUserException(message);
         }
 
-        if (userRepository.findByPhoneNumber(requestDto.phoneNumber()).isPresent()) {
+        if (userRepository.existsByPhoneNumber(requestDto.phoneNumber())) {
             String message = String.format("User with phone number %s already exists", requestDto.phoneNumber());
             throw new DuplicateUserException(message);
         }
@@ -99,25 +99,25 @@ public class UserServiceImpl implements UserService {
                     "Verification strategies are not properly configured");
         }
 
-        VerificationToken emailToken = emailStrategy.createVerificationToken(savedUser.id());
-        VerificationToken phoneToken = phoneStrategy.createVerificationToken(savedUser.id());
+        VerificationToken emailToken = emailStrategy.createVerificationToken(savedUser);
+        VerificationToken phoneToken = phoneStrategy.createVerificationToken(savedUser);
 
         VerificationToken savedEmailToken = tokenRepository.save(emailToken);
         VerificationToken savedPhoneToken = tokenRepository.save(phoneToken);
 
         eventPublisher.publishEvent(new UserRegisteredEvent(
-                savedUser.id(),
-                savedUser.email(),
-                savedUser.phoneNumber(),
-                savedUser.role(),
-                savedUser.userStatus(),
-                savedEmailToken.token(),
-                savedPhoneToken.token()
+                savedUser.getId(),
+                savedUser.getEmail(),
+                savedUser.getPhoneNumber(),
+                savedUser.getRole(),
+                savedUser.getUserStatus(),
+                savedEmailToken.getToken(),
+                savedPhoneToken.getToken()
         ));
 
-        log.info("Registered user {}", savedUser.id());
+        log.info("Registered user {}", savedUser.getId());
 
-        return mapToResponse(savedUser);
+        return UserResponseDto.fromEntity(savedUser);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class UserServiceImpl implements UserService {
                 && !Objects.equals(authentication.getPrincipal(), "anonymousUser")) {
             String currentEmail = authentication.getName();
             UserEntity currentUser = userRepository.findByEmail(currentEmail).orElse(null);
-            if (currentUser != null && currentUser.id().equals(id)) {
+            if (currentUser != null && currentUser.getId().equals(id)) {
                 throw new AccessDeniedException("You cannot change your own status");
             }
         }
@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "User with ID '" + id + "' not found"));
 
-        UserStatus currentStatus = user.userStatus();
+        UserStatus currentStatus = user.getUserStatus();
         UserStatus targetStatus = command.userStatus();
 
         if (!currentStatus.canTransitionTo(targetStatus)) {
@@ -146,20 +146,13 @@ public class UserServiceImpl implements UserService {
             throw new InvalidUserStateException(message);
         }
 
-        UserEntity updatedData = new UserEntity(
-                user.id(),
-                user.email(),
-                user.phoneNumber(),
-                user.role(),
-                user.password(),
-                targetStatus
-        );
+        user.setUserStatus(targetStatus);
 
-        UserEntity updatedUser = userRepository.updateById(id, updatedData);
+        UserEntity updatedUser = userRepository.save(user);
 
         log.info("Updated status for user {} to {}", id, targetStatus);
 
-        return mapToResponse(updatedUser);
+        return UserResponseDto.fromEntity(updatedUser);
     }
 
     @Override
@@ -168,50 +161,33 @@ public class UserServiceImpl implements UserService {
         VerificationToken verificationToken = tokenRepository.findByToken(token)
                 .orElseThrow(() -> new InvalidTokenException("Invalid token"));
 
-        if (verificationToken.expiryDate().isBefore(LocalDateTime.now())) {
+        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
             String message = String.format("Token %s has expired", token);
             throw new InvalidTokenException(message);
         }
 
-        UserEntity user = userRepository.findById(verificationToken.userId())
+        UserEntity user = userRepository.findById(verificationToken.getUser().getId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        VerificationStrategy strategy = strategyMap.get(verificationToken.tokenType().name());
+        VerificationStrategy strategy = strategyMap.get(verificationToken.getTokenType().name());
         if (strategy == null) {
             String message = String.format("Verification strategy for token %s not found",
-                    verificationToken.tokenType());
+                    verificationToken.getTokenType());
             throw new InvalidVerificationStrategyException(message);
         }
 
-        UserStatus nextStatus = strategy.getNextStatus(user.userStatus());
+        UserStatus nextStatus = strategy.getNextStatus(user.getUserStatus());
 
-        if (!user.userStatus().canTransitionTo(nextStatus)) {
-            String message = String.format("Illegal transition from %s to %s", user.userStatus(), nextStatus);
+        if (!user.getUserStatus().canTransitionTo(nextStatus)) {
+            String message = String.format("Illegal transition from %s to %s",
+                    user.getUserStatus(), nextStatus);
             throw new InvalidUserStateException(message);
         }
 
-        UserEntity updatedUser = new UserEntity(
-                user.id(),
-                user.email(),
-                user.phoneNumber(),
-                user.role(),
-                user.password(),
-                nextStatus
-        );
-        userRepository.updateById(user.id(), updatedUser);
-
+        user.setUserStatus(nextStatus);
+        userRepository.save(user);
         tokenRepository.delete(verificationToken);
 
-        log.info("Token confirmed. User status {} transitioned to {}", user.id(), nextStatus);
-    }
-
-    private UserResponseDto mapToResponse(UserEntity entity) {
-        return new UserResponseDto(
-                entity.id(),
-                entity.email(),
-                entity.phoneNumber(),
-                entity.role(),
-                entity.userStatus()
-        );
+        log.info("Token confirmed. User status {} transitioned to {}", user.getId(), nextStatus);
     }
 }

@@ -2,6 +2,8 @@ package org.identity.service.internal;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import org.identity.entity.UserEntity;
 import org.identity.entity.VerificationToken;
 import org.identity.enums.TokenType;
 import org.identity.enums.UserStatus;
@@ -31,13 +33,14 @@ public class EmailVerificationStrategy implements VerificationStrategy {
     }
 
     @Override
-    public VerificationToken createVerificationToken(UUID userId) {
+    public VerificationToken createVerificationToken(UserEntity user) {
         String token = UUID.randomUUID().toString();
 
         LocalDateTime expirationTime = LocalDateTime.now().plusHours(expiryHours);
 
         return new VerificationToken(
-                userId,
+                null,
+                user,
                 token,
                 TokenType.EMAIL_VERIFICATION,
                 expirationTime
@@ -46,7 +49,7 @@ public class EmailVerificationStrategy implements VerificationStrategy {
 
     @Override
     public void sendMessage(String to, VerificationToken token) {
-        String confirmationUrl = frontendUrl + "/auth/confirm-email?token=" + token.token();
+        String confirmationUrl = frontendUrl + "/auth/confirm-email?token=" + token.getToken();
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject("Confirm your email to use account in Formula1 App");

@@ -34,13 +34,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         UserEntity user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
 
-        if (user.userStatus() == UserStatus.DEACTIVATED) {
+        if (user.getUserStatus() == UserStatus.DEACTIVATED) {
             throw new DisabledException("User is deactivated and cannot log in");
         }
 
-        if (user.userStatus() == UserStatus.PENDING_VERIFICATION
-                || user.userStatus() == UserStatus.EMAIL_VERIFIED
-                || user.userStatus() == UserStatus.PHONE_VERIFIED) {
+        if (user.getUserStatus() == UserStatus.PENDING_VERIFICATION
+                || user.getUserStatus() == UserStatus.EMAIL_VERIFIED
+                || user.getUserStatus() == UserStatus.PHONE_VERIFIED) {
             throw new DisabledException("User is not active. Please, verify your email and phone number");
         }
 
