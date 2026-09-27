@@ -5,13 +5,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Pattern;
+import java.util.UUID;
 import org.identity.validation.FieldMatch;
 import org.identity.enums.Role;
 import org.identity.validation.OnCreate;
 import org.identity.validation.OnUpdate;
 import org.hibernate.validator.constraints.Length;
-
-import java.util.UUID;
 
 @FieldMatch(groups = {OnCreate.class, OnUpdate.class},
         first = "password",
