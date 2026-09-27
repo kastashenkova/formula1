@@ -21,6 +21,6 @@ public record RaceRequestDto(
         LocalDateTime raceDate
 ) {
     public static RaceEntity toEntity(RaceRequestDto requestDto) {
-        return new RaceEntity(requestDto.raceId, requestDto.raceName, requestDto.raceDate);
+        return new RaceEntity(requestDto.raceName, requestDto.raceDate);
     }
 }

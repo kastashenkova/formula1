@@ -11,16 +11,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "drivers")
 public class DriverEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     @Column(nullable = false)
     private Long driverNumber;
     @Column(nullable = false)
@@ -30,23 +31,21 @@ public class DriverEntity {
     private RaceEntity race;
 
     @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<TelemetryPointEntity> telemetryPoints = new HashSet<>();
+    private List<TelemetryPointEntity> telemetryPoints = new ArrayList<>();
 
     protected DriverEntity() {
     }
 
-    public DriverEntity(Long id, Long driverNumber, String fullName, RaceEntity race) {
-        this.id = id;
+    public DriverEntity(Long driverNumber, String fullName) {
         this.driverNumber = driverNumber;
         this.fullName = fullName;
-        this.race = race;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -74,11 +73,11 @@ public class DriverEntity {
         this.race = race;
     }
 
-    public Set<TelemetryPointEntity> getTelemetryPoints() {
+    public List<TelemetryPointEntity> getTelemetryPoints() {
         return telemetryPoints;
     }
 
-    public void setTelemetryPoints(Set<TelemetryPointEntity> telemetryPoints) {
+    public void setTelemetryPoints(List<TelemetryPointEntity> telemetryPoints) {
         this.telemetryPoints = telemetryPoints;
     }
 

@@ -9,9 +9,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -21,20 +21,19 @@ public class RaceEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID raceId;
 
-    @Column(nullable = false, length = 150)
+    @Column(nullable = false, length = 150, unique = true)
     private String raceName;
 
     @Column(nullable = false)
     private LocalDateTime raceDate;
 
     @OneToMany(mappedBy = "race", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<DriverEntity> drivers = new HashSet<>();
+    private List<DriverEntity> drivers = new ArrayList<>();
 
     protected RaceEntity() {
     }
 
-    public RaceEntity(UUID raceId, String raceName, LocalDateTime raceDate) {
-        this.raceId = raceId;
+    public RaceEntity(String raceName, LocalDateTime raceDate) {
         this.raceName = raceName;
         this.raceDate = raceDate;
     }
@@ -63,11 +62,11 @@ public class RaceEntity {
         this.raceDate = raceDate;
     }
 
-    public Set<DriverEntity> getDrivers() {
+    public List<DriverEntity> getDrivers() {
         return drivers;
     }
 
-    public void setDrivers(Set<DriverEntity> drivers) {
+    public void setDrivers(List<DriverEntity> drivers) {
         this.drivers = drivers;
     }
 

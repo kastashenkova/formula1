@@ -104,7 +104,6 @@ public class UserServiceTest {
         );
 
          UserEntity testEntity = new UserEntity(
-                 UUID.randomUUID(),
                  testUserRequest.email(),
                  testUserRequest.phoneNumber(),
                  testUserRequest.role(),
@@ -182,7 +181,6 @@ public class UserServiceTest {
                 "admin123"
         );
         UserEntity existingUser = new UserEntity(
-                UUID.randomUUID(),
                 "k.astashenkova@ukma.edu.ua",
                 "+358408587404",
                 Role.ADMIN,
@@ -238,7 +236,6 @@ public class UserServiceTest {
         );
 
         UserEntity existingUser = new UserEntity(
-                null,
                 "astashenkova.katya@gmail.com",
                 "+380980137037",
                 Role.ADMIN,
@@ -266,7 +263,6 @@ public class UserServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -300,7 +296,6 @@ public class UserServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         UserEntity phoneVerifiedUser = new UserEntity(
-                UUID.randomUUID(),
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -329,7 +324,6 @@ public class UserServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -349,7 +343,6 @@ public class UserServiceTest {
     @Test
     void shouldConfirmTokenSuccessfully() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -385,7 +378,6 @@ public class UserServiceTest {
     @Test
     void shouldThrowInvalidTokenExceptionWhenTokenNotFound() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -411,7 +403,6 @@ public class UserServiceTest {
     @Test
     void shouldThrowEntityNotFoundExceptionWhenUserNotFound() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -438,7 +429,6 @@ public class UserServiceTest {
     @Test
     void shouldThrowInvalidTokenExceptionWhenTokenExpired() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -464,7 +454,6 @@ public class UserServiceTest {
     @Test
     void shouldThrowInvalidVerificationStrategyExceptionWhenVerificationStrategyNotFound() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -499,7 +488,6 @@ public class UserServiceTest {
     @Test
     void shouldThrowInvalidUserStateExceptionOnIllegalTransitionDuringConfirmation() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,

@@ -34,8 +34,7 @@ public class TelemetryPointEntity {
     protected TelemetryPointEntity() {
     }
 
-    public TelemetryPointEntity(UUID id, Float x, Float y, String timestamp, Float speed, DriverEntity driver) {
-        this.id = id;
+    public TelemetryPointEntity(Float x, Float y, String timestamp, Float speed, DriverEntity driver) {
         this.x = x;
         this.y = y;
         this.timestamp = timestamp;

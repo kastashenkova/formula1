@@ -42,13 +42,11 @@ public class UserEntity {
     protected UserEntity() {
     }
 
-    public UserEntity(UUID id,
-                      String email,
+    public UserEntity(String email,
                       String phoneNumber,
                       Role role,
                       String password,
                       UserStatus userStatus) {
-        this.id = id;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.role = role;

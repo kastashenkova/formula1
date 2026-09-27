@@ -7,4 +7,5 @@ import org.streaming.entity.RaceEntity;
 
 @Repository
 public interface RaceRepository extends JpaRepository<RaceEntity, UUID> {
+    boolean existsByRaceName(String raceName);
 }
