@@ -197,9 +197,16 @@ Response example
 ```
 
 ## Commands
-- Compile the whole project: `.\mvnw.cmd clean install`
-- Run backend: `.\mvnw.cmd spring-boot:run -pl backend/application`
-- Check test coverage: `.\mvnw.cmd clean verify`
+- Compile the whole project: `mvn clean install`
+- Run backend modules: `mvn spring-boot:run` (inside some module)
+- Check test coverage: `mvn clean verify`
 
 ## Swagger
+### Identity module
 http://localhost:8080/api/v1/swagger-ui/index.html
+
+### Processing module
+http://localhost:8082/api/v1/swagger-ui/index.html
+
+### Streaming module
+http://localhost:8081/api/v1/swagger-ui/index.html
