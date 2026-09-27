@@ -17,19 +17,19 @@ import java.util.UUID;
 public class TelemetryPointEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    UUID id;
+    private UUID id;
     @Column(nullable = false)
-    Float x;
+    private Float x;
     @Column(nullable = false)
-    Float y;
+    private Float y;
     @Column(nullable = false)
-    String timestamp;
+    private String timestamp;
     @Column(nullable = false)
-    Float speed;
+    private Float speed;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "driver_id", nullable = false)
-    DriverEntity driver;
+    private DriverEntity driver;
 
     protected TelemetryPointEntity() {
     }

@@ -1,13 +1,17 @@
 package org.streaming.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -22,6 +26,9 @@ public class RaceEntity {
 
     @Column(nullable = false)
     private LocalDateTime raceDate;
+
+    @OneToMany(mappedBy = "race", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<DriverEntity> drivers = new HashSet<>();
 
     protected RaceEntity() {
     }
@@ -54,6 +61,24 @@ public class RaceEntity {
 
     public void setRaceDate(LocalDateTime raceDate) {
         this.raceDate = raceDate;
+    }
+
+    public Set<DriverEntity> getDrivers() {
+        return drivers;
+    }
+
+    public void setDrivers(Set<DriverEntity> drivers) {
+        this.drivers = drivers;
+    }
+
+    public void addDriver(DriverEntity driver) {
+        drivers.add(driver);
+        driver.setRace(this);
+    }
+
+    public void removeDriver(DriverEntity driver) {
+        drivers.remove(driver);
+        driver.setRace(null);
     }
 
     @Override

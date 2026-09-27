@@ -1,5 +1,6 @@
 package org.streaming.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,8 +9,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "drivers")
@@ -18,12 +22,15 @@ public class DriverEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    Long driverNumber;
+    private Long driverNumber;
     @Column(nullable = false)
-    String fullName;
+    private String fullName;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "race_id", nullable = false)
-    RaceEntity race;
+    private RaceEntity race;
+
+    @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TelemetryPointEntity> telemetryPoints = new HashSet<>();
 
     protected DriverEntity() {
     }
@@ -65,6 +72,24 @@ public class DriverEntity {
 
     public void setRace(RaceEntity race) {
         this.race = race;
+    }
+
+    public Set<TelemetryPointEntity> getTelemetryPoints() {
+        return telemetryPoints;
+    }
+
+    public void setTelemetryPoints(Set<TelemetryPointEntity> telemetryPoints) {
+        this.telemetryPoints = telemetryPoints;
+    }
+
+    public void addTelemetryPoint(TelemetryPointEntity telemetryPointEntity) {
+        telemetryPoints.add(telemetryPointEntity);
+        telemetryPointEntity.setDriver(this);
+    }
+
+    public void removeTelemetryPoint(TelemetryPointEntity telemetryPointEntity) {
+        telemetryPoints.remove(telemetryPointEntity);
+        telemetryPointEntity.setDriver(null);
     }
 
     @Override
