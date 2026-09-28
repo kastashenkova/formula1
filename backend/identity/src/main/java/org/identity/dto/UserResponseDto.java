@@ -11,7 +11,7 @@ public record UserResponseDto(
         String email,
         @JsonProperty("phone_number")
         String phoneNumber,
-        Role role,
+        String role,
         @JsonProperty("user_status")
         String userStatus
 ) {

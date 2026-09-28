@@ -61,7 +61,7 @@ public class UserControllerTest {
                 null,
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.USER,
+                Role.USER.toString(),
                 "user1234",
                 "user1234"
         );
@@ -93,7 +93,7 @@ public class UserControllerTest {
                 null,
                 "invalid-email-format",
                 "+380980137037",
-                Role.USER,
+                Role.USER.toString(),
                 "user1234",
                 "user1234"
         );
@@ -113,7 +113,7 @@ public class UserControllerTest {
                 null,
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 "user1234"
         );
@@ -133,7 +133,7 @@ public class UserControllerTest {
                 null,
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin12",
                 "admin12"
         );
@@ -153,7 +153,7 @@ public class UserControllerTest {
                 null,
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin1234567890_admin1234567890_admin1234567890",
                 "admin1234567890_admin1234567890_admin1234567890"
         );

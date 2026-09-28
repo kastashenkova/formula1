@@ -46,7 +46,7 @@ public class UserRegisteredEventListenerTest {
                 null,
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.USER,
+                Role.USER.toString(),
                 "admin123",
                 UserStatus.PENDING_VERIFICATION.toString()
         );
@@ -55,7 +55,7 @@ public class UserRegisteredEventListenerTest {
                 UUID.randomUUID(),
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.USER,
+                Role.USER.toString(),
                 UserStatus.PENDING_VERIFICATION.toString(),
                 "email-token",
                 "phone-token"

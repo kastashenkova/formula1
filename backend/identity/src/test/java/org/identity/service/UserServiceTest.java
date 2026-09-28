@@ -98,7 +98,7 @@ public class UserServiceTest {
                 null,
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                  "admin123"
         );
@@ -157,7 +157,7 @@ public class UserServiceTest {
                 null,
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 "admin123"
         );
@@ -176,14 +176,14 @@ public class UserServiceTest {
                 null,
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 "admin123"
         );
         UserEntity existingUser = new UserEntity(
                 "k.astashenkova@ukma.edu.ua",
                 "+358408587404",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 UserStatus.ACTIVE.toString()
         );
@@ -201,7 +201,7 @@ public class UserServiceTest {
                 null,
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 "admin123"
         );
@@ -230,7 +230,7 @@ public class UserServiceTest {
                 null,
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 "admin123"
         );
@@ -257,7 +257,7 @@ public class UserServiceTest {
         UserEntity testUser = new UserEntity(
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 UserStatus.PENDING_VERIFICATION.toString());
 
@@ -290,7 +290,7 @@ public class UserServiceTest {
         UserEntity phoneVerifiedUser = new UserEntity(
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 UserStatus.PHONE_VERIFIED.toString());
 
@@ -319,7 +319,7 @@ public class UserServiceTest {
                 UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 UserStatus.PHONE_VERIFIED.toString());
 
@@ -338,7 +338,7 @@ public class UserServiceTest {
         UserEntity testUser = new UserEntity(
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 UserStatus.PHONE_VERIFIED.toString());
 
@@ -373,7 +373,7 @@ public class UserServiceTest {
         UserEntity testUser = new UserEntity(
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 UserStatus.PHONE_VERIFIED.toString());
 
@@ -398,7 +398,7 @@ public class UserServiceTest {
         UserEntity testUser = new UserEntity(
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 UserStatus.PHONE_VERIFIED.toString());
 
@@ -424,7 +424,7 @@ public class UserServiceTest {
         UserEntity testUser = new UserEntity(
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 UserStatus.PHONE_VERIFIED.toString());
 
@@ -449,7 +449,7 @@ public class UserServiceTest {
         UserEntity testUser = new UserEntity(
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 UserStatus.PHONE_VERIFIED.toString());
 
@@ -483,7 +483,7 @@ public class UserServiceTest {
         UserEntity testUser = new UserEntity(
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 UserStatus.ACTIVE.toString());
 

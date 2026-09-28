@@ -64,7 +64,7 @@ class AuthenticationServiceTest {
                 UUID.randomUUID(),
                 userLoginRequestDto.email(),
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "hashedPass",
                 UserStatus.ACTIVE.toString());
 
@@ -111,7 +111,7 @@ class AuthenticationServiceTest {
                 UUID.randomUUID(),
                 request.email(),
                 "+380980137037",
-                Role.USER,
+                Role.USER.toString(),
                 "user123",
                 UserStatus.ACTIVE.toString());
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.of(activeUser));
@@ -134,7 +134,7 @@ class AuthenticationServiceTest {
         UserEntity deactivatedUser = new UserEntity(
                 UUID.randomUUID(), request.email(),
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 UserStatus.DEACTIVATED.toString());
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.of(deactivatedUser));
@@ -153,7 +153,7 @@ class AuthenticationServiceTest {
         UserEntity notVerifiedUser = new UserEntity(
                 UUID.randomUUID(), request.email(),
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 UserStatus.EMAIL_VERIFIED.toString());
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.of(notVerifiedUser));
@@ -172,7 +172,7 @@ class AuthenticationServiceTest {
         UserEntity notVerifiedUser = new UserEntity(
                 UUID.randomUUID(), request.email(),
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 UserStatus.PHONE_VERIFIED.toString());
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.of(notVerifiedUser));

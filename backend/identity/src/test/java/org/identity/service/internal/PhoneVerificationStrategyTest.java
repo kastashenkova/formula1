@@ -63,7 +63,7 @@ class PhoneVerificationStrategyTest {
         UserEntity testUser = new UserEntity(
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 UserStatus.PHONE_VERIFIED.toString());
 
@@ -80,7 +80,7 @@ class PhoneVerificationStrategyTest {
         UserEntity testUser = new UserEntity(
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 UserStatus.PHONE_VERIFIED.toString());
 
@@ -129,7 +129,7 @@ class PhoneVerificationStrategyTest {
         UserEntity testUser = new UserEntity(
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 UserStatus.PHONE_VERIFIED.toString());
 

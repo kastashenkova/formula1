@@ -26,9 +26,8 @@ public class UserEntity {
     String email;
     @Column(nullable = false, length = 13)
     String phoneNumber;
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 5)
-    Role role;
+    String role;
     @Column(nullable = false, length = 60)
     String password;
     @Column(nullable = false, length = 20)
@@ -42,7 +41,7 @@ public class UserEntity {
 
     public UserEntity(String email,
                       String phoneNumber,
-                      Role role,
+                      String role,
                       String password,
                       String userStatus) {
         this.email = email;
@@ -55,7 +54,7 @@ public class UserEntity {
     public UserEntity(UUID id,
                       String email,
                       String phoneNumber,
-                      Role role,
+                      String role,
                       String password,
                       String userStatus) {
         this.id = id;
@@ -90,11 +89,11 @@ public class UserEntity {
         this.phoneNumber = phoneNumber;
     }
 
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
     }
 

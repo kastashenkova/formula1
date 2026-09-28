@@ -9,7 +9,7 @@ public record UserRegisteredEvent(
         UUID id,
         String email,
         String phoneNumber,
-        Role role,
+        String role,
         String userStatus,
         String emailVerificationToken,
         String phoneVerificationToken
