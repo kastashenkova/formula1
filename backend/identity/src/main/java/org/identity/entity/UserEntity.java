@@ -112,16 +112,6 @@ public class UserEntity {
         this.verificationTokens = verificationTokens;
     }
 
-    public void addVerificationToken(VerificationToken token) {
-        verificationTokens.add(token);
-        token.setUser(this);
-    }
-
-    public void removeVerificationToken(VerificationToken token) {
-        verificationTokens.remove(token);
-        token.setUser(null);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
