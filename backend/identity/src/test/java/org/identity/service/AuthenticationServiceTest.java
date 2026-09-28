@@ -11,7 +11,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import java.util.UUID;
 import org.identity.dto.UserLoginRequestDto;
 import org.identity.dto.UserLoginResponseDto;
 import org.identity.entity.UserEntity;
@@ -61,7 +60,6 @@ class AuthenticationServiceTest {
         );
 
         UserEntity existingUser = new UserEntity(
-                UUID.randomUUID(),
                 userLoginRequestDto.email(),
                 "+380980137037",
                 Role.ADMIN,
@@ -108,7 +106,6 @@ class AuthenticationServiceTest {
                 "admin123");
 
         UserEntity activeUser = new UserEntity(
-                UUID.randomUUID(),
                 request.email(),
                 "+380980137037",
                 Role.USER,
@@ -132,7 +129,7 @@ class AuthenticationServiceTest {
                 "admin123");
 
         UserEntity deactivatedUser = new UserEntity(
-                UUID.randomUUID(), request.email(),
+                request.email(),
                 "+380980137037",
                 Role.ADMIN,
                 "admin123",
@@ -151,7 +148,7 @@ class AuthenticationServiceTest {
                 "admin123");
 
         UserEntity notVerifiedUser = new UserEntity(
-                UUID.randomUUID(), request.email(),
+                request.email(),
                 "+380980137037",
                 Role.ADMIN,
                 "admin123",
@@ -170,7 +167,7 @@ class AuthenticationServiceTest {
                 "admin123");
 
         UserEntity notVerifiedUser = new UserEntity(
-                UUID.randomUUID(), request.email(),
+                request.email(),
                 "+380980137037",
                 Role.ADMIN,
                 "admin123",

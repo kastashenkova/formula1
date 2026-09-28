@@ -1,10 +1,10 @@
 package org.streaming.service.internal;
 
-import com.sun.jdi.request.DuplicateRequestException;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.UUID;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,11 +14,13 @@ import org.streaming.dto.RaceRequestDto;
 import org.streaming.dto.RaceResponseDto;
 import org.streaming.entity.DriverEntity;
 import org.streaming.entity.RaceEntity;
+import org.streaming.exception.DuplicateRaceException;
 import org.streaming.repository.DriverRepository;
 import org.streaming.repository.RaceRepository;
 import org.streaming.service.RaceService;
 
 @Service
+@Transactional
 public class RaceServiceImpl implements RaceService {
 
     private final RaceRepository raceRepository;
@@ -31,26 +33,26 @@ public class RaceServiceImpl implements RaceService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public RaceResponseDto getRace(UUID raceId) {
-        RaceEntity raceEntity = raceRepository.findById(raceId)
+        RaceEntity raceEntity = raceRepository.findByIdWithDetails(raceId)
                 .orElseThrow(() -> new EntityNotFoundException("Race with id: " + raceId + " not found"));
 
         return RaceResponseDto.fromEntity(raceEntity);
     }
 
     @Override
-    public List<RaceResponseDto> getRaces(Pageable pageable) {
-        return raceRepository.findAll(pageable)
-                .stream()
-                .map(RaceResponseDto::fromEntity)
-                .toList();
+    @Transactional(readOnly = true)
+    public Page<RaceResponseDto> getRaces(Pageable pageable) {
+        return raceRepository.findAllWithDetails(pageable)
+                .map(RaceResponseDto::fromEntity);
     }
 
     @Override
     public RaceResponseDto addRace(RaceRequestDto raceRequestDto) {
         if (raceRepository.existsByRaceName(raceRequestDto.raceName())) {
             String message = String.format("Race with name %s already exists", raceRequestDto.raceName());
-            throw new DuplicateRequestException(message);
+            throw new DuplicateRaceException(message);
         }
 
         RaceEntity race = RaceRequestDto.toEntity(raceRequestDto);
@@ -61,7 +63,7 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     public RaceResponseDto updateRace(UUID id, RaceRequestDto raceRequestDto) {
-        RaceEntity raceEntity = raceRepository.findById(id)
+        RaceEntity raceEntity = raceRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new EntityNotFoundException("Race with id: " + id + " not found"));
 
         raceEntity.setRaceName(raceRequestDto.raceName());
@@ -94,14 +96,12 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DriverResponseDto> getDrivers(UUID raceId) {
+    public Page<DriverResponseDto> getDrivers(UUID raceId, Pageable pageable) {
         RaceEntity raceEntity = raceRepository.findById(raceId)
                 .orElseThrow(() -> new EntityNotFoundException("Race with id: " + raceId + " not found"));
 
-        return driverRepository.findByRaceOrderByFullName(raceEntity)
-                .stream()
-                .map(DriverResponseDto::fromEntity)
-                .toList();
+        return driverRepository.findByRaceOrderByFullName(raceEntity, pageable)
+                .map(DriverResponseDto::fromEntity);
     }
 
     @Override

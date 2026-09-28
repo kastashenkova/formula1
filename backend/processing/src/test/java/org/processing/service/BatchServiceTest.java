@@ -3,7 +3,6 @@ package org.processing.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -113,28 +112,30 @@ public class BatchServiceTest {
 
         List<BatchEntity> races =  List.of(monacoRace, austriaRace);
 
-        when(repo.findAll(anyInt(), anyInt())).thenReturn(races);
+        when(repo.findAll(any(Pageable.class)))
+                .thenReturn(new org.springframework.data.domain.PageImpl<>(races));
 
         Pageable pageable = PageRequest.of(0, 10);
         var response = service.getBatches(pageable);
 
         assertNotNull(response);
-        assertEquals(2, response.size());
-        assertEquals("Monaco", response.get(0).raceName());
-        assertEquals("Austria", response.get(1).raceName());
-        verify(repo).findAll(anyInt(), anyInt());
+        assertEquals(2, response.getContent().size());
+        assertEquals("Monaco", response.getContent().getFirst().raceName());
+        assertEquals("Austria", response.getContent().get(1).raceName());
+        verify(repo).findAll(any(Pageable.class));
     }
 
     @Test
     @DisplayName("Success request for empty batch list")
-    void getEmptyListSuccessfully() {
-        when(repo.findAll(anyInt(), anyInt())).thenReturn(List.of());
+    void getEmptyPageSuccessfully() {
+        when(repo.findAll(any(Pageable.class)))
+                .thenReturn(new org.springframework.data.domain.PageImpl<>(List.of()));
 
         Pageable pageable = PageRequest.of(0, 10);
         var response = service.getBatches(pageable);
 
         assertNotNull(response);
-        assertEquals(0, response.size());
-        verify(repo).findAll(anyInt(), anyInt());
+        assertEquals(0, response.getContent().size());
+        verify(repo).findAll(any(Pageable.class));
     }
 }

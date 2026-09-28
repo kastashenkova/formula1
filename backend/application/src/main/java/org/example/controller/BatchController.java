@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -48,8 +50,8 @@ public class BatchController {
     @GetMapping
     @Operation(summary = "All batches",
             description = "Information about all the race batches")
-    public ResponseEntity<List<BatchResponseDto>> getBatches(Pageable pageable) {
-        List<BatchResponseDto> list = batchService.getBatches(pageable);
-        return ResponseEntity.ok(list);
+    public ResponseEntity<Page<BatchResponseDto>> getBatches(Pageable pageable) {
+        Page<BatchResponseDto> page = batchService.getBatches(pageable);
+        return ResponseEntity.ok(page);
     }
 }

@@ -4,10 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 import org.identity.validation.OnCreate;
 import org.identity.validation.OnUpdate;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -57,9 +58,9 @@ public class RaceController {
         return ResponseEntity.created(location).body(created);
     }
 
-    @PostMapping("/{id}")
-    @Operation(summary = "Race creation",
-            description = "Create a new race")
+    @PutMapping("/{id}")
+    @Operation(summary = "Race update",
+            description = "Update an existing race")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RaceResponseDto> update(@PathVariable UUID id,
                                                   @Validated(OnUpdate.class)
@@ -69,7 +70,7 @@ public class RaceController {
         return ResponseEntity.ok(updated);
     }
 
-    @PostMapping("/{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Get race",
             description = "Get an existing race by its id")
     public ResponseEntity<RaceResponseDto> getRace(@PathVariable UUID id) {
@@ -78,11 +79,11 @@ public class RaceController {
         return ResponseEntity.ok(race);
     }
 
-    @PostMapping
+    @GetMapping
     @Operation(summary = "Get races",
             description = "Get all existing races")
-    public ResponseEntity<List<RaceResponseDto>> getRaces(Pageable pageable) {
-        List<RaceResponseDto> races = raceService.getRaces(pageable);
+    public ResponseEntity<Page<RaceResponseDto>> getRaces(Pageable pageable) {
+        Page<RaceResponseDto> races = raceService.getRaces(pageable);
 
         return ResponseEntity.ok(races);
     }
@@ -109,8 +110,8 @@ public class RaceController {
     @GetMapping("/{id}/driver")
     @Operation(summary = "Get drivers",
             description = "Get drivers of the existing race")
-    public List<DriverResponseDto> getDrivers(@PathVariable UUID id) {
-        return raceService.getDrivers(id);
+    public Page<DriverResponseDto> getDrivers(@PathVariable UUID id, Pageable pageable) {
+        return raceService.getDrivers(id, pageable);
     }
 
     @DeleteMapping("/{raceId}/driver/{driverId}")

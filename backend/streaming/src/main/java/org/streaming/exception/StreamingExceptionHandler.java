@@ -29,8 +29,8 @@ public class StreamingExceptionHandler {
         return pd;
     }
 
-    @ExceptionHandler(DuplicateWebhookException.class)
-    public ProblemDetail handleDuplicateWebhook(DuplicateWebhookException ex) {
+    @ExceptionHandler({DuplicateWebhookException.class, DuplicateRaceException.class})
+    public ProblemDetail handleDuplicate(DomainException ex) {
         return buildProblemDetail(
                 HttpStatus.CONFLICT,
                 "Resource conflict",

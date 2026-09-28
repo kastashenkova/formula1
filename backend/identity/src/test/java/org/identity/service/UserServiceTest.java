@@ -330,12 +330,15 @@ public class UserServiceTest {
                 "admin123",
                 UserStatus.PHONE_VERIFIED);
 
+        UUID userId = UUID.randomUUID();
+        testUser.setId(userId);
+
         when(userRepository.findByEmail("d.dzhos@ukma.edu.ua")).thenReturn(Optional.of(testUser));
 
         UpdateUserStatusCommand command = new UpdateUserStatusCommand(UserStatus.DEACTIVATED);
 
         assertThrows(AccessDeniedException.class,
-                () -> userService.updateStatus(testUser.getId(), command));
+                () -> userService.updateStatus(userId, command));
 
         verify(userRepository, never()).save(any());
     }

@@ -13,6 +13,8 @@ import org.processing.service.BatchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,11 +62,9 @@ public class BatchServiceImpl implements BatchService {
     }
 
     @Override
-    public List<BatchResponseDto> getBatches(Pageable pageable) {
+    public Page<BatchResponseDto> getBatches(Pageable pageable) {
         return batchRepository.findAll(pageable)
-                .stream()
-                .map(this::mapToResponse)
-                .toList();
+                .map(this::mapToResponse);
     }
 
     private BatchResponseDto mapToResponse(BatchEntity batchEntity) {

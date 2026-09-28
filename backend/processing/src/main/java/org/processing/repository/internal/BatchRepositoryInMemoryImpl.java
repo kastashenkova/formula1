@@ -10,6 +10,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.processing.entity.BatchEntity;
 import org.processing.repository.BatchRepository;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -39,7 +40,7 @@ public class BatchRepositoryInMemoryImpl implements BatchRepository {
     }
 
     @Override
-    public List<BatchEntity> findAll(Pageable pageable) {
+    public Page<BatchEntity> findAll(Pageable pageable) {
         throw new NotImplementedException();
     }
 }

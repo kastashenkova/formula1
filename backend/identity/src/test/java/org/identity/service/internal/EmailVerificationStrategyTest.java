@@ -7,8 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
-
 import org.identity.entity.UserEntity;
 import org.identity.entity.VerificationToken;
 import org.identity.enums.Role;
@@ -51,7 +49,6 @@ class EmailVerificationStrategyTest {
     @Test
     void shouldCreateTokenWithCorrectExpiry() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -69,7 +66,6 @@ class EmailVerificationStrategyTest {
     @Test
     void shouldSendMessage() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,

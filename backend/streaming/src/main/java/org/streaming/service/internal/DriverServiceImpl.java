@@ -1,9 +1,13 @@
 package org.streaming.service.internal;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.UUID;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.streaming.dto.*;
 import org.streaming.entity.DriverEntity;
 import org.streaming.entity.TelemetryPointEntity;
@@ -12,6 +16,7 @@ import org.streaming.repository.TelemetryPointRepository;
 import org.streaming.service.DriverService;
 
 @Service
+@Transactional
 public class DriverServiceImpl implements DriverService {
 
     private final DriverRepository driverRepository;
@@ -24,19 +29,19 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public DriverResponseDto getDriver(UUID driverId) {
-        DriverEntity driver = driverRepository.findById(driverId)
+        DriverEntity driver = driverRepository.findByIdWithDetails(driverId)
                 .orElseThrow(() -> new EntityNotFoundException("Driver with id " + driverId + " not found"));
 
         return DriverResponseDto.fromEntity(driver);
     }
 
     @Override
-    public List<DriverResponseDto> getDrivers() {
-        return driverRepository.findAll()
-                .stream()
-                .map(DriverResponseDto::fromEntity)
-                .toList();
+    @Transactional(readOnly = true)
+    public Page<DriverResponseDto> getDrivers(Pageable pageable) {
+        return driverRepository.findAllWithDetails(pageable)
+                .map(DriverResponseDto::fromEntity);
     }
 
     @Override
@@ -49,7 +54,7 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public DriverResponseDto updateDriver(UUID id, DriverRequestDto driverRequestDto) {
-        DriverEntity driver = driverRepository.findById(id)
+        DriverEntity driver = driverRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new EntityNotFoundException("Driver with id " + id + " not found"));
 
         driver.setDriverNumber(driverRequestDto.driverNumber());
@@ -81,14 +86,13 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public List<TelemetryPointResponseDto> getTelemetryPoints(UUID driverId) {
+    @Transactional(readOnly = true)
+    public Page<TelemetryPointResponseDto> getTelemetryPoints(UUID driverId, Pageable pageable) {
         DriverEntity driver = driverRepository.findById(driverId)
                 .orElseThrow(() -> new EntityNotFoundException("Driver with id " + driverId + " not found"));
 
-        return telemetryPointRepository.findAllByDriverOrderByTimestamp(driver)
-                .stream()
-                .map(TelemetryPointResponseDto::fromEntity)
-                .toList();
+        return telemetryPointRepository.findAllWithDetailsByDriverOrderByTimestamp(driver, pageable)
+                .map(TelemetryPointResponseDto::fromEntity);
     }
 
     @Override

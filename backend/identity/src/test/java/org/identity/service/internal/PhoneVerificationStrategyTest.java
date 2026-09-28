@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.identity.entity.UserEntity;
 import org.identity.entity.VerificationToken;
 import org.identity.enums.Role;
@@ -61,7 +60,6 @@ class PhoneVerificationStrategyTest {
     @Test
     void shouldCreateTokenWithCorrectExpiry() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -79,7 +77,6 @@ class PhoneVerificationStrategyTest {
     @Test
     void shouldSendMessage() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -129,7 +126,6 @@ class PhoneVerificationStrategyTest {
     @Test
     void shouldThrowExceptionWhenWhatsAppApiFails() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,

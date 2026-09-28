@@ -26,6 +26,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -59,7 +60,7 @@ public class BatchControllerTest {
 
     @Test
     @DisplayName("Should return list with with example race session")
-    void getBatches_filledList_Success() throws Exception {
+    void getBatches_filledPage_Success() throws Exception {
         BatchResponseDto batchExample = new BatchResponseDto(
                 UUID.randomUUID(),
                 "exampleRace",
@@ -69,31 +70,31 @@ public class BatchControllerTest {
         );
 
         Pageable pageable = PageRequest.of(0, 10);
-        when(batchService.getBatches(pageable)).thenReturn(List.of(batchExample));
+        when(batchService.getBatches(pageable)).thenReturn(new PageImpl<>(List.of(batchExample)));
 
         mockMvc.perform(get("/batches")
                         .param("page", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(1));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(1));
 
         verify(batchService, times(1)).getBatches(pageable);
     }
 
     @Test
     @DisplayName("Should return empty list")
-    void getBatches_emptyList_Success() throws Exception {
+    void getBatches_emptyPage_Success() throws Exception {
         Pageable pageable = PageRequest.of(0, 10);
 
-        when(batchService.getBatches(pageable)).thenReturn(List.of());
+        when(batchService.getBatches(pageable)).thenReturn(new PageImpl<>(List.of()));
 
         mockMvc.perform(get("/batches")
                         .param("page", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$").isEmpty());
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content").isEmpty());
 
         verify(batchService, times(1)).getBatches(pageable);
     }

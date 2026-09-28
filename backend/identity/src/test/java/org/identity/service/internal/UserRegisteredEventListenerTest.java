@@ -43,7 +43,6 @@ public class UserRegisteredEventListenerTest {
                 tokenRepository, emailVerificationStrategy, phoneVerificationStrategy);
 
         testUser = new UserEntity(
-                null,
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
                 Role.USER,

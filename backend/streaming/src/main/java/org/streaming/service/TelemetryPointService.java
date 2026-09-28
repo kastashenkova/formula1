@@ -1,14 +1,14 @@
 package org.streaming.service;
 
-import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.streaming.dto.TelemetryPointRequestDto;
 import org.streaming.dto.TelemetryPointResponseDto;
 
 public interface TelemetryPointService {
     TelemetryPointResponseDto getTelemetryPoint(UUID pointId);
-    List<TelemetryPointResponseDto> getTelemetryPoints();
-    TelemetryPointResponseDto addTelemetryPoint(TelemetryPointRequestDto requestDto);
+    Page<TelemetryPointResponseDto> getTelemetryPoints(Pageable pageable);
     TelemetryPointResponseDto updateTelemetryPoint(UUID pointId, TelemetryPointRequestDto requestDto);
     void deleteTelemetryPoint(UUID pointId);
 }
