@@ -104,7 +104,6 @@ public class UserServiceTest {
         );
 
          UserEntity testEntity = new UserEntity(
-                 UUID.randomUUID(),
                  testUserRequest.email(),
                  testUserRequest.phoneNumber(),
                  testUserRequest.role(),
@@ -124,13 +123,13 @@ public class UserServiceTest {
                 1L,
                 testEntity,
                 "email-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now().plusHours(1));
         VerificationToken mockPhoneToken = new VerificationToken(
                 1L,
                 testEntity,
                 "phone-token",
-                TokenType.PHONE_VERIFICATION,
+                TokenType.PHONE_VERIFICATION.toString(),
                 LocalDateTime.now().plusHours(1));
 
         when(emailStrategy.createVerificationToken(any())).thenReturn(mockEmailToken);
@@ -182,7 +181,6 @@ public class UserServiceTest {
                 "admin123"
         );
         UserEntity existingUser = new UserEntity(
-                UUID.randomUUID(),
                 "k.astashenkova@ukma.edu.ua",
                 "+358408587404",
                 Role.ADMIN,
@@ -257,7 +255,6 @@ public class UserServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -291,7 +288,6 @@ public class UserServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         UserEntity phoneVerifiedUser = new UserEntity(
-                UUID.randomUUID(),
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -340,7 +336,6 @@ public class UserServiceTest {
     @Test
     void shouldConfirmTokenSuccessfully() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -351,7 +346,7 @@ public class UserServiceTest {
                 1L,
                 testUser,
                 "valid-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now().plusHours(3));
 
         when(tokenRepository.findByToken(verificationToken.getToken())).thenReturn(Optional.of(verificationToken));
@@ -376,7 +371,6 @@ public class UserServiceTest {
     @Test
     void shouldThrowInvalidTokenExceptionWhenTokenNotFound() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -387,7 +381,7 @@ public class UserServiceTest {
                 1L,
                 testUser,
                 "invalid-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now().plusHours(3));
 
         when(tokenRepository.findByToken(any())).thenReturn(Optional.empty());
@@ -402,7 +396,6 @@ public class UserServiceTest {
     @Test
     void shouldThrowEntityNotFoundExceptionWhenUserNotFound() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -413,7 +406,7 @@ public class UserServiceTest {
                 1L,
                 testUser,
                 "valid-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now().plusHours(3));
 
         when(tokenRepository.findByToken(any())).thenReturn(Optional.of(verificationToken));
@@ -429,7 +422,6 @@ public class UserServiceTest {
     @Test
     void shouldThrowInvalidTokenExceptionWhenTokenExpired() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -440,7 +432,7 @@ public class UserServiceTest {
                 1L,
                 testUser,
                 "invalid-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now().minusHours(3));
 
         when(tokenRepository.findByToken(any())).thenReturn(Optional.of(verificationToken));
@@ -455,7 +447,6 @@ public class UserServiceTest {
     @Test
     void shouldThrowInvalidVerificationStrategyExceptionWhenVerificationStrategyNotFound() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -466,7 +457,7 @@ public class UserServiceTest {
                 1L,
                 testUser,
                 "valid-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now().plusHours(3));
 
         when(tokenRepository.findByToken("valid-token")).thenReturn(Optional.of(verificationToken));
@@ -490,7 +481,6 @@ public class UserServiceTest {
     @Test
     void shouldThrowInvalidUserStateExceptionOnIllegalTransitionDuringConfirmation() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -501,7 +491,7 @@ public class UserServiceTest {
                 1L,
                 testUser,
                 "valid-token",
-                TokenType.PHONE_VERIFICATION,
+                TokenType.PHONE_VERIFICATION.toString(),
                 LocalDateTime.now().plusHours(3));
 
         when(tokenRepository.findByToken("valid-token")).thenReturn(Optional.of(verificationToken));

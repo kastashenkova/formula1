@@ -68,14 +68,14 @@ public class UserRegisteredEventListenerTest {
                 1L,
                 testUser,
                 "email-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now().plusMinutes(15)
         );
         VerificationToken phoneToken = new VerificationToken(
                 2L,
                 testUser,
                 "phone-token",
-                TokenType.PHONE_VERIFICATION,
+                TokenType.PHONE_VERIFICATION.toString(),
                 LocalDateTime.now().plusMinutes(15)
         );
         when(tokenRepository.findByToken(emailToken.getToken())).thenReturn(Optional.of(emailToken));
@@ -93,7 +93,7 @@ public class UserRegisteredEventListenerTest {
                 1L,
                 testUser,
                 "phone-token",
-                TokenType.PHONE_VERIFICATION,
+                TokenType.PHONE_VERIFICATION.toString(),
                 LocalDateTime.now().plusMinutes(15)
         );
         when(tokenRepository.findByToken("email-token")).thenReturn(Optional.empty());
@@ -111,7 +111,7 @@ public class UserRegisteredEventListenerTest {
                 1L,
                 testUser,
                 "email-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now().plusMinutes(15)
         );
         when(tokenRepository.findByToken(emailToken.getToken())).thenReturn(Optional.of(emailToken));

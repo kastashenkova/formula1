@@ -51,7 +51,6 @@ class EmailVerificationStrategyTest {
     @Test
     void shouldCreateTokenWithCorrectExpiry() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -60,7 +59,7 @@ class EmailVerificationStrategyTest {
 
         VerificationToken token = strategy.createVerificationToken(testUser);
 
-        assertEquals(TokenType.EMAIL_VERIFICATION, token.getTokenType());
+        assertEquals(TokenType.EMAIL_VERIFICATION.toString(), token.getTokenType());
         assertEquals(testUser, token.getUser());
         assertNotNull(token.getToken());
         assertTrue(token.getExpiryDate().isAfter(LocalDateTime.now().plusHours(23)));
@@ -69,7 +68,6 @@ class EmailVerificationStrategyTest {
     @Test
     void shouldSendMessage() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -80,7 +78,7 @@ class EmailVerificationStrategyTest {
                 1L,
                 testUser,
                 "test-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now());
 
         strategy.sendMessage("k.astashenkova@ukma.edu.ua", token);

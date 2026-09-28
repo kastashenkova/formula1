@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import org.identity.enums.Role;
-import org.identity.enums.UserStatus;
 
 @Entity
 @Table(name = "users")
@@ -41,6 +40,18 @@ public class UserEntity {
     protected UserEntity() {
     }
 
+    public UserEntity(String email,
+                      String phoneNumber,
+                      Role role,
+                      String password,
+                      String userStatus) {
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+        this.password = password;
+        this.userStatus = userStatus;
+    }
+
     public UserEntity(UUID id,
                       String email,
                       String phoneNumber,
@@ -52,7 +63,7 @@ public class UserEntity {
         this.phoneNumber = phoneNumber;
         this.role = role;
         this.password = password;
-        this.userStatus = userStatus != null ? userStatus : UserStatus.PENDING_VERIFICATION.toString();
+        this.userStatus = userStatus;
     }
 
     public UUID getId() {

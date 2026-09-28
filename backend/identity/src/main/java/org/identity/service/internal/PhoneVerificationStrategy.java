@@ -56,7 +56,7 @@ public class PhoneVerificationStrategy implements VerificationStrategy {
                 null,
                 user,
                 token,
-                TokenType.PHONE_VERIFICATION,
+                TokenType.PHONE_VERIFICATION.toString(),
                 expirationTime
         );
     }

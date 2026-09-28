@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findById(verificationToken.getUser().getId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        VerificationStrategy strategy = strategyMap.get(verificationToken.getTokenType().name());
+        VerificationStrategy strategy = strategyMap.get(verificationToken.getTokenType());
         if (strategy == null) {
             String message = String.format("Verification strategy for token %s not found",
                     verificationToken.getTokenType());

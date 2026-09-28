@@ -61,7 +61,6 @@ class PhoneVerificationStrategyTest {
     @Test
     void shouldCreateTokenWithCorrectExpiry() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -70,7 +69,7 @@ class PhoneVerificationStrategyTest {
 
         VerificationToken token = strategy.createVerificationToken(testUser);
 
-        assertEquals(TokenType.PHONE_VERIFICATION, token.getTokenType());
+        assertEquals(TokenType.PHONE_VERIFICATION.toString(), token.getTokenType());
         assertEquals(testUser, token.getUser());
         assertNotNull(token.getToken());
         assertTrue(token.getExpiryDate().isAfter(LocalDateTime.now().plusHours(23)));
@@ -79,7 +78,6 @@ class PhoneVerificationStrategyTest {
     @Test
     void shouldSendMessage() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -90,7 +88,7 @@ class PhoneVerificationStrategyTest {
                 1L,
                 testUser,
                 "test-token",
-                TokenType.PHONE_VERIFICATION,
+                TokenType.PHONE_VERIFICATION.toString(),
                 LocalDateTime.now());
 
         String phoneNumber = "+380980137037";
@@ -129,7 +127,6 @@ class PhoneVerificationStrategyTest {
     @Test
     void shouldThrowExceptionWhenWhatsAppApiFails() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN,
@@ -140,7 +137,7 @@ class PhoneVerificationStrategyTest {
                 1L,
                 testUser,
                 "test-token",
-                TokenType.PHONE_VERIFICATION,
+                TokenType.PHONE_VERIFICATION.toString(),
                 LocalDateTime.now());
 
         String expectedUrl = "https://graph.facebook.com/v25.0/1111111111111111/messages";
