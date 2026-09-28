@@ -96,7 +96,7 @@ class PhoneVerificationStrategyTest {
         when(restTemplate.postForEntity(eq(expectedUrl), any(HttpEntity.class), eq(String.class)))
                 .thenReturn(ResponseEntity.ok().build());
 
-        strategy.sendMessage(phoneNumber, token);
+        strategy.sendMessage(phoneNumber, token.getToken());
 
         ArgumentCaptor<HttpEntity<Map<String, Object>>> entityCaptor = ArgumentCaptor.forClass(HttpEntity.class);
 
@@ -115,7 +115,7 @@ class PhoneVerificationStrategyTest {
         assertEquals("template", payload.get("type"));
 
         Map<String, Object> template = (Map<String, Object>) payload.get("template");
-        assertEquals("verificationlink", template.get("name"));
+        assertEquals("verificaion_link", template.get("name"));
 
         List<Map<String, Object>> components = (List<Map<String, Object>>) template.get("components");
         List<Map<String, Object>> parameters = (List<Map<String, Object>>) components.get(0).get("parameters");
@@ -148,7 +148,7 @@ class PhoneVerificationStrategyTest {
                 .thenThrow(mockException);
 
         assertThrows(RestClientResponseException.class,
-                () -> strategy.sendMessage("+380980137037", token));
+                () -> strategy.sendMessage("+380980137037", token.getToken()));
     }
 
     @Test

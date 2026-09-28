@@ -1,10 +1,10 @@
 package org.streaming.service.internal;
 
 import jakarta.persistence.EntityNotFoundException;
-import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +22,7 @@ import org.streaming.service.RaceService;
 @Service
 @Transactional
 public class RaceServiceImpl implements RaceService {
-
+    private static final Logger log = LoggerFactory.getLogger(RaceServiceImpl.class);
     private final RaceRepository raceRepository;
 
     private final DriverRepository driverRepository;
@@ -58,6 +58,8 @@ public class RaceServiceImpl implements RaceService {
         RaceEntity race = RaceRequestDto.toEntity(raceRequestDto);
         RaceEntity saved = raceRepository.save(race);
 
+        log.info("Created race {}", saved.getRaceId());
+
         return RaceResponseDto.fromEntity(saved);
     }
 
@@ -70,6 +72,8 @@ public class RaceServiceImpl implements RaceService {
         raceEntity.setRaceDate(raceRequestDto.raceDate());
 
         raceRepository.save(raceEntity);
+
+        log.info("Updated race {}", raceEntity.getRaceId());
 
         return RaceResponseDto.fromEntity(raceEntity);
     }
@@ -90,6 +94,8 @@ public class RaceServiceImpl implements RaceService {
         DriverEntity driverEntity = DriverRequestDto.toEntity(request);
         raceEntity.addDriver(driverEntity);
         DriverEntity savedDriver = driverRepository.save(driverEntity);
+
+        log.info("Added driver {}", savedDriver.getId());
 
         return DriverResponseDto.fromEntity(savedDriver);
     }

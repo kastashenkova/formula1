@@ -1,10 +1,10 @@
 package org.streaming.service.internal;
 
 import jakarta.persistence.EntityNotFoundException;
-import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +17,7 @@ import org.streaming.service.TelemetryPointService;
 @Service
 @Transactional
 public class TelemetryPointServiceImpl implements TelemetryPointService {
-
+    private static final Logger log = LoggerFactory.getLogger(TelemetryPointServiceImpl.class);
     private final TelemetryPointRepository telemetryPointRepository;
 
     public TelemetryPointServiceImpl(TelemetryPointRepository telemetryPointRepository) {
@@ -53,6 +53,8 @@ public class TelemetryPointServiceImpl implements TelemetryPointService {
         telemetryPointEntity.setSpeed(requestDto.speed());
 
         telemetryPointRepository.save(telemetryPointEntity);
+
+        log.info("Updated telemetry point {}", telemetryPointEntity.getId());
 
         return TelemetryPointResponseDto.fromEntity(telemetryPointEntity);
     }

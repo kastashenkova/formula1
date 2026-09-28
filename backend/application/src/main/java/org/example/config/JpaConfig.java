@@ -5,15 +5,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@EnableJpaRepositories(basePackages = {
-        "org.identity.repository",
-        "org.processing.repository",
-        "org.streaming.repository"
-})
-@EntityScan(basePackages = {
-        "org.identity.entity",
-        "org.processing.entity",
-        "org.streaming.entity"
-})
+@EnableJpaRepositories(
+        basePackages = {"org.identity.repository", "org.processing.repository", "org.streaming.repository"},
+        transactionManagerRef = "transactionManager")
+@EntityScan(basePackages = {"org.identity.entity", "org.processing.entity", "org.streaming.entity", "org.springframework.modulith.events.jpa"})
 public class JpaConfig {
 }

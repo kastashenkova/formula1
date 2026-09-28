@@ -79,7 +79,7 @@ class EmailVerificationStrategyTest {
                 TokenType.EMAIL_VERIFICATION,
                 LocalDateTime.now());
 
-        strategy.sendMessage("k.astashenkova@ukma.edu.ua", token);
+        strategy.sendMessage("k.astashenkova@ukma.edu.ua", token.getToken());
 
         ArgumentCaptor<SimpleMailMessage> messageCaptor = ArgumentCaptor.forClass(SimpleMailMessage.class);
         verify(mailSender).send(messageCaptor.capture());

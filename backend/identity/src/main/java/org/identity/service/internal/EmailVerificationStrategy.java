@@ -2,7 +2,6 @@ package org.identity.service.internal;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-
 import org.identity.entity.UserEntity;
 import org.identity.entity.VerificationToken;
 import org.identity.enums.TokenType;
@@ -48,8 +47,8 @@ public class EmailVerificationStrategy implements VerificationStrategy {
     }
 
     @Override
-    public void sendMessage(String to, VerificationToken token) {
-        String confirmationUrl = frontendUrl + "/auth/confirm-email?token=" + token.getToken();
+    public void sendMessage(String to, String token) {
+        String confirmationUrl = frontendUrl + "/auth/confirm-email?token=" + token;
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject("Confirm your email to use account in Formula1 App");

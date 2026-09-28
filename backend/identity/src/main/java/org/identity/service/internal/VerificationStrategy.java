@@ -12,7 +12,7 @@ public interface VerificationStrategy {
 
     VerificationToken createVerificationToken(UserEntity user);
 
-    void sendMessage(String to, VerificationToken token);
+    void sendMessage(String to, String token);
 
     UserStatus getNextStatus(UserStatus currentStatus);
 }
