@@ -1,8 +1,8 @@
 package org.example.controller;
 
-import org.streaming.dto.WebhookRequestDto;
-import org.streaming.dto.WebhookResponseDto;
-import org.streaming.service.WebhookService;
+import org.identity.dto.WebhookRequestDto;
+import org.identity.dto.WebhookResponseDto;
+import org.identity.service.WebhookService;
 import java.net.URI;
 import org.streaming.validation.OnCreate;
 import org.streaming.validation.OnUpdate;
