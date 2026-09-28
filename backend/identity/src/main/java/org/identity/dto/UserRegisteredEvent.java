@@ -10,7 +10,7 @@ public record UserRegisteredEvent(
         String email,
         String phoneNumber,
         Role role,
-        UserStatus userStatus,
+        String userStatus,
         String emailVerificationToken,
         String phoneVerificationToken
 ) {

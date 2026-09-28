@@ -71,7 +71,7 @@ public class UserControllerTest {
                 newUserRequestDto.email(),
                 newUserRequestDto.phoneNumber(),
                 newUserRequestDto.role(),
-                UserStatus.PENDING_VERIFICATION
+                UserStatus.PENDING_VERIFICATION.toString()
         );
 
         when(userService.addUser(newUserRequestDto)).thenReturn(newUserResponseDto);

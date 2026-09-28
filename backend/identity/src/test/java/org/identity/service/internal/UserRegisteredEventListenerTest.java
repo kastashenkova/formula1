@@ -48,7 +48,7 @@ public class UserRegisteredEventListenerTest {
                 "+380980137037",
                 Role.USER,
                 "admin123",
-                UserStatus.PENDING_VERIFICATION
+                UserStatus.PENDING_VERIFICATION.toString()
         );
 
         testEvent = new UserRegisteredEvent(
@@ -56,7 +56,7 @@ public class UserRegisteredEventListenerTest {
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
                 Role.USER,
-                UserStatus.PENDING_VERIFICATION,
+                UserStatus.PENDING_VERIFICATION.toString(),
                 "email-token",
                 "phone-token"
         );

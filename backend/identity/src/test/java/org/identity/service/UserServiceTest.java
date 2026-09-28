@@ -109,7 +109,7 @@ public class UserServiceTest {
                  testUserRequest.phoneNumber(),
                  testUserRequest.role(),
                  testUserRequest.password(),
-                 UserStatus.PENDING_VERIFICATION
+                 UserStatus.PENDING_VERIFICATION.toString()
          );
 
         when(userRepository.existsByEmail(testUserRequest.email())).thenReturn(false);
@@ -142,7 +142,7 @@ public class UserServiceTest {
         assertEquals(testUserRequest.email(), responseDto.email());
         assertEquals(testUserRequest.phoneNumber(), responseDto.phoneNumber());
         assertEquals(testUserRequest.role(), responseDto.role());
-        assertEquals(UserStatus.PENDING_VERIFICATION, responseDto.userStatus());
+        assertEquals(UserStatus.PENDING_VERIFICATION.toString(), responseDto.userStatus());
 
         verify(userRepository).save(any(UserEntity.class));
 
@@ -187,7 +187,7 @@ public class UserServiceTest {
                 "+358408587404",
                 Role.ADMIN,
                 "admin123",
-                UserStatus.ACTIVE
+                UserStatus.ACTIVE.toString()
         );
         when(userRepository.findById((UUID) any())).thenReturn(Optional.of(existingUser));
 
@@ -237,15 +237,6 @@ public class UserServiceTest {
                 "admin123"
         );
 
-        UserEntity existingUser = new UserEntity(
-                null,
-                "astashenkova.katya@gmail.com",
-                "+380980137037",
-                Role.ADMIN,
-                "admin123",
-                UserStatus.ACTIVE
-        );
-
         when(userRepository.existsByEmail(testUserRequest.email())).thenReturn(false);
         when(userRepository.existsByPhoneNumber(testUserRequest.phoneNumber()))
                 .thenReturn(true);
@@ -271,7 +262,7 @@ public class UserServiceTest {
                 "+380980137037",
                 Role.ADMIN,
                 "admin123",
-                UserStatus.PENDING_VERIFICATION);
+                UserStatus.PENDING_VERIFICATION.toString());
 
         when(userRepository.findById(testUser.getId()))
                 .thenReturn(Optional.of(testUser));
@@ -286,7 +277,7 @@ public class UserServiceTest {
                 testUser.getId(), updateUserStatusCommand);
 
         assertNotNull(responseDto);
-        assertEquals(UserStatus.EMAIL_VERIFIED, responseDto.userStatus());
+        assertEquals(UserStatus.EMAIL_VERIFIED.toString(), responseDto.userStatus());
         verify(userRepository).save(any(UserEntity.class));
     }
 
@@ -305,7 +296,7 @@ public class UserServiceTest {
                 "+380980137037",
                 Role.ADMIN,
                 "admin123",
-                UserStatus.PHONE_VERIFIED);
+                UserStatus.PHONE_VERIFIED.toString());
 
         when(userRepository.findById(phoneVerifiedUser.getId()))
                 .thenReturn(Optional.of(phoneVerifiedUser));
@@ -334,7 +325,7 @@ public class UserServiceTest {
                 "+380980137037",
                 Role.ADMIN,
                 "admin123",
-                UserStatus.PHONE_VERIFIED);
+                UserStatus.PHONE_VERIFIED.toString());
 
         when(userRepository.findByEmail("d.dzhos@ukma.edu.ua")).thenReturn(Optional.of(testUser));
 
@@ -354,7 +345,7 @@ public class UserServiceTest {
                 "+380980137037",
                 Role.ADMIN,
                 "admin123",
-                UserStatus.PHONE_VERIFIED);
+                UserStatus.PHONE_VERIFIED.toString());
 
         VerificationToken verificationToken = new VerificationToken(
                 1L,
@@ -372,7 +363,7 @@ public class UserServiceTest {
         ArgumentCaptor<UserEntity> userCaptor = ArgumentCaptor.forClass(UserEntity.class);
         verify(userRepository).save(userCaptor.capture());
 
-        assertEquals(UserStatus.ACTIVE, userCaptor.getValue().getUserStatus());
+        assertEquals(UserStatus.ACTIVE.toString(), userCaptor.getValue().getUserStatus());
         assertEquals(testUser.getId(), userCaptor.getValue().getId());
         assertEquals(testUser.getEmail(), userCaptor.getValue().getEmail());
         assertEquals(testUser.getPhoneNumber(), userCaptor.getValue().getPhoneNumber());
@@ -390,7 +381,7 @@ public class UserServiceTest {
                 "+380980137037",
                 Role.ADMIN,
                 "admin123",
-                UserStatus.PHONE_VERIFIED);
+                UserStatus.PHONE_VERIFIED.toString());
 
         VerificationToken verificationToken = new VerificationToken(
                 1L,
@@ -416,7 +407,7 @@ public class UserServiceTest {
                 "+380980137037",
                 Role.ADMIN,
                 "admin123",
-                UserStatus.PHONE_VERIFIED);
+                UserStatus.PHONE_VERIFIED.toString());
 
         VerificationToken verificationToken = new VerificationToken(
                 1L,
@@ -443,7 +434,7 @@ public class UserServiceTest {
                 "+380980137037",
                 Role.ADMIN,
                 "admin123",
-                UserStatus.PHONE_VERIFIED);
+                UserStatus.PHONE_VERIFIED.toString());
 
         VerificationToken verificationToken = new VerificationToken(
                 1L,
@@ -469,7 +460,7 @@ public class UserServiceTest {
                 "+380980137037",
                 Role.ADMIN,
                 "admin123",
-                UserStatus.PHONE_VERIFIED);
+                UserStatus.PHONE_VERIFIED.toString());
 
         VerificationToken verificationToken = new VerificationToken(
                 1L,
@@ -504,7 +495,7 @@ public class UserServiceTest {
                 "+380980137037",
                 Role.ADMIN,
                 "admin123",
-                UserStatus.ACTIVE);
+                UserStatus.ACTIVE.toString());
 
         VerificationToken verificationToken = new VerificationToken(
                 1L,

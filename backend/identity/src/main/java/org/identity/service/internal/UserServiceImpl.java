@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
                 requestDto.phoneNumber(),
                 requestDto.role(),
                 passwordEncoder.encode(requestDto.password()),
-                UserStatus.PENDING_VERIFICATION
+                UserStatus.PENDING_VERIFICATION.toString()
         );
 
         UserEntity savedUser = userRepository.save(newUser);
@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "User with ID '" + id + "' not found"));
 
-        UserStatus currentStatus = user.getUserStatus();
+        UserStatus currentStatus = UserStatus.valueOf(user.getUserStatus());
         UserStatus targetStatus = command.userStatus();
 
         if (!currentStatus.canTransitionTo(targetStatus)) {
@@ -146,7 +146,7 @@ public class UserServiceImpl implements UserService {
             throw new InvalidUserStateException(message);
         }
 
-        user.setUserStatus(targetStatus);
+        user.setUserStatus(targetStatus.toString());
 
         UserEntity updatedUser = userRepository.save(user);
 
@@ -176,15 +176,16 @@ public class UserServiceImpl implements UserService {
             throw new InvalidVerificationStrategyException(message);
         }
 
-        UserStatus nextStatus = strategy.getNextStatus(user.getUserStatus());
+        UserStatus currentStatus = UserStatus.valueOf(verificationToken.getUser().getUserStatus());
+        UserStatus nextStatus = strategy.getNextStatus(currentStatus);
 
-        if (!user.getUserStatus().canTransitionTo(nextStatus)) {
+        if (!currentStatus.canTransitionTo(nextStatus)) {
             String message = String.format("Illegal transition from %s to %s",
                     user.getUserStatus(), nextStatus);
             throw new InvalidUserStateException(message);
         }
 
-        user.setUserStatus(nextStatus);
+        user.setUserStatus(nextStatus.toString());
         userRepository.save(user);
         tokenRepository.delete(verificationToken);
 

@@ -32,9 +32,8 @@ public class UserEntity {
     Role role;
     @Column(nullable = false, length = 60)
     String password;
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    UserStatus userStatus;
+    String userStatus;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     List<VerificationToken> verificationTokens = new ArrayList<>();
@@ -47,13 +46,13 @@ public class UserEntity {
                       String phoneNumber,
                       Role role,
                       String password,
-                      UserStatus userStatus) {
+                      String userStatus) {
         this.id = id;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.role = role;
         this.password = password;
-        this.userStatus = userStatus != null ? userStatus : UserStatus.PENDING_VERIFICATION;
+        this.userStatus = userStatus != null ? userStatus : UserStatus.PENDING_VERIFICATION.toString();
     }
 
     public UUID getId() {
@@ -96,11 +95,11 @@ public class UserEntity {
         this.password = password;
     }
 
-    public UserStatus getUserStatus() {
+    public String getUserStatus() {
         return userStatus;
     }
 
-    public void setUserStatus(UserStatus userStatus) {
+    public void setUserStatus(String userStatus) {
         this.userStatus = userStatus;
     }
 

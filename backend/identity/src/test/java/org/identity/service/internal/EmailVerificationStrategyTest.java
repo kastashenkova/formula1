@@ -56,7 +56,7 @@ class EmailVerificationStrategyTest {
                 "+380980137037",
                 Role.ADMIN,
                 "admin123",
-                UserStatus.PHONE_VERIFIED);
+                UserStatus.PHONE_VERIFIED.toString());
 
         VerificationToken token = strategy.createVerificationToken(testUser);
 
@@ -74,7 +74,7 @@ class EmailVerificationStrategyTest {
                 "+380980137037",
                 Role.ADMIN,
                 "admin123",
-                UserStatus.PHONE_VERIFIED);
+                UserStatus.PHONE_VERIFIED.toString());
 
         VerificationToken token = new VerificationToken(
                 1L,
