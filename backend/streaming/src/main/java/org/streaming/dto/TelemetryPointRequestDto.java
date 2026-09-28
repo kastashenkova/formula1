@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.streaming.entity.TelemetryPointEntity;
 import org.streaming.validation.OnCreate;
 import org.streaming.validation.OnUpdate;
 
@@ -22,4 +23,11 @@ public record TelemetryPointRequestDto(
         @Max(groups = {OnCreate.class, OnUpdate.class}, value = 400, message = "{validation.speed.max}")
         Float speed
 ) {
+        public static TelemetryPointEntity toEntity(TelemetryPointRequestDto requestDto) {
+                return new TelemetryPointEntity (
+                        requestDto.x,
+                        requestDto.y,
+                        requestDto.timestamp,
+                        requestDto.speed);
+        }
 }
