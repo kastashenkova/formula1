@@ -91,6 +91,7 @@ public class RaceController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a certain race",
             description = "Delete a race by its id")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteRace(@PathVariable UUID id) {
         raceService.deleteRace(id);
         return ResponseEntity.noContent().build();
@@ -99,6 +100,7 @@ public class RaceController {
     @PostMapping("/{id}/driver")
     @Operation(summary = "Add driver",
             description = "Add driver to the existing race")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DriverResponseDto> addDriver(
             @PathVariable UUID id,
             @Valid @RequestBody DriverRequestDto request
@@ -117,6 +119,7 @@ public class RaceController {
     @DeleteMapping("/{raceId}/driver/{driverId}")
     @Operation(summary = "Delete driver",
             description = "Delete driver from the existing race")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDriver(@PathVariable UUID raceId, @PathVariable UUID driverId) {
         raceService.deleteDriver(raceId, driverId);
