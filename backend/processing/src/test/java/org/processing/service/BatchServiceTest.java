@@ -25,6 +25,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 public class BatchServiceTest {
@@ -113,9 +115,8 @@ public class BatchServiceTest {
 
         when(repo.findAll(anyInt(), anyInt())).thenReturn(races);
 
-        int page = 0;
-        int size = 10;
-        var response = service.getBatches(page, size);
+        Pageable pageable = PageRequest.of(0, 10);
+        var response = service.getBatches(pageable);
 
         assertNotNull(response);
         assertEquals(2, response.size());
@@ -129,9 +130,8 @@ public class BatchServiceTest {
     void getEmptyListSuccessfully() {
         when(repo.findAll(anyInt(), anyInt())).thenReturn(List.of());
 
-        int page = 0;
-        int size = 10;
-        var response = service.getBatches(page, size);
+        Pageable pageable = PageRequest.of(0, 10);
+        var response = service.getBatches(pageable);
 
         assertNotNull(response);
         assertEquals(0, response.size());

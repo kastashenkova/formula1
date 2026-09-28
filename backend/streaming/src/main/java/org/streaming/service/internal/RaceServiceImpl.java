@@ -4,6 +4,8 @@ import com.sun.jdi.request.DuplicateRequestException;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.streaming.dto.DriverRequestDto;
@@ -37,8 +39,8 @@ public class RaceServiceImpl implements RaceService {
     }
 
     @Override
-    public List<RaceResponseDto> getRaces() {
-        return raceRepository.findAll()
+    public List<RaceResponseDto> getRaces(Pageable pageable) {
+        return raceRepository.findAll(pageable)
                 .stream()
                 .map(RaceResponseDto::fromEntity)
                 .toList();

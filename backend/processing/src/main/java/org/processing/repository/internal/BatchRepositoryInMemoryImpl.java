@@ -6,9 +6,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.commons.lang3.NotImplementedException;
 import org.processing.entity.BatchEntity;
 import org.processing.repository.BatchRepository;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -34,5 +36,10 @@ public class BatchRepositoryInMemoryImpl implements BatchRepository {
                 .skip((long) page * size)
                 .limit(size)
                 .toList();
+    }
+
+    @Override
+    public List<BatchEntity> findAll(Pageable pageable) {
+        throw new NotImplementedException();
     }
 }

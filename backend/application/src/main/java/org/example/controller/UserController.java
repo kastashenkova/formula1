@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.UUID;
-
 import org.identity.command.UpdateUserStatusCommand;
 import org.identity.dto.UserLoginRequestDto;
 import org.identity.dto.UserLoginResponseDto;

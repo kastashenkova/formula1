@@ -1,6 +1,6 @@
 package org.example.controller;
 
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -26,6 +26,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.TestConstructor;
@@ -57,7 +59,7 @@ public class BatchControllerTest {
 
     @Test
     @DisplayName("Should return list with with example race session")
-    void getRaces_filledList_Success() throws Exception {
+    void getBatches_filledList_Success() throws Exception {
         BatchResponseDto batchExample = new BatchResponseDto(
                 UUID.randomUUID(),
                 "exampleRace",
@@ -66,10 +68,8 @@ public class BatchControllerTest {
                 null
         );
 
-        int page = 0;
-        int size = 10;
-
-        when(batchService.getBatches(page, size)).thenReturn(List.of(batchExample));
+        Pageable pageable = PageRequest.of(0, 10);
+        when(batchService.getBatches(pageable)).thenReturn(List.of(batchExample));
 
         mockMvc.perform(get("/batches")
                         .param("page", "0")
@@ -78,16 +78,15 @@ public class BatchControllerTest {
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(1));
 
-        verify(batchService, times(1)).getBatches(page, size);
+        verify(batchService, times(1)).getBatches(pageable);
     }
 
     @Test
     @DisplayName("Should return empty list")
-    void getRaces_emptyList_Success() throws Exception {
-        int page = 0;
-        int size = 10;
+    void getBatches_emptyList_Success() throws Exception {
+        Pageable pageable = PageRequest.of(0, 10);
 
-        when(batchService.getBatches(page, size)).thenReturn(List.of());
+        when(batchService.getBatches(pageable)).thenReturn(List.of());
 
         mockMvc.perform(get("/batches")
                         .param("page", "0")
@@ -96,16 +95,16 @@ public class BatchControllerTest {
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$").isEmpty());
 
-        verify(batchService, times(1)).getBatches(page, size);
+        verify(batchService, times(1)).getBatches(pageable);
     }
 
     @Test
     @DisplayName("Should return list paginated with default parameters")
-    void getRaces_defaultParameters_Success() throws Exception {
+    void getBatches_defaultParameters_Success() throws Exception {
         mockMvc.perform(get("/batches"))
                 .andExpect(status().isOk());
 
-        verify(batchService, times(1)).getBatches(anyInt(), anyInt());
+        verify(batchService, times(1)).getBatches(any(Pageable.class));
     }
 
     @Test
