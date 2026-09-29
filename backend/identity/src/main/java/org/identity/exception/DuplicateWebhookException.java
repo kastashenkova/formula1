@@ -1,4 +1,4 @@
-package org.streaming.exception;
+package org.identity.exception;
 
 public class DuplicateWebhookException extends DomainException {
 

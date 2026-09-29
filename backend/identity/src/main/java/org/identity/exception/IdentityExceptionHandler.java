@@ -124,4 +124,14 @@ public class IdentityExceptionHandler {
                 "An unexpected internal error occurred"
         );
     }
+
+    @ExceptionHandler(DuplicateWebhookException.class)
+    public ProblemDetail handleDuplicateWebhook(DuplicateWebhookException ex) {
+        return buildProblemDetail(
+                HttpStatus.CONFLICT,
+                "Resource conflict",
+                "https://identity.ukma.edu.ua/errors/conflict",
+                ex.getMessage()
+        );
+    }
 }
