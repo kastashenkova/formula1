@@ -1,6 +1,7 @@
 package org.identity.repository;
 
 import java.util.Optional;
+import java.util.UUID;
 import org.identity.entity.VerificationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

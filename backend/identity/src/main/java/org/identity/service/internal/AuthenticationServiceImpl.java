@@ -14,6 +14,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtUtil jwtUtil;
@@ -34,13 +36,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         UserEntity user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
 
-        if (user.getUserStatus() == UserStatus.DEACTIVATED) {
+        if (Objects.equals(user.getUserStatus(), UserStatus.DEACTIVATED.toString())) {
             throw new DisabledException("User is deactivated and cannot log in");
         }
 
-        if (user.getUserStatus() == UserStatus.PENDING_VERIFICATION
-                || user.getUserStatus() == UserStatus.EMAIL_VERIFIED
-                || user.getUserStatus() == UserStatus.PHONE_VERIFIED) {
+        if (Objects.equals(user.getUserStatus(), UserStatus.PENDING_VERIFICATION.toString())
+                || Objects.equals(user.getUserStatus(), UserStatus.EMAIL_VERIFIED.toString())
+                || Objects.equals(user.getUserStatus(), UserStatus.PHONE_VERIFIED.toString())) {
             throw new DisabledException("User is not active. Please, verify your email and phone number");
         }
 

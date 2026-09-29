@@ -34,7 +34,7 @@ public record UserRegistrationRequestDto(
         String phoneNumber,
 
         @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "{validation.role.not-null}")
-        Role role,
+        String role,
 
         @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "{validation.password.not-blank}")
         @Length(groups = {OnCreate.class, OnUpdate.class}, min = 8, max = 35, message = "{validation.password.size}")

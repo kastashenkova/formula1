@@ -2,8 +2,6 @@ package org.identity.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import org.identity.enums.TokenType;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -26,10 +23,9 @@ public class VerificationToken {
     UserEntity user;
     @Column(nullable = false, unique = true)
     String token;
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 18)
-    TokenType tokenType;
-    @Column(nullable = false, length = 5)
+    String tokenType;
+    @Column(nullable = false)
     LocalDateTime expiryDate;
 
     protected VerificationToken() {
@@ -38,7 +34,7 @@ public class VerificationToken {
     public VerificationToken(Long id,
                              UserEntity user,
                              String token,
-                             TokenType tokenType,
+                             String tokenType,
                              LocalDateTime expiryDate) {
         this.id = id;
         this.user = user;
@@ -71,11 +67,11 @@ public class VerificationToken {
         this.token = token;
     }
 
-    public TokenType getTokenType() {
+    public String getTokenType() {
         return tokenType;
     }
 
-    public void setTokenType(TokenType tokenType) {
+    public void setTokenType(String tokenType) {
         this.tokenType = tokenType;
     }
 

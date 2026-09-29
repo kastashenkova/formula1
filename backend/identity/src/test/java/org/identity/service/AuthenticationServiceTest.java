@@ -62,9 +62,9 @@ class AuthenticationServiceTest {
         UserEntity existingUser = new UserEntity(
                 userLoginRequestDto.email(),
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "hashedPass",
-                UserStatus.ACTIVE);
+                UserStatus.ACTIVE.toString());
 
         when(userRepository.findByEmail(userLoginRequestDto.email())).thenReturn(Optional.of(existingUser));
 
@@ -108,9 +108,9 @@ class AuthenticationServiceTest {
         UserEntity activeUser = new UserEntity(
                 request.email(),
                 "+380980137037",
-                Role.USER,
+                Role.USER.toString(),
                 "user123",
-                UserStatus.ACTIVE);
+                UserStatus.ACTIVE.toString());
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.of(activeUser));
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
@@ -131,9 +131,9 @@ class AuthenticationServiceTest {
         UserEntity deactivatedUser = new UserEntity(
                 request.email(),
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
-                UserStatus.DEACTIVATED);
+                UserStatus.DEACTIVATED.toString());
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.of(deactivatedUser));
 
         assertThrows(DisabledException.class, () -> service.authenticate(request));
@@ -150,9 +150,9 @@ class AuthenticationServiceTest {
         UserEntity notVerifiedUser = new UserEntity(
                 request.email(),
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
-                UserStatus.EMAIL_VERIFIED);
+                UserStatus.EMAIL_VERIFIED.toString());
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.of(notVerifiedUser));
 
         assertThrows(DisabledException.class, () -> service.authenticate(request));
@@ -169,9 +169,9 @@ class AuthenticationServiceTest {
         UserEntity notVerifiedUser = new UserEntity(
                 request.email(),
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
-                UserStatus.PHONE_VERIFIED);
+                UserStatus.PHONE_VERIFIED.toString());
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.of(notVerifiedUser));
 
         assertThrows(DisabledException.class, () -> service.authenticate(request));

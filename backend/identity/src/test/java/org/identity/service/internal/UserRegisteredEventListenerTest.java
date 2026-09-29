@@ -9,6 +9,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.util.UUID;
 import org.identity.dto.UserRegisteredEvent;
+import org.identity.entity.UserEntity;
+import org.identity.entity.VerificationToken;
 import org.identity.enums.Role;
 import org.identity.enums.UserStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,18 +28,28 @@ class UserRegisteredEventListenerTest {
 
     private UserRegisteredEventListener listener;
     private UserRegisteredEvent testEvent;
+    private UserEntity testUser;
 
     @BeforeEach
     void setUp() {
         listener = new UserRegisteredEventListener(
                 emailVerificationStrategy, phoneVerificationStrategy);
 
+        testUser = new UserEntity(
+                null,
+                "k.astashenkova@ukma.edu.ua",
+                "+380980137037",
+                Role.USER.toString(),
+                "admin123",
+                UserStatus.PENDING_VERIFICATION.toString()
+        );
+
         testEvent = new UserRegisteredEvent(
                 UUID.randomUUID(),
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.USER,
-                UserStatus.PENDING_VERIFICATION,
+                Role.USER.toString(),
+                UserStatus.PENDING_VERIFICATION.toString(),
                 "email-token",
                 "phone-token"
         );

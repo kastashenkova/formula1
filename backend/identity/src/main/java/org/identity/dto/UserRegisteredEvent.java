@@ -9,8 +9,8 @@ public record UserRegisteredEvent(
         UUID id,
         String email,
         String phoneNumber,
-        Role role,
-        UserStatus userStatus,
+        String role,
+        String userStatus,
         String emailVerificationToken,
         String phoneVerificationToken
 ) {
