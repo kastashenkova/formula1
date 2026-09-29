@@ -42,7 +42,7 @@ public class EmailVerificationStrategy implements VerificationStrategy {
                 null,
                 user,
                 token,
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 expirationTime
         );
     }

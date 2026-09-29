@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import org.identity.enums.Role;
-import org.identity.enums.UserStatus;
 
 @Entity
 @Table(name = "users")
@@ -27,14 +26,12 @@ public class UserEntity {
     String email;
     @Column(nullable = false, length = 13)
     String phoneNumber;
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 5)
-    Role role;
+    String role;
     @Column(nullable = false, length = 60)
     String password;
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    UserStatus userStatus;
+    String userStatus;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     List<VerificationToken> verificationTokens = new ArrayList<>();
@@ -44,14 +41,28 @@ public class UserEntity {
 
     public UserEntity(String email,
                       String phoneNumber,
-                      Role role,
+                      String role,
                       String password,
-                      UserStatus userStatus) {
+                      String userStatus) {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.role = role;
         this.password = password;
-        this.userStatus = userStatus != null ? userStatus : UserStatus.PENDING_VERIFICATION;
+        this.userStatus = userStatus;
+    }
+
+    public UserEntity(UUID id,
+                      String email,
+                      String phoneNumber,
+                      String role,
+                      String password,
+                      String userStatus) {
+        this.id = id;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+        this.password = password;
+        this.userStatus = userStatus;
     }
 
     public UUID getId() {
@@ -78,11 +89,11 @@ public class UserEntity {
         this.phoneNumber = phoneNumber;
     }
 
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
     }
 
@@ -94,11 +105,11 @@ public class UserEntity {
         this.password = password;
     }
 
-    public UserStatus getUserStatus() {
+    public String getUserStatus() {
         return userStatus;
     }
 
-    public void setUserStatus(UserStatus userStatus) {
+    public void setUserStatus(String userStatus) {
         this.userStatus = userStatus;
     }
 
@@ -108,11 +119,6 @@ public class UserEntity {
 
     public void setVerificationTokens(List<VerificationToken> verificationTokens) {
         this.verificationTokens = verificationTokens;
-    }
-
-    public void addVerificationToken(VerificationToken token) {
-        verificationTokens.add(token);
-        token.setUser(this);
     }
 
     public void removeVerificationToken(VerificationToken token) {
