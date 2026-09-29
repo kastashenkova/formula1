@@ -1,20 +1,16 @@
 package org.processing.service.internal;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 import org.processing.dto.BatchRequestDto;
 import org.processing.dto.BatchResponseDto;
 import org.processing.entity.BatchEntity;
 import org.processing.dto.BatchCreatedEvent;
-import org.processing.exception.DuplicateBatchException;
 import org.processing.repository.BatchRepository;
 import org.processing.service.BatchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,30 +29,20 @@ public class BatchServiceImpl implements BatchService {
     @Override
     @Transactional
     public BatchResponseDto uploadBatch(BatchRequestDto requestDto) {
-        UUID id = UUID.randomUUID();
-
-        if (batchRepository.findById(id).isPresent()) {
-            throw new DuplicateBatchException("Batch with id " + id + " already exists");
-        }
-
-        BatchEntity newBatch = new BatchEntity(
-                id,
-                requestDto.raceName(),
-                requestDto.year(),
+        var newBatch = new BatchEntity(
+                null,
                 LocalDateTime.now(),
-                null);
-
-        BatchEntity savedBatch = batchRepository.save(newBatch);
+                null,
+                null
+        );
+        var savedBatch = batchRepository.save(newBatch);
 
         eventPublisher.publishEvent(new BatchCreatedEvent(
-                savedBatch.batchId(),
-                savedBatch.raceName(),
-                savedBatch.year(),
-                savedBatch.createdAt(),
-                savedBatch.deletedAt()
+                savedBatch.getBatchId(),
+                newBatch.getCreatedAt()
         ));
 
-        log.info("Created batch {}", savedBatch.batchId());
+        log.info("Created batch {}", savedBatch.getBatchId());
 
         return mapToResponse(savedBatch);
     }
@@ -69,11 +55,9 @@ public class BatchServiceImpl implements BatchService {
 
     private BatchResponseDto mapToResponse(BatchEntity batchEntity) {
         return new BatchResponseDto(
-                batchEntity.batchId(),
-                batchEntity.raceName(),
-                batchEntity.year(),
-                batchEntity.createdAt(),
-                batchEntity.deletedAt()
+                batchEntity.getBatchId(),
+                batchEntity.getCreatedAt(),
+                batchEntity.getDeletedAt()
         );
     }
 }

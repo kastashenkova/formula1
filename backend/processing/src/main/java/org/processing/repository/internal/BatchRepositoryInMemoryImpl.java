@@ -21,7 +21,7 @@ public class BatchRepositoryInMemoryImpl implements BatchRepository {
 
     @Override
     public BatchEntity save(BatchEntity batch) {
-        storage.put(batch.batchId(), batch);
+        storage.put(batch.getBatchId(), batch);
         return batch;
     }
 
@@ -33,7 +33,7 @@ public class BatchRepositoryInMemoryImpl implements BatchRepository {
     @Override
     public List<BatchEntity> findAll(int page, int size) {
         return storage.values().stream()
-                .sorted(Comparator.comparing(BatchEntity::createdAt))
+                .sorted(Comparator.comparing(BatchEntity::getCreatedAt))
                 .skip((long) page * size)
                 .limit(size)
                 .toList();

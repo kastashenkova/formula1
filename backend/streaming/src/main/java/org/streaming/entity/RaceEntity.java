@@ -21,7 +21,7 @@ public class RaceEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID raceId;
 
-    @Column(nullable = false, length = 150, unique = true)
+    @Column(nullable = false, length = 150)
     private String raceName;
 
     @Column(nullable = false)
