@@ -11,9 +11,9 @@ public record UserResponseDto(
         String email,
         @JsonProperty("phone_number")
         String phoneNumber,
-        Role role,
+        String role,
         @JsonProperty("user_status")
-        UserStatus userStatus
+        String userStatus
 ) {
         public static UserResponseDto fromEntity(UserEntity userEntity) {
                 return new UserResponseDto(
