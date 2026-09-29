@@ -1,7 +1,8 @@
-package org.streaming.service;
+package org.identity.service;
 
-import org.streaming.dto.WebhookRequestDto;
-import org.streaming.dto.WebhookResponseDto;
+
+import org.identity.dto.WebhookRequestDto;
+import org.identity.dto.WebhookResponseDto;
 
 public interface WebhookService {
 

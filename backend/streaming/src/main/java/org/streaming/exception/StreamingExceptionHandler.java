@@ -29,16 +29,6 @@ public class StreamingExceptionHandler {
         return pd;
     }
 
-    @ExceptionHandler({DuplicateWebhookException.class, DuplicateRaceException.class})
-    public ProblemDetail handleDuplicate(DomainException ex) {
-        return buildProblemDetail(
-                HttpStatus.CONFLICT,
-                "Resource conflict",
-                "https://streaming.ukma.edu.ua/errors/conflict",
-                ex.getMessage()
-        );
-    }
-
     @ExceptionHandler({NoResourceFoundException.class,
             EntityNotFoundException.class,
             NoHandlerFoundException.class})

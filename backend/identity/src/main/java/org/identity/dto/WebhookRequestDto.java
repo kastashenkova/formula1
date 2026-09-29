@@ -1,8 +1,8 @@
-package org.streaming.dto;
+package org.identity.dto;
 
-import org.streaming.enums.WebhookTypes;
-import org.streaming.validation.OnCreate;
-import org.streaming.validation.OnUpdate;
+import org.identity.enums.WebhookTypes;
+import org.identity.validation.OnCreate;
+import org.identity.validation.OnUpdate;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
