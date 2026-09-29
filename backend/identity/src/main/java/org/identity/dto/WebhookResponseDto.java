@@ -1,9 +1,9 @@
-package org.streaming.dto;
+package org.identity.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
-import org.streaming.enums.WebhookTypes;
+import org.identity.enums.WebhookTypes;
 
 public record WebhookResponseDto(
         @JsonFormat(shape = JsonFormat.Shape.STRING)
