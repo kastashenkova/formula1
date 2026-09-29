@@ -2,6 +2,8 @@ package org.streaming.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import org.streaming.entity.TelemetryPointEntity;
 import org.streaming.validation.OnCreate;
 import org.streaming.validation.OnUpdate;
 
@@ -13,6 +15,13 @@ public record TelemetryPointRequestDto(
         Integer y,
 
         @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "{validation.timestamp.not-blank}")
-        String timestamp
+        LocalDateTime timestamp
 ) {
+        public static TelemetryPointEntity toEntity(TelemetryPointRequestDto requestDto) {
+                return new TelemetryPointEntity (
+                        requestDto.x,
+                        requestDto.y,
+                        requestDto.timestamp
+                );
+        }
 }

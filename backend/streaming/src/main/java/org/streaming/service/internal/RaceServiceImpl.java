@@ -84,7 +84,7 @@ public class RaceServiceImpl implements RaceService {
                 .orElseThrow(() -> new EntityNotFoundException("Race with id: " + raceId + " not found"));
 
         DriverEntity driverEntity = DriverRequestDto.toEntity(request);
-        raceEntity.addDriver(DriverRequestDto.toEntity(request));
+        raceEntity.addDriver(driverEntity);
         DriverEntity savedDriver = driverRepository.save(driverEntity);
 
         return DriverResponseDto.fromEntity(savedDriver);
@@ -111,7 +111,8 @@ public class RaceServiceImpl implements RaceService {
                 .orElseThrow(() -> new EntityNotFoundException("Driver with id: " + driverId + " not found"));
 
         if (!driver.getRace().equals(race)) {
-            String message = String.format("Driver with id %s does not belong to this Race", driverId);
+            String message = String.format("Driver with id %s does not belong to the Race with id %s",
+                    driverId, raceId);
             throw new IllegalArgumentException(message);
         }
 
