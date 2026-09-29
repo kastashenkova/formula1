@@ -50,11 +50,6 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     public RaceResponseDto addRace(RaceRequestDto raceRequestDto) {
-        if (raceRepository.existsByRaceName(raceRequestDto.raceName())) {
-            String message = String.format("Race with name %s already exists", raceRequestDto.raceName());
-            throw new DuplicateRaceException(message);
-        }
-
         RaceEntity race = RaceRequestDto.toEntity(raceRequestDto);
         RaceEntity saved = raceRepository.save(race);
 

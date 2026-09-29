@@ -36,7 +36,7 @@ public class StreamingExceptionHandler {
         return buildProblemDetail(
                 HttpStatus.NOT_FOUND,
                 "Entity or resource not found",
-                "https://streaming-gateway.ukma.edu.ua/errors/not-found",
+                "https://streaming.ukma.edu.ua/errors/not-found",
                 ex.getMessage()
         );
     }
@@ -46,7 +46,7 @@ public class StreamingExceptionHandler {
         ProblemDetail pd = buildProblemDetail(
                 HttpStatus.BAD_REQUEST,
                 "Validation failed",
-                "https://streaming-gateway.ukma.edu.ua/errors/validation-error",
+                "https://streaming.ukma.edu.ua/errors/validation-error",
                 "Validation failed for one or more fields"
         );
 
@@ -68,7 +68,7 @@ public class StreamingExceptionHandler {
         return buildProblemDetail(
                 HttpStatus.BAD_REQUEST,
                 "Bad request or business rule error",
-                "https://streaming-gateway.ukma.edu.ua/errors/bad-request",
+                "https://streaming.ukma.edu.ua/errors/bad-request",
                 ex.getMessage()
         );
     }
@@ -78,7 +78,7 @@ public class StreamingExceptionHandler {
         return buildProblemDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Internal server error",
-                "https://streaming-gateway.ukma.edu.ua/errors/internal-server-error",
+                "https://streaming.ukma.edu.ua/errors/internal-server-error",
                 "An unexpected internal error occurred"
         );
     }
