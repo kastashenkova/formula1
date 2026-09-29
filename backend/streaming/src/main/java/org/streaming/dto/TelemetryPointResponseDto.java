@@ -1,7 +1,8 @@
 package org.streaming.dto;
 
-import java.time.LocalDateTime;
 import org.streaming.entity.TelemetryPointEntity;
+
+import java.time.LocalDateTime;
 
 public record TelemetryPointResponseDto(
         Integer x,
