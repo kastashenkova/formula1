@@ -316,6 +316,7 @@ public class UserServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         UserEntity testUser = new UserEntity(
+                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
                 Role.ADMIN.toString(),

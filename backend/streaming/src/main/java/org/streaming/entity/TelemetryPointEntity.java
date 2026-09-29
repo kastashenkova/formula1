@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -19,13 +20,11 @@ public class TelemetryPointEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(nullable = false)
-    private Float x;
+    private Integer x;
     @Column(nullable = false)
-    private Float y;
+    private Integer y;
     @Column(nullable = false)
-    private String timestamp;
-    @Column(nullable = false)
-    private Float speed;
+    private LocalDateTime timestamp;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "driver_id", nullable = false)
@@ -34,11 +33,10 @@ public class TelemetryPointEntity {
     protected TelemetryPointEntity() {
     }
 
-    public TelemetryPointEntity(Float x, Float y, String timestamp, Float speed, DriverEntity driver) {
+    public TelemetryPointEntity(Integer x, Integer y, LocalDateTime timestamp, DriverEntity driver) {
         this.x = x;
         this.y = y;
         this.timestamp = timestamp;
-        this.speed = speed;
         this.driver = driver;
     }
 
@@ -50,36 +48,28 @@ public class TelemetryPointEntity {
         this.id = id;
     }
 
-    public Float getX() {
+    public Integer getX() {
         return x;
     }
 
-    public void setX(Float x) {
+    public void setX(Integer x) {
         this.x = x;
     }
 
-    public Float getY() {
+    public Integer getY() {
         return y;
     }
 
-    public void setY(Float y) {
+    public void setY(Integer y) {
         this.y = y;
     }
 
-    public String getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public Float getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(Float speed) {
-        this.speed = speed;
     }
 
     public DriverEntity getDriver() {
