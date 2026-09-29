@@ -1,10 +1,17 @@
 package org.streaming.service.internal;
 
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.UUID;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-import org.streaming.dto.*;
+import org.springframework.transaction.annotation.Transactional;
+import org.streaming.dto.DriverRequestDto;
+import org.streaming.dto.DriverResponseDto;
+import org.streaming.dto.TelemetryPointRequestDto;
+import org.streaming.dto.TelemetryPointResponseDto;
 import org.streaming.entity.DriverEntity;
 import org.streaming.entity.TelemetryPointEntity;
 import org.streaming.repository.DriverRepository;
@@ -12,8 +19,9 @@ import org.streaming.repository.TelemetryPointRepository;
 import org.streaming.service.DriverService;
 
 @Service
+@Transactional
 public class DriverServiceImpl implements DriverService {
-
+    private static final Logger log = LoggerFactory.getLogger(DriverServiceImpl.class);
     private final DriverRepository driverRepository;
     private final TelemetryPointRepository telemetryPointRepository;
 
@@ -24,19 +32,19 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public DriverResponseDto getDriver(UUID driverId) {
-        DriverEntity driver = driverRepository.findById(driverId)
+        DriverEntity driver = driverRepository.findByIdWithDetails(driverId)
                 .orElseThrow(() -> new EntityNotFoundException("Driver with id " + driverId + " not found"));
 
         return DriverResponseDto.fromEntity(driver);
     }
 
     @Override
-    public List<DriverResponseDto> getDrivers() {
-        return driverRepository.findAll()
-                .stream()
-                .map(DriverResponseDto::fromEntity)
-                .toList();
+    @Transactional(readOnly = true)
+    public Page<DriverResponseDto> getDrivers(Pageable pageable) {
+        return driverRepository.findAllWithDetails(pageable)
+                .map(DriverResponseDto::fromEntity);
     }
 
     @Override
@@ -44,18 +52,22 @@ public class DriverServiceImpl implements DriverService {
         DriverEntity driver = DriverRequestDto.toEntity(driverRequestDto);
         DriverEntity saved = driverRepository.save(driver);
 
+        log.info("Created driver {}", saved.getId());
+
         return DriverResponseDto.fromEntity(saved);
     }
 
     @Override
     public DriverResponseDto updateDriver(UUID id, DriverRequestDto driverRequestDto) {
-        DriverEntity driver = driverRepository.findById(id)
+        DriverEntity driver = driverRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new EntityNotFoundException("Driver with id " + id + " not found"));
 
         driver.setDriverNumber(driverRequestDto.driverNumber());
         driver.setFullName(driverRequestDto.fullName());
 
         DriverEntity saved = driverRepository.save(driver);
+
+        log.info("Updated driver {}", saved.getId());
 
         return DriverResponseDto.fromEntity(saved);
     }
@@ -77,18 +89,19 @@ public class DriverServiceImpl implements DriverService {
         driver.addTelemetryPoint(telemetryPointEntity);
         TelemetryPointEntity savedPoint = telemetryPointRepository.save(telemetryPointEntity);
 
+        log.info("Added telemetry point {}", savedPoint.getId());
+
         return TelemetryPointResponseDto.fromEntity(savedPoint);
     }
 
     @Override
-    public List<TelemetryPointResponseDto> getTelemetryPoints(UUID driverId) {
+    @Transactional(readOnly = true)
+    public Page<TelemetryPointResponseDto> getTelemetryPoints(UUID driverId, Pageable pageable) {
         DriverEntity driver = driverRepository.findById(driverId)
                 .orElseThrow(() -> new EntityNotFoundException("Driver with id " + driverId + " not found"));
 
-        return telemetryPointRepository.findAllByDriverOrderByTimestamp(driver)
-                .stream()
-                .map(TelemetryPointResponseDto::fromEntity)
-                .toList();
+        return telemetryPointRepository.findAllWithDetailsByDriverOrderByTimestamp(driver, pageable)
+                .map(TelemetryPointResponseDto::fromEntity);
     }
 
     @Override

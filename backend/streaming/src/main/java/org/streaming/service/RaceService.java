@@ -1,7 +1,8 @@
 package org.streaming.service;
 
-import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.streaming.dto.DriverRequestDto;
 import org.streaming.dto.DriverResponseDto;
 import org.streaming.dto.RaceRequestDto;
@@ -9,11 +10,11 @@ import org.streaming.dto.RaceResponseDto;
 
 public interface RaceService {
     RaceResponseDto getRace(UUID raceId);
-    List<RaceResponseDto> getRaces();
+    Page<RaceResponseDto> getRaces(Pageable pageable);
     RaceResponseDto addRace(RaceRequestDto raceRequestDto);
     RaceResponseDto updateRace(UUID id, RaceRequestDto raceRequestDto);
     void deleteRace(UUID id);
     DriverResponseDto addDriver(UUID raceId, DriverRequestDto request);
-    List<DriverResponseDto> getDrivers(UUID raceId);
+    Page<DriverResponseDto> getDrivers(UUID raceId, Pageable pageable);
     void deleteDriver(UUID raceId, UUID driverId);
 }

@@ -7,8 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
-
 import org.identity.entity.UserEntity;
 import org.identity.entity.VerificationToken;
 import org.identity.enums.Role;
@@ -81,7 +79,7 @@ class EmailVerificationStrategyTest {
                 TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now());
 
-        strategy.sendMessage("k.astashenkova@ukma.edu.ua", token);
+        strategy.sendMessage("k.astashenkova@ukma.edu.ua", token.getToken());
 
         ArgumentCaptor<SimpleMailMessage> messageCaptor = ArgumentCaptor.forClass(SimpleMailMessage.class);
         verify(mailSender).send(messageCaptor.capture());

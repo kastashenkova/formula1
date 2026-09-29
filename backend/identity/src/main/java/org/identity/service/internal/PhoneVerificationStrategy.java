@@ -1,17 +1,16 @@
 package org.identity.service.internal;
 
-import static reactor.netty.http.HttpConnectionLiveness.log;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 import org.identity.entity.UserEntity;
 import org.identity.entity.VerificationToken;
 import org.identity.enums.TokenType;
 import org.identity.enums.UserStatus;
 import org.identity.exception.InvalidUserStateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class PhoneVerificationStrategy implements VerificationStrategy {
+    private static final Logger log = LoggerFactory.getLogger(PhoneVerificationStrategy.class);
 
     @Value("${phone.token.expiry.date}")
     private long expiryHours;
@@ -62,7 +62,7 @@ public class PhoneVerificationStrategy implements VerificationStrategy {
     }
 
     @Override
-    public void sendMessage(String to, VerificationToken token) {
+    public void sendMessage(String to, String token) {
         String url = String.format("%s/%s/messages", whatsappApiUrl, phoneNumberId);
 
         HttpHeaders headers = new HttpHeaders();
@@ -76,7 +76,7 @@ public class PhoneVerificationStrategy implements VerificationStrategy {
                 "to", recipient,
                 "type", "template",
                 "template", Map.of(
-                        "name", "verificationlink",
+                        "name", "verificaion_link",
                         "language", Map.of("code", "en"),
                         "components", List.of(Map.of(
                                 "type", "button",
@@ -84,7 +84,7 @@ public class PhoneVerificationStrategy implements VerificationStrategy {
                                 "index", "0",
                                 "parameters", List.of(Map.of(
                                         "type", "text",
-                                        "text", token.getToken()
+                                        "text", token
                                 ))
                         ))
                 )

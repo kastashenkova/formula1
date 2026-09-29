@@ -1,8 +1,5 @@
 package org.identity.service.internal;
 
-import org.identity.entity.VerificationToken;
-import org.identity.exception.InvalidTokenException;
-import org.identity.repository.TokenRepository;
 import org.identity.dto.UserRegisteredEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,62 +9,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserRegisteredEventListener {
     private static final Logger log = LoggerFactory.getLogger(UserRegisteredEventListener.class);
-    private final TokenRepository tokenRepository;
     private final EmailVerificationStrategy emailVerificationStrategy;
     private final PhoneVerificationStrategy phoneVerificationStrategy;
 
-    UserRegisteredEventListener(TokenRepository tokenRepository,
-                                EmailVerificationStrategy emailVerificationStrategy,
+    UserRegisteredEventListener(EmailVerificationStrategy emailVerificationStrategy,
                                 PhoneVerificationStrategy phoneVerificationStrategy) {
-        this.tokenRepository = tokenRepository;
         this.emailVerificationStrategy = emailVerificationStrategy;
         this.phoneVerificationStrategy = phoneVerificationStrategy;
     }
 
     @ApplicationModuleListener
-    public void onUserRegistered(UserRegisteredEvent event) {
-        log.info("UserRegisteredEvent received for user {}", event.id());
+    void sendEmailVerification(UserRegisteredEvent event) {
+        log.info("Sending email verification for user {}", event.id());
+        emailVerificationStrategy.sendMessage(event.email(), event.emailVerificationToken());
+    }
 
-        try {
-            VerificationToken emailToken = tokenRepository
-                    .findByToken(event.emailVerificationToken())
-                    .orElseThrow(() ->
-                            new InvalidTokenException(
-                                    "Email verification token not found"
-                            )
-                    );
-
-            emailVerificationStrategy.sendMessage(
-                    event.email(),
-                    emailToken
-            );
-        } catch (Exception e) {
-            log.error(
-                    "Failed to send email verification for user {}",
-                    event.id(),
-                    e
-            );
-        }
-
-        try {
-            VerificationToken phoneToken = tokenRepository
-                    .findByToken(event.phoneVerificationToken())
-                    .orElseThrow(() ->
-                            new InvalidTokenException(
-                                    "Phone verification token not found"
-                            )
-                    );
-
-            phoneVerificationStrategy.sendMessage(
-                    event.phoneNumber(),
-                    phoneToken
-            );
-        } catch (Exception e) {
-            log.error(
-                    "Failed to send phone verification for user {}",
-                    event.id(),
-                    e
-            );
-        }
+    @ApplicationModuleListener
+    void sendPhoneVerification(UserRegisteredEvent event) {
+        log.info("Sending phone verification for user {}", event.id());
+        phoneVerificationStrategy.sendMessage(event.phoneNumber(), event.phoneVerificationToken());
     }
 }

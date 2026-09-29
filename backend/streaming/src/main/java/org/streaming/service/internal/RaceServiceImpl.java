@@ -1,9 +1,11 @@
 package org.streaming.service.internal;
 
-import com.sun.jdi.request.DuplicateRequestException;
 import jakarta.persistence.EntityNotFoundException;
-import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.streaming.dto.DriverRequestDto;
@@ -12,13 +14,15 @@ import org.streaming.dto.RaceRequestDto;
 import org.streaming.dto.RaceResponseDto;
 import org.streaming.entity.DriverEntity;
 import org.streaming.entity.RaceEntity;
+import org.streaming.exception.DuplicateRaceException;
 import org.streaming.repository.DriverRepository;
 import org.streaming.repository.RaceRepository;
 import org.streaming.service.RaceService;
 
 @Service
+@Transactional
 public class RaceServiceImpl implements RaceService {
-
+    private static final Logger log = LoggerFactory.getLogger(RaceServiceImpl.class);
     private final RaceRepository raceRepository;
 
     private final DriverRepository driverRepository;
@@ -29,43 +33,47 @@ public class RaceServiceImpl implements RaceService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public RaceResponseDto getRace(UUID raceId) {
-        RaceEntity raceEntity = raceRepository.findById(raceId)
+        RaceEntity raceEntity = raceRepository.findByIdWithDetails(raceId)
                 .orElseThrow(() -> new EntityNotFoundException("Race with id: " + raceId + " not found"));
 
         return RaceResponseDto.fromEntity(raceEntity);
     }
 
     @Override
-    public List<RaceResponseDto> getRaces() {
-        return raceRepository.findAll()
-                .stream()
-                .map(RaceResponseDto::fromEntity)
-                .toList();
+    @Transactional(readOnly = true)
+    public Page<RaceResponseDto> getRaces(Pageable pageable) {
+        return raceRepository.findAllWithDetails(pageable)
+                .map(RaceResponseDto::fromEntity);
     }
 
     @Override
     public RaceResponseDto addRace(RaceRequestDto raceRequestDto) {
         if (raceRepository.existsByRaceName(raceRequestDto.raceName())) {
             String message = String.format("Race with name %s already exists", raceRequestDto.raceName());
-            throw new DuplicateRequestException(message);
+            throw new DuplicateRaceException(message);
         }
 
         RaceEntity race = RaceRequestDto.toEntity(raceRequestDto);
         RaceEntity saved = raceRepository.save(race);
+
+        log.info("Created race {}", saved.getRaceId());
 
         return RaceResponseDto.fromEntity(saved);
     }
 
     @Override
     public RaceResponseDto updateRace(UUID id, RaceRequestDto raceRequestDto) {
-        RaceEntity raceEntity = raceRepository.findById(id)
+        RaceEntity raceEntity = raceRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new EntityNotFoundException("Race with id: " + id + " not found"));
 
         raceEntity.setRaceName(raceRequestDto.raceName());
         raceEntity.setRaceDate(raceRequestDto.raceDate());
 
         raceRepository.save(raceEntity);
+
+        log.info("Updated race {}", raceEntity.getRaceId());
 
         return RaceResponseDto.fromEntity(raceEntity);
     }
@@ -87,19 +95,19 @@ public class RaceServiceImpl implements RaceService {
         raceEntity.addDriver(driverEntity);
         DriverEntity savedDriver = driverRepository.save(driverEntity);
 
+        log.info("Added driver {}", savedDriver.getId());
+
         return DriverResponseDto.fromEntity(savedDriver);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<DriverResponseDto> getDrivers(UUID raceId) {
+    public Page<DriverResponseDto> getDrivers(UUID raceId, Pageable pageable) {
         RaceEntity raceEntity = raceRepository.findById(raceId)
                 .orElseThrow(() -> new EntityNotFoundException("Race with id: " + raceId + " not found"));
 
-        return driverRepository.findByRaceOrderByFullName(raceEntity)
-                .stream()
-                .map(DriverResponseDto::fromEntity)
-                .toList();
+        return driverRepository.findByRaceOrderByFullName(raceEntity, pageable)
+                .map(DriverResponseDto::fromEntity);
     }
 
     @Override
