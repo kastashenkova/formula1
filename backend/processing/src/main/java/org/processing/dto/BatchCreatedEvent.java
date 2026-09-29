@@ -5,9 +5,6 @@ import java.util.UUID;
 
 public record BatchCreatedEvent(
         UUID batchId,
-        String raceName,
-        Integer year,
-        LocalDateTime createdAt,
-        LocalDateTime deletedAt
+        LocalDateTime createdAt
 ) {
 }
