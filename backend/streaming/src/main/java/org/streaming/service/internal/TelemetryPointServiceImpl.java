@@ -53,7 +53,6 @@ public class TelemetryPointServiceImpl implements TelemetryPointService {
         telemetryPointEntity.setX(requestDto.x());
         telemetryPointEntity.setY(requestDto.y());
         telemetryPointEntity.setTimestamp(requestDto.timestamp());
-        telemetryPointEntity.setSpeed(requestDto.speed());
 
         telemetryPointRepository.save(telemetryPointEntity);
 

@@ -33,11 +33,10 @@ public class TelemetryPointEntity {
     protected TelemetryPointEntity() {
     }
 
-    public TelemetryPointEntity(Integer x, Integer y, LocalDateTime timestamp, DriverEntity driver) {
+    public TelemetryPointEntity(Integer x, Integer y, LocalDateTime timestamp) {
         this.x = x;
         this.y = y;
         this.timestamp = timestamp;
-        this.driver = driver;
     }
 
     public UUID getId() {
