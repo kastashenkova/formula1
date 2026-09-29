@@ -60,8 +60,6 @@ public class BatchControllerTest {
     void getRaces_filledList_Success() throws Exception {
         BatchResponseDto batchExample = new BatchResponseDto(
                 UUID.randomUUID(),
-                "exampleRace",
-                2025,
                 LocalDateTime.now(),
                 null
         );
@@ -112,18 +110,14 @@ public class BatchControllerTest {
     @DisplayName("Should return list paginated with default parameters")
     void uploadRace_relevantData_Success() throws Exception {
         BatchRequestDto newBatchRequestDto = new BatchRequestDto(
-                null,
                 "exampleRace",
-                2025,
-                LocalDateTime.now(),
-                null);
+                2025
+        );
 
         BatchResponseDto newBatchResponseDto = new BatchResponseDto(
                 UUID.randomUUID(),
-                newBatchRequestDto.raceName(),
-                newBatchRequestDto.year(),
-                newBatchRequestDto.createdAt(),
-                newBatchRequestDto.deletedAt()
+                LocalDateTime.now(),
+                null
         );
 
         when(batchService.uploadBatch(newBatchRequestDto)).thenReturn(newBatchResponseDto);
@@ -145,11 +139,9 @@ public class BatchControllerTest {
     @DisplayName("Should return 400 Bad Request when year is more than expected maximum")
     void uploadRace_tooBigYear_ReturnsBadRequest() throws Exception {
         BatchRequestDto invalidRequest = new BatchRequestDto(
-                null,
                 "exampleRace",
-                2027,
-                LocalDateTime.now(),
-                null);
+                2027
+        );
 
         mockMvc.perform(post("/batches")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -163,11 +155,9 @@ public class BatchControllerTest {
     @DisplayName("Should return 400 Bad Request when year is less than expected minimum")
     void uploadRace_tooSmallYear_ReturnsBadRequest() throws Exception {
         BatchRequestDto invalidRequest = new BatchRequestDto(
-                null,
                 "exampleRace",
-                1949,
-                LocalDateTime.now(),
-                null);
+                1949
+        );
 
         mockMvc.perform(post("/batches")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -181,11 +171,9 @@ public class BatchControllerTest {
     @DisplayName("Should return 400 Bad Request when race name is too short")
     void uploadRace_tooShortRaceName_ReturnsBadRequest() throws Exception {
         BatchRequestDto invalidRequest = new BatchRequestDto(
-                null,
                 "rc",
-                2024,
-                LocalDateTime.now(),
-                null);
+                2025
+        );
 
         mockMvc.perform(post("/batches")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -199,29 +187,9 @@ public class BatchControllerTest {
     @DisplayName("Should return 400 Bad Request when race name is too long")
     void uploadRace_tooLongRaceName_ReturnsBadRequest() throws Exception {
         BatchRequestDto invalidRequest = new BatchRequestDto(
-                null,
                 "invalid-race-name-here-invalid-race-name-here-invalid-race-name-here-invalid-race-name-here-invalid-race-name-here",
-                2024,
-                LocalDateTime.now(),
-                null);
-
-        mockMvc.perform(post("/batches")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(batchService);
-    }
-
-    @Test
-    @DisplayName("Should return 400 Bad Request when batch id is not null during creation")
-    void uploadRace_batchIdNotNull_ReturnsBadRequest() throws Exception {
-        BatchRequestDto invalidRequest = new BatchRequestDto(
-                UUID.randomUUID(),
-                "exampleRace",
-                2025,
-                LocalDateTime.now(),
-                null);
+                2024
+        );
 
         mockMvc.perform(post("/batches")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -236,10 +204,8 @@ public class BatchControllerTest {
     void uploadRace_nullRaceName_ReturnsBadRequest() throws Exception {
         BatchRequestDto invalidRequest = new BatchRequestDto(
                 null,
-                null,
-                2025,
-                LocalDateTime.now(),
-                null);
+                null
+        );
 
         mockMvc.perform(post("/batches")
                         .contentType(MediaType.APPLICATION_JSON)
