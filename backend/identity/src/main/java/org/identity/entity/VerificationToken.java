@@ -25,7 +25,7 @@ public class VerificationToken {
     String token;
     @Column(nullable = false, length = 18)
     String tokenType;
-    @Column(nullable = false, length = 5)
+    @Column(nullable = false)
     LocalDateTime expiryDate;
 
     protected VerificationToken() {
