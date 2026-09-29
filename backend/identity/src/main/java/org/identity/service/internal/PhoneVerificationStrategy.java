@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import org.identity.entity.UserEntity;
 import org.identity.entity.VerificationToken;
 import org.identity.enums.TokenType;
 import org.identity.enums.UserStatus;
@@ -45,15 +47,16 @@ public class PhoneVerificationStrategy implements VerificationStrategy {
     }
 
     @Override
-    public VerificationToken createVerificationToken(UUID userId) {
+    public VerificationToken createVerificationToken(UserEntity user) {
         String token = UUID.randomUUID().toString();
 
         LocalDateTime expirationTime = LocalDateTime.now().plusHours(expiryHours);
 
         return new VerificationToken(
-                userId,
+                null,
+                user,
                 token,
-                TokenType.PHONE_VERIFICATION,
+                TokenType.PHONE_VERIFICATION.toString(),
                 expirationTime
         );
     }
@@ -81,7 +84,7 @@ public class PhoneVerificationStrategy implements VerificationStrategy {
                                 "index", "0",
                                 "parameters", List.of(Map.of(
                                         "type", "text",
-                                        "text", token.token()
+                                        "text", token.getToken()
                                 ))
                         ))
                 )

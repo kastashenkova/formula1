@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import org.identity.dto.UserRegisteredEvent;
+import org.identity.entity.UserEntity;
 import org.identity.entity.VerificationToken;
 import org.identity.enums.Role;
 import org.identity.enums.TokenType;
@@ -34,18 +35,28 @@ public class UserRegisteredEventListenerTest {
     private UserRegisteredEventListener userRegisteredEventListener;
 
     private UserRegisteredEvent testEvent;
+    private UserEntity testUser;
 
     @BeforeEach
     void setUp() {
         userRegisteredEventListener = new UserRegisteredEventListener(
                 tokenRepository, emailVerificationStrategy, phoneVerificationStrategy);
 
+        testUser = new UserEntity(
+                null,
+                "k.astashenkova@ukma.edu.ua",
+                "+380980137037",
+                Role.USER.toString(),
+                "admin123",
+                UserStatus.PENDING_VERIFICATION.toString()
+        );
+
         testEvent = new UserRegisteredEvent(
                 UUID.randomUUID(),
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.USER,
-                UserStatus.PENDING_VERIFICATION,
+                Role.USER.toString(),
+                UserStatus.PENDING_VERIFICATION.toString(),
                 "email-token",
                 "phone-token"
         );
@@ -54,19 +65,21 @@ public class UserRegisteredEventListenerTest {
     @Test
     void shouldSendBothVerificationMessagesSuccessfully() {
         VerificationToken emailToken = new VerificationToken(
-                testEvent.id(),
+                1L,
+                testUser,
                 "email-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now().plusMinutes(15)
         );
         VerificationToken phoneToken = new VerificationToken(
-                testEvent.id(),
+                2L,
+                testUser,
                 "phone-token",
-                TokenType.PHONE_VERIFICATION,
+                TokenType.PHONE_VERIFICATION.toString(),
                 LocalDateTime.now().plusMinutes(15)
         );
-        when(tokenRepository.findByToken(emailToken.token())).thenReturn(Optional.of(emailToken));
-        when(tokenRepository.findByToken(phoneToken.token())).thenReturn(Optional.of(phoneToken));
+        when(tokenRepository.findByToken(emailToken.getToken())).thenReturn(Optional.of(emailToken));
+        when(tokenRepository.findByToken(phoneToken.getToken())).thenReturn(Optional.of(phoneToken));
 
         userRegisteredEventListener.onUserRegistered(testEvent);
 
@@ -77,13 +90,14 @@ public class UserRegisteredEventListenerTest {
     @Test
     void shouldHandleExceptionWhenEmailTokenNotFoundAndProceedWithPhone() {
         VerificationToken phoneToken = new VerificationToken(
-                testEvent.id(),
+                1L,
+                testUser,
                 "phone-token",
-                TokenType.PHONE_VERIFICATION,
+                TokenType.PHONE_VERIFICATION.toString(),
                 LocalDateTime.now().plusMinutes(15)
         );
         when(tokenRepository.findByToken("email-token")).thenReturn(Optional.empty());
-        when(tokenRepository.findByToken(phoneToken.token())).thenReturn(Optional.of(phoneToken));
+        when(tokenRepository.findByToken(phoneToken.getToken())).thenReturn(Optional.of(phoneToken));
 
         userRegisteredEventListener.onUserRegistered(testEvent);
 
@@ -94,12 +108,13 @@ public class UserRegisteredEventListenerTest {
     @Test
     void shouldHandleExceptionWhenPhoneTokenNotFoundAndProceedWithEmail() {
         VerificationToken emailToken = new VerificationToken(
-                testEvent.id(),
+                1L,
+                testUser,
                 "email-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now().plusMinutes(15)
         );
-        when(tokenRepository.findByToken(emailToken.token())).thenReturn(Optional.of(emailToken));
+        when(tokenRepository.findByToken(emailToken.getToken())).thenReturn(Optional.of(emailToken));
         when(tokenRepository.findByToken("phone-token")).thenReturn(Optional.empty());
 
         userRegisteredEventListener.onUserRegistered(testEvent);

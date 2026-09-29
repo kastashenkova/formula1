@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -99,27 +98,38 @@ public class UserServiceTest {
                 null,
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                  "admin123"
         );
-        when(userRepository.findByEmail(testUserRequest.email())).thenReturn(Optional.empty());
-        when(userRepository.findByPhoneNumber(testUserRequest.phoneNumber())).thenReturn(Optional.empty());
-        when(userRepository.findById(any())).thenReturn(Optional.empty());
+
+         UserEntity testEntity = new UserEntity(
+                 testUserRequest.email(),
+                 testUserRequest.phoneNumber(),
+                 testUserRequest.role(),
+                 testUserRequest.password(),
+                 UserStatus.PENDING_VERIFICATION.toString()
+         );
+
+        when(userRepository.existsByEmail(testUserRequest.email())).thenReturn(false);
+        when(userRepository.existsByPhoneNumber(testUserRequest.phoneNumber())).thenReturn(false);
+        when(userRepository.findById((UUID) any())).thenReturn(Optional.empty());
         when(userRepository.save(any(UserEntity.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
         when(tokenRepository.save(any(VerificationToken.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         VerificationToken mockEmailToken = new VerificationToken(
-                UUID.randomUUID(),
+                1L,
+                testEntity,
                 "email-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now().plusHours(1));
         VerificationToken mockPhoneToken = new VerificationToken(
-                UUID.randomUUID(),
+                1L,
+                testEntity,
                 "phone-token",
-                TokenType.PHONE_VERIFICATION,
+                TokenType.PHONE_VERIFICATION.toString(),
                 LocalDateTime.now().plusHours(1));
 
         when(emailStrategy.createVerificationToken(any())).thenReturn(mockEmailToken);
@@ -131,7 +141,7 @@ public class UserServiceTest {
         assertEquals(testUserRequest.email(), responseDto.email());
         assertEquals(testUserRequest.phoneNumber(), responseDto.phoneNumber());
         assertEquals(testUserRequest.role(), responseDto.role());
-        assertEquals(UserStatus.PENDING_VERIFICATION, responseDto.userStatus());
+        assertEquals(UserStatus.PENDING_VERIFICATION.toString(), responseDto.userStatus());
 
         verify(userRepository).save(any(UserEntity.class));
 
@@ -147,19 +157,12 @@ public class UserServiceTest {
                 null,
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 "admin123"
         );
-        UserEntity existingUser = new UserEntity(
-                null,
-                "k.astashenkova@ukma.edu.ua",
-                "+358408587404",
-                Role.ADMIN,
-                "admin123",
-                UserStatus.ACTIVE
-        );
-        when(userRepository.findByEmail(testUserRequest.email())).thenReturn(Optional.of(existingUser));
+
+        when(userRepository.existsByEmail(testUserRequest.email())).thenReturn(true);
 
         assertThrows(DuplicateUserException.class, () -> userService.addUser(testUserRequest));
 
@@ -173,19 +176,18 @@ public class UserServiceTest {
                 null,
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 "admin123"
         );
         UserEntity existingUser = new UserEntity(
-                UUID.randomUUID(),
                 "k.astashenkova@ukma.edu.ua",
                 "+358408587404",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
-                UserStatus.ACTIVE
+                UserStatus.ACTIVE.toString()
         );
-        when(userRepository.findById(any())).thenReturn(Optional.of(existingUser));
+        when(userRepository.findById((UUID) any())).thenReturn(Optional.of(existingUser));
 
         assertThrows(DuplicateUserException.class, () -> userService.addUser(testUserRequest));
 
@@ -194,19 +196,19 @@ public class UserServiceTest {
     }
 
     @Test
-    void shouldThrowInvalidVerificationStrategyExceptionWhenStrategyMissconfigured() {
+    void shouldThrowInvalidVerificationStrategyExceptionWhenStrategyMisconfigured() {
         UserRegistrationRequestDto testUserRequest = new UserRegistrationRequestDto(
                 null,
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 "admin123"
         );
 
-        when(userRepository.findByEmail(testUserRequest.email())).thenReturn(Optional.empty());
-        when(userRepository.findByPhoneNumber(testUserRequest.phoneNumber())).thenReturn(Optional.empty());
-        when(userRepository.findById(any())).thenReturn(Optional.empty());
+        when(userRepository.existsByEmail(testUserRequest.email())).thenReturn(false);
+        when(userRepository.existsByPhoneNumber(testUserRequest.phoneNumber())).thenReturn(false);
+        when(userRepository.findById((UUID) any())).thenReturn(Optional.empty());
 
         UserServiceImpl serviceWithoutStrategies = new UserServiceImpl(
                 passwordEncoder,
@@ -228,23 +230,14 @@ public class UserServiceTest {
                 null,
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
                 "admin123"
         );
 
-        UserEntity existingUser = new UserEntity(
-                null,
-                "astashenkova.katya@gmail.com",
-                "+380980137037",
-                Role.ADMIN,
-                "admin123",
-                UserStatus.ACTIVE
-        );
-
-        when(userRepository.findByEmail(testUserRequest.email())).thenReturn(Optional.empty());
-        when(userRepository.findByPhoneNumber(testUserRequest.phoneNumber()))
-                .thenReturn(Optional.of(existingUser));
+        when(userRepository.existsByEmail(testUserRequest.email())).thenReturn(false);
+        when(userRepository.existsByPhoneNumber(testUserRequest.phoneNumber()))
+                .thenReturn(true);
 
         assertThrows(DuplicateUserException.class, () -> userService.addUser(testUserRequest));
 
@@ -262,28 +255,27 @@ public class UserServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
-                UserStatus.PENDING_VERIFICATION);
+                UserStatus.PENDING_VERIFICATION.toString());
 
-        when(userRepository.findById(testUser.id()))
+        when(userRepository.findById(testUser.getId()))
                 .thenReturn(Optional.of(testUser));
 
-        when(userRepository.updateById(any(UUID.class), any(UserEntity.class)))
-                .thenAnswer(invocation -> invocation.getArgument(1));
+        when(userRepository.save(any(UserEntity.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         UpdateUserStatusCommand updateUserStatusCommand
                 = new UpdateUserStatusCommand(UserStatus.EMAIL_VERIFIED);
 
         UserResponseDto responseDto = userService.updateStatus(
-                testUser.id(), updateUserStatusCommand);
+                testUser.getId(), updateUserStatusCommand);
 
         assertNotNull(responseDto);
-        assertEquals(UserStatus.EMAIL_VERIFIED, responseDto.userStatus());
-        verify(userRepository).updateById(any(UUID.class), any(UserEntity.class));
+        assertEquals(UserStatus.EMAIL_VERIFIED.toString(), responseDto.userStatus());
+        verify(userRepository).save(any(UserEntity.class));
     }
 
     @Test
@@ -296,23 +288,22 @@ public class UserServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         UserEntity phoneVerifiedUser = new UserEntity(
-                UUID.randomUUID(),
                 "k.astashenkova@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
-                UserStatus.PHONE_VERIFIED);
+                UserStatus.PHONE_VERIFIED.toString());
 
-        when(userRepository.findById(phoneVerifiedUser.id()))
+        when(userRepository.findById(phoneVerifiedUser.getId()))
                 .thenReturn(Optional.of(phoneVerifiedUser));
 
         UpdateUserStatusCommand updateUserStatusCommand
                 = new UpdateUserStatusCommand(UserStatus.PENDING_VERIFICATION);
 
         assertThrows(InvalidUserStateException.class,
-                () -> userService.updateStatus(phoneVerifiedUser.id(), updateUserStatusCommand));
+                () -> userService.updateStatus(phoneVerifiedUser.getId(), updateUserStatusCommand));
 
-        verify(userRepository, never()).updateById(any(), any());
+        verify(userRepository, never()).save(any());
     }
 
     @Test
@@ -328,122 +319,149 @@ public class UserServiceTest {
                 UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
-                UserStatus.PHONE_VERIFIED);
+                UserStatus.PHONE_VERIFIED.toString());
 
         when(userRepository.findByEmail("d.dzhos@ukma.edu.ua")).thenReturn(Optional.of(testUser));
 
         UpdateUserStatusCommand command = new UpdateUserStatusCommand(UserStatus.DEACTIVATED);
 
         assertThrows(AccessDeniedException.class,
-                () -> userService.updateStatus(testUser.id(), command));
+                () -> userService.updateStatus(testUser.getId(), command));
 
-        verify(userRepository, never()).updateById(any(), any());
+        verify(userRepository, never()).save(any());
     }
 
     @Test
     void shouldConfirmTokenSuccessfully() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
-                UserStatus.PHONE_VERIFIED);
+                UserStatus.PHONE_VERIFIED.toString());
 
         VerificationToken verificationToken = new VerificationToken(
-                testUser.id(),
+                1L,
+                testUser,
                 "valid-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now().plusHours(3));
 
-        when(tokenRepository.findByToken(verificationToken.token())).thenReturn(Optional.of(verificationToken));
-        when(userRepository.findById(verificationToken.userId())).thenReturn(Optional.of(testUser));
+        when(tokenRepository.findByToken(verificationToken.getToken())).thenReturn(Optional.of(verificationToken));
+        when(userRepository.findById(verificationToken.getUser().getId())).thenReturn(Optional.of(testUser));
         when(emailStrategy.getNextStatus(UserStatus.PHONE_VERIFIED)).thenReturn(UserStatus.ACTIVE);
 
         userService.confirmByToken("valid-token");
 
         ArgumentCaptor<UserEntity> userCaptor = ArgumentCaptor.forClass(UserEntity.class);
-        verify(userRepository).updateById(eq(testUser.id()), userCaptor.capture());
+        verify(userRepository).save(userCaptor.capture());
 
-        assertEquals(UserStatus.ACTIVE, userCaptor.getValue().userStatus());
-        assertEquals(testUser.id(), userCaptor.getValue().id());
-        assertEquals(testUser.email(), userCaptor.getValue().email());
-        assertEquals(testUser.phoneNumber(), userCaptor.getValue().phoneNumber());
-        assertEquals(testUser.role(), userCaptor.getValue().role());
-        assertEquals(testUser.password(), userCaptor.getValue().password());
+        assertEquals(UserStatus.ACTIVE.toString(), userCaptor.getValue().getUserStatus());
+        assertEquals(testUser.getId(), userCaptor.getValue().getId());
+        assertEquals(testUser.getEmail(), userCaptor.getValue().getEmail());
+        assertEquals(testUser.getPhoneNumber(), userCaptor.getValue().getPhoneNumber());
+        assertEquals(testUser.getRole(), userCaptor.getValue().getRole());
+        assertEquals(testUser.getPassword(), userCaptor.getValue().getPassword());
 
         verify(tokenRepository).delete(verificationToken);
     }
 
     @Test
     void shouldThrowInvalidTokenExceptionWhenTokenNotFound() {
+        UserEntity testUser = new UserEntity(
+                "d.dzhos@ukma.edu.ua",
+                "+380980137037",
+                Role.ADMIN.toString(),
+                "admin123",
+                UserStatus.PHONE_VERIFIED.toString());
+
         VerificationToken verificationToken = new VerificationToken(
-                UUID.randomUUID(),
+                1L,
+                testUser,
                 "invalid-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now().plusHours(3));
 
         when(tokenRepository.findByToken(any())).thenReturn(Optional.empty());
 
-        assertThrows(InvalidTokenException.class, () -> userService.confirmByToken(verificationToken.token()));
+        assertThrows(InvalidTokenException.class, () -> userService.confirmByToken(
+                verificationToken.getToken()));
 
-        verify(userRepository, never()).updateById(any(), any());
+        verify(userRepository, never()).save(any());
         verify(tokenRepository, never()).delete(verificationToken);
     }
 
     @Test
     void shouldThrowEntityNotFoundExceptionWhenUserNotFound() {
+        UserEntity testUser = new UserEntity(
+                "d.dzhos@ukma.edu.ua",
+                "+380980137037",
+                Role.ADMIN.toString(),
+                "admin123",
+                UserStatus.PHONE_VERIFIED.toString());
+
         VerificationToken verificationToken = new VerificationToken(
-                UUID.randomUUID(),
+                1L,
+                testUser,
                 "valid-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now().plusHours(3));
 
         when(tokenRepository.findByToken(any())).thenReturn(Optional.of(verificationToken));
-        when(userRepository.findById(any())).thenReturn(Optional.empty());
+        when(userRepository.findById((UUID) any())).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> userService.confirmByToken(verificationToken.token()));
+        assertThrows(EntityNotFoundException.class, () -> userService
+                .confirmByToken(verificationToken.getToken()));
 
-        verify(userRepository, never()).updateById(any(), any());
+        verify(userRepository, never()).save(any());
         verify(tokenRepository, never()).delete(verificationToken);
     }
 
     @Test
     void shouldThrowInvalidTokenExceptionWhenTokenExpired() {
+        UserEntity testUser = new UserEntity(
+                "d.dzhos@ukma.edu.ua",
+                "+380980137037",
+                Role.ADMIN.toString(),
+                "admin123",
+                UserStatus.PHONE_VERIFIED.toString());
+
         VerificationToken verificationToken = new VerificationToken(
-                UUID.randomUUID(),
+                1L,
+                testUser,
                 "invalid-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now().minusHours(3));
 
         when(tokenRepository.findByToken(any())).thenReturn(Optional.of(verificationToken));
 
-        assertThrows(InvalidTokenException.class, () -> userService.confirmByToken(verificationToken.token()));
+        assertThrows(InvalidTokenException.class, () -> userService.confirmByToken(
+                verificationToken.getToken()));
 
-        verify(userRepository, never()).updateById(any(), any());
+        verify(userRepository, never()).save(any());
         verify(tokenRepository, never()).delete(verificationToken);
     }
 
     @Test
     void shouldThrowInvalidVerificationStrategyExceptionWhenVerificationStrategyNotFound() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
-                UserStatus.PHONE_VERIFIED);
+                UserStatus.PHONE_VERIFIED.toString());
 
         VerificationToken verificationToken = new VerificationToken(
-                testUser.id(),
+                1L,
+                testUser,
                 "valid-token",
-                TokenType.EMAIL_VERIFICATION,
+                TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now().plusHours(3));
 
         when(tokenRepository.findByToken("valid-token")).thenReturn(Optional.of(verificationToken));
-        when(userRepository.findById(testUser.id())).thenReturn(Optional.of(testUser));
+        when(userRepository.findById(testUser.getId())).thenReturn(Optional.of(testUser));
 
         UserServiceImpl serviceWithoutStrategies = new UserServiceImpl(
                 passwordEncoder,
@@ -454,38 +472,38 @@ public class UserServiceTest {
         );
 
         assertThrows(InvalidVerificationStrategyException.class, () ->
-                serviceWithoutStrategies.confirmByToken(verificationToken.token()));
+                serviceWithoutStrategies.confirmByToken(verificationToken.getToken()));
 
-        verify(userRepository, never()).updateById(any(), any());
+        verify(userRepository, never()).save(any());
         verify(tokenRepository, never()).delete(any());
     }
 
     @Test
     void shouldThrowInvalidUserStateExceptionOnIllegalTransitionDuringConfirmation() {
         UserEntity testUser = new UserEntity(
-                UUID.randomUUID(),
                 "d.dzhos@ukma.edu.ua",
                 "+380980137037",
-                Role.ADMIN,
+                Role.ADMIN.toString(),
                 "admin123",
-                UserStatus.ACTIVE);
+                UserStatus.ACTIVE.toString());
 
         VerificationToken verificationToken = new VerificationToken(
-                testUser.id(),
+                1L,
+                testUser,
                 "valid-token",
-                TokenType.PHONE_VERIFICATION,
+                TokenType.PHONE_VERIFICATION.toString(),
                 LocalDateTime.now().plusHours(3));
 
         when(tokenRepository.findByToken("valid-token")).thenReturn(Optional.of(verificationToken));
 
-        when(userRepository.findById(testUser.id())).thenReturn(Optional.of(testUser));
+        when(userRepository.findById(testUser.getId())).thenReturn(Optional.of(testUser));
 
         when(phoneStrategy.getNextStatus(any())).thenReturn(UserStatus.PHONE_VERIFIED);
 
         assertThrows(InvalidUserStateException.class,
-                () -> userService.confirmByToken(verificationToken.token()));
+                () -> userService.confirmByToken(verificationToken.getToken()));
 
-        verify(userRepository, never()).updateById(any(), any());
+        verify(userRepository, never()).save(any());
         verify(tokenRepository, never()).delete(any());
     }
 }
