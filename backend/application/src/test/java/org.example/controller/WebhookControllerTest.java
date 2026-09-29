@@ -20,10 +20,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
-
+import java.util.UUID;
 import org.identity.exception.IdentityExceptionHandler;
 import org.identity.security.JwtUtil;
-import org.junit.jupiter.api.Disabled;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.identity.dto.WebhookRequestDto;
@@ -41,7 +40,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(WebhookController.class)
 @Import(IdentityExceptionHandler.class)
 @TestConstructor(autowireMode = ALL)
-@Disabled // TODO remove when service logic is fixed
 public class WebhookControllerTest {
 
     private final MockMvc mockMvc;
@@ -68,8 +66,8 @@ public class WebhookControllerTest {
         WebhookRequestDto newWebhookRequestDto = new WebhookRequestDto(
                 null,
                 "https://example-url.com",
-                1L,
-                WebhookTypes.BATCH_COMPLETED
+                UUID.randomUUID(),
+                WebhookTypes.BATCH_COMPLETED.toString()
         );
 
         WebhookResponseDto newWebhookResponseDto = new WebhookResponseDto(
@@ -100,26 +98,8 @@ public class WebhookControllerTest {
         WebhookRequestDto invalidRequest = new WebhookRequestDto(
                 null,
                 "invalidURL",
-                1L,
-                WebhookTypes.BATCH_COMPLETED
-        );
-
-        mockMvc.perform(post("/webhooks")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(webhookService);
-    }
-
-    @Test
-    @DisplayName("Should return 400 Bad Request when user id is 0")
-    void createWebhook_invalidUserId_ReturnsBadRequest() throws Exception {
-        WebhookRequestDto invalidRequest = new WebhookRequestDto(
-                null,
-                "https://example-url.com",
-                0L,
-                WebhookTypes.BATCH_COMPLETED
+                UUID.randomUUID(),
+                WebhookTypes.BATCH_COMPLETED.toString()
         );
 
         mockMvc.perform(post("/webhooks")
@@ -167,8 +147,8 @@ public class WebhookControllerTest {
         WebhookRequestDto newWebhookRequestDto = new WebhookRequestDto(
                 null,
                 "https://example-url.com",
-                1L,
-                WebhookTypes.BATCH_COMPLETED
+                UUID.randomUUID(),
+                WebhookTypes.BATCH_COMPLETED.toString()
         );
 
         WebhookResponseDto newWebhookResponseDto = new WebhookResponseDto(
@@ -219,8 +199,8 @@ public class WebhookControllerTest {
         WebhookRequestDto updateRequestDto = new WebhookRequestDto(
                 null,
                 "https://example-url.com",
-                1L,
-                WebhookTypes.BATCH_COMPLETED
+                UUID.randomUUID(),
+                WebhookTypes.BATCH_COMPLETED.toString()
         );
 
         WebhookResponseDto newWebhookResponseDto = new WebhookResponseDto(
@@ -250,8 +230,8 @@ public class WebhookControllerTest {
         WebhookRequestDto updateRequestDto = new WebhookRequestDto(
                 null,
                 "https://example-url.com",
-                1L,
-                WebhookTypes.BATCH_COMPLETED
+                UUID.randomUUID(),
+                WebhookTypes.BATCH_COMPLETED.toString()
         );
 
         when(webhookService.update(eq(1L), any(WebhookRequestDto.class)))

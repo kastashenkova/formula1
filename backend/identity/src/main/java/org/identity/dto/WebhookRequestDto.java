@@ -1,12 +1,14 @@
 package org.identity.dto;
 
-import org.identity.enums.WebhookTypes;
+import org.identity.entity.WebhookEntity;
 import org.identity.validation.OnCreate;
 import org.identity.validation.OnUpdate;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import org.hibernate.validator.constraints.URL;
 
 public record WebhookRequestDto(
@@ -26,13 +28,17 @@ public record WebhookRequestDto(
         String webhookURL,
 
         @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "{validation.userID.not-null}")
-        @Min(groups = {OnCreate.class, OnUpdate.class},
-                value = 1,
-                message = "{validation.userID.min}"
-        )
-        Long userID,
+        UUID userID,
 
         @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "{validation.webhookType.not-null}")
-        WebhookTypes webhookType
+        String webhookType
 ) {
+
+        public static WebhookEntity toEntity(WebhookRequestDto requestDto) {
+                return new WebhookEntity(
+                        requestDto.webhookURL,
+                        requestDto.webhookType,
+                        LocalDateTime.now(),
+                        LocalDateTime.now());
+        }
 }

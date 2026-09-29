@@ -1,50 +1,81 @@
 package org.identity.service.internal;
 
-import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import org.identity.dto.WebhookRequestDto;
 import org.identity.dto.WebhookResponseDto;
+import org.identity.entity.UserEntity;
 import org.identity.entity.WebhookEntity;
-import org.identity.enums.WebhookTypes;
-
+import org.identity.repository.UserRepository;
+import org.identity.repository.WebhookRepository;
 import org.identity.service.WebhookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class WebhookServiceImpl implements WebhookService {
     private static final Logger log = LoggerFactory.getLogger(WebhookServiceImpl.class);
 
+    private final WebhookRepository webhookRepository;
+    private final UserRepository userRepository;
+
+    public WebhookServiceImpl(WebhookRepository webhookRepository, UserRepository userRepository) {
+        this.webhookRepository = webhookRepository;
+        this.userRepository = userRepository;
+    }
+
     @Override
-    @Transactional
     public WebhookResponseDto create(WebhookRequestDto request) {
-        return null;
+        UserEntity user = userRepository.findById(request.userID())
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "User with id " + request.userID() + " not found"
+                        ));
+
+        WebhookEntity webhook = WebhookRequestDto.toEntity(request);
+        webhook.setUser(user);
+
+        WebhookEntity saved = webhookRepository.save(webhook);
+
+        log.info("Created webhook {}", saved.getId());
+
+        return WebhookResponseDto.fromEntity(saved);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public WebhookResponseDto getById(Long id) {
-        return null;
+        WebhookEntity webhook = webhookRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new EntityNotFoundException("Webhook with id "
+                        + id + " not found"));
+
+        return WebhookResponseDto.fromEntity(webhook);
     }
 
     @Override
-    @Transactional
     public WebhookResponseDto update(Long id, WebhookRequestDto request) {
-        return null;
+        WebhookEntity webhookEntity = webhookRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new EntityNotFoundException("Webhook with id: " + id + " not found"));
+
+        webhookEntity.setWebhookUrl(request.webhookURL());
+        webhookEntity.setWebhookType(request.webhookType());
+        webhookEntity.setUpdatedAt(LocalDateTime.now());
+
+        webhookRepository.save(webhookEntity);
+
+        log.info("Updated webhook {}", webhookEntity.getId());
+
+        return WebhookResponseDto.fromEntity(webhookEntity);
     }
 
     @Override
-    @Transactional
     public void delete(Long id) {
-    }
+        webhookRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new EntityNotFoundException("Webhook with id: " + id + " not found"));
 
-    private WebhookResponseDto toResponseDto(WebhookEntity webhook) {
-        return new WebhookResponseDto(
-                webhook.getId(),
-                webhook.getWebhookUrl(),
-                webhook.getId(), // TODO user id here
-                WebhookTypes.valueOf(webhook.getWebhookType()),
-                webhook.getCreatedAt(),
-                webhook.getUpdatedAt()
-        );
+        webhookRepository.deleteById(id);
     }
 }

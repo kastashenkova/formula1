@@ -1,18 +1,23 @@
 package org.identity.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
 @Table(name = "webhooks")
-public class WebhookEntity{
+public class WebhookEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -21,10 +26,9 @@ public class WebhookEntity{
     @Column(nullable = false)
     private String webhookUrl;
 
-// uncomment when UserEntity is on master
-//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private UserEntity user;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
 
     @Column(nullable = false)
     private String webhookType;
@@ -35,4 +39,16 @@ public class WebhookEntity{
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    protected  WebhookEntity() {
+    }
+
+    public WebhookEntity(String webhookUrl,
+                         String webhookType,
+                         LocalDateTime createdAt,
+                         LocalDateTime updatedAt) {
+        this.webhookUrl = webhookUrl;
+        this.webhookType = webhookType;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }

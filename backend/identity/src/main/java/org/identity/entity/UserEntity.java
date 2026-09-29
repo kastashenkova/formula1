@@ -9,8 +9,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -29,6 +31,9 @@ public class UserEntity {
     String password;
     @Column(nullable = false, length = 20)
     String userStatus;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<WebhookEntity> webhooks = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     List<VerificationToken> verificationTokens = new ArrayList<>();
@@ -121,6 +126,24 @@ public class UserEntity {
     public void removeVerificationToken(VerificationToken token) {
         verificationTokens.remove(token);
         token.setUser(null);
+    }
+
+    public Set<WebhookEntity> getWebhooks() {
+        return webhooks;
+    }
+
+    public void setWebhooks(Set<WebhookEntity> webhooks) {
+        this.webhooks = webhooks;
+    }
+
+    public void addWebhook(WebhookEntity webhook) {
+        webhooks.add(webhook);
+        webhook.setUser(this);
+    }
+
+    public void removeWebhook(WebhookEntity webhook) {
+        webhooks.remove(webhook);
+        webhook.setUser(null);
     }
 
     @Override

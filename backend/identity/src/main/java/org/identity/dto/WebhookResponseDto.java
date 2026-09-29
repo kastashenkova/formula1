@@ -3,7 +3,8 @@ package org.identity.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
-import org.identity.enums.WebhookTypes;
+import java.util.UUID;
+import org.identity.entity.WebhookEntity;
 
 public record WebhookResponseDto(
         @JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -13,10 +14,10 @@ public record WebhookResponseDto(
         String webhookURL,
 
         @JsonProperty("user_id")
-        Long userID,
+        UUID userID,
 
         @JsonProperty("webhook_type")
-        WebhookTypes webhookType,
+        String webhookType,
 
         @JsonProperty("created_at")
         LocalDateTime createdAt,
@@ -25,4 +26,14 @@ public record WebhookResponseDto(
         LocalDateTime updatedAt
 ) {
 
+        public static WebhookResponseDto fromEntity(WebhookEntity webhook) {
+                return new WebhookResponseDto(
+                        webhook.getId(),
+                        webhook.getWebhookUrl(),
+                        webhook.getUser().getId(),
+                        webhook.getWebhookType(),
+                        webhook.getCreatedAt(),
+                        webhook.getUpdatedAt()
+                );
+        }
 }
