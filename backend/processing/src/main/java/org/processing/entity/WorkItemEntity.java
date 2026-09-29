@@ -1,9 +1,10 @@
 package org.processing.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import tools.jackson.databind.JsonNode;
@@ -15,7 +16,8 @@ import java.util.UUID;
 @Table(name = "work_items")
 @Getter
 @Setter
-@AllArgsConstructor
+@Accessors(chain = true)
+@RequiredArgsConstructor
 public class WorkItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -31,8 +33,6 @@ public class WorkItemEntity {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private JsonNode payload; // each batch define it's JSON schema, can be reused for different operations
-
-    protected WorkItemEntity() {}
 
     @Override
     public boolean equals(Object o) {
