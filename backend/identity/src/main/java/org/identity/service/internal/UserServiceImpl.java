@@ -81,7 +81,6 @@ public class UserServiceImpl implements UserService {
         }
 
         UserEntity newUser = new UserEntity(
-                id,
                 requestDto.email(),
                 requestDto.phoneNumber(),
                 requestDto.role(),
