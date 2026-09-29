@@ -10,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
 
@@ -17,6 +19,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table(name = "webhooks")
+@RequiredArgsConstructor
 public class WebhookEntity {
 
     @Id
@@ -24,6 +27,7 @@ public class WebhookEntity {
     private Long id;
 
     @Column(nullable = false)
+    @NonNull
     private String webhookUrl;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -31,24 +35,17 @@ public class WebhookEntity {
     private UserEntity user;
 
     @Column(nullable = false)
+    @NonNull
     private String webhookType;
 
     @Column(nullable = false)
+    @NonNull
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
+    @NonNull
     private LocalDateTime updatedAt;
 
     protected  WebhookEntity() {
-    }
-
-    public WebhookEntity(String webhookUrl,
-                         String webhookType,
-                         LocalDateTime createdAt,
-                         LocalDateTime updatedAt) {
-        this.webhookUrl = webhookUrl;
-        this.webhookType = webhookType;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 }

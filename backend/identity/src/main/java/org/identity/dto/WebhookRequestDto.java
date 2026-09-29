@@ -3,7 +3,6 @@ package org.identity.dto;
 import org.identity.entity.WebhookEntity;
 import org.identity.validation.OnCreate;
 import org.identity.validation.OnUpdate;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
