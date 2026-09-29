@@ -1,8 +1,8 @@
 package org.identity.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "webhooks")
 public class WebhookEntity{
 
@@ -35,5 +35,4 @@ public class WebhookEntity{
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    protected WebhookEntity() {}
 }
