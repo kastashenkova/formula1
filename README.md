@@ -208,12 +208,12 @@ http://localhost:8080/api/v1/swagger-ui/index.html
 http://localhost:8080/api/v1/h2-console
 
 ## Run
-## MacOS/Linux: 
+### MacOS/Linux
 ```bash
 bash start
 ```
 
-## Windows:
+### Windows
 ```bash
 .\start.cmd
 ```
