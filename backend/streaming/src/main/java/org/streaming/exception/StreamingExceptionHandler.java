@@ -73,6 +73,26 @@ public class StreamingExceptionHandler {
         );
     }
 
+    @ExceptionHandler(RaceNotFound.class)
+    public ProblemDetail handleRaceNotFoundOnProvider(RaceNotFound ex) {
+        return buildProblemDetail(
+                HttpStatus.NOT_FOUND,
+                "F1 race is not found for this info",
+                "https://streaming.ukma.edu.ua/errors/bad-request",
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(ExternalHTTPError.class)
+    public ProblemDetail handleExternalHTTPError(ExternalHTTPError ex) {
+        return buildProblemDetail(
+                HttpStatus.OK,
+                "Provider api is not responding, try again later",
+                "https://streaming.ukma.edu.ua/errors/bad-request",
+                ex.getMessage()
+        );
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGeneral(Exception ex) {
         return buildProblemDetail(
