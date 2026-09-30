@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cp backend/application/.env-example backend/application/.env
+chmod +x ./mvnw
+./mvnw spring-boot:run -pl backend/application
