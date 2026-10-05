@@ -1,6 +1,10 @@
 package org.example.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -15,6 +19,7 @@ import org.identity.service.UserService;
 import org.identity.service.AuthenticationService;
 import org.identity.validation.OnCreate;
 import org.identity.validation.OnUpdate;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -44,6 +49,11 @@ public class UserController {
     @PostMapping("/registration")
     @Operation(summary = "User registration",
             description = "Create a new user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "User created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid data request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "409", description = "User with such email or phone number already exists", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+    })
     public ResponseEntity<UserResponseDto> register(@Validated(OnCreate.class)
                                         @RequestBody UserRegistrationRequestDto requestDto)
             throws RegistrationException {
@@ -61,6 +71,10 @@ public class UserController {
     @PostMapping("/login")
     @Operation(summary = "User authentication",
             description = "Authenticate an existing user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User logged in successfully"),
+            @ApiResponse(responseCode = "400", description = "Bad credentials", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+    })
     public ResponseEntity<UserLoginResponseDto> login(@RequestBody @Valid UserLoginRequestDto request) {
         UserLoginResponseDto logged = authenticationService.authenticate(request);
 
@@ -71,6 +85,12 @@ public class UserController {
     @Operation(summary = "Update user status",
             description = "Update user status by id")
     @PreAuthorize("hasRole('ADMIN')")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User status updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid data request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "403", description = "Access denied", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+    })
     public ResponseEntity<UserResponseDto> updateUserStatus(
             @PathVariable UUID id,
             @Validated(OnUpdate.class)
@@ -83,6 +103,11 @@ public class UserController {
     @PostMapping("/confirmation")
     @Operation(summary = "Confirm account",
             description = "Activates user account via token")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User confirmed successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid data request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+    })
     public ResponseEntity<Void> confirmAccount(@RequestParam("token") String token) {
         userService.confirmByToken(token);
 

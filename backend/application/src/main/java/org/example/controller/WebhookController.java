@@ -1,5 +1,9 @@
 package org.example.controller;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.identity.dto.WebhookRequestDto;
 import org.identity.dto.WebhookResponseDto;
 import org.identity.service.WebhookService;
@@ -8,6 +12,7 @@ import org.identity.validation.OnCreate;
 import org.identity.validation.OnUpdate;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,6 +40,11 @@ public class WebhookController {
     @PostMapping
     @Operation(summary = "Create a new webhook",
             description = "Create a new webhook")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Webhook created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid data request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "404", description = "User specified in request not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+    })
     public ResponseEntity<WebhookResponseDto> createWebhook(
             @Validated({OnCreate.class})
             @RequestBody WebhookRequestDto request
@@ -53,6 +63,10 @@ public class WebhookController {
     @GetMapping("/{id}")
     @Operation(summary = "Get a certain webhook",
             description = "Get a webhook by its id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Webhook found"),
+            @ApiResponse(responseCode = "404", description = "Webhook not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+    })
     public ResponseEntity<WebhookResponseDto> getWebhook(
             @PathVariable Long id
     ) {
@@ -64,6 +78,11 @@ public class WebhookController {
     @PutMapping("/{id}")
     @Operation(summary = "Update a certain webhook",
             description = "Update a webhook by its id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Webhook updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid data request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "404", description = "Webhook not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+    })
     public ResponseEntity<WebhookResponseDto> updateWebhook(
             @PathVariable Long id,
             @Validated({OnUpdate.class})
@@ -77,6 +96,10 @@ public class WebhookController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a certain webhook",
             description = "Delete a webhook by its id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Webhook deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Webhook not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+    })
     public ResponseEntity<Void> deleteWebhook(
             @PathVariable Long id
     ) {
