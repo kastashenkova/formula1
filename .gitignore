@@ -33,3 +33,4 @@ build/
 .vscode/
 frontend/.firebase/
 frontend/node/
+/backend/application/logs/
