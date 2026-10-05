@@ -1,0 +1,398 @@
+{
+  "info": {
+    "_postman_id": "ad90c5df-5b88-4573-b18d-21d854613ddb",
+    "name": "Key Integration scenario",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51183420",
+    "_collection_link": "https://go.postman.co/collection/51183420-ad90c5df-5b88-4573-b18d-21d854613ddb?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var jsonData = pm.response.json();\r\npm.environment.set(\"jwt_token\", jsonData.token);\r\npm.environment.set(\"userId\", \"a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11\");"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"astashenkova.katya@gmail.com\",\r\n  \"password\": \"admin123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create new race",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Response status 201 Created', function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\npm.test('Got valid race id', function () {\r\n    pm.expect(json.race_id).to.be.a('string');\r\n    pm.environment.set(\"raceId\", json.race_id);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"raceId\": null,\r\n  \"raceName\": \"Singapore Airlines Singapore GP\",\r\n  \"raceDate\": \"2026-10-11T15:00:00.000Z\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/races",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "races"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get races",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Response status 200 OK', function () {\r\n    pm.response.to.have.status(200);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/races",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "races"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add driver to race",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Response status 201 Created', function () {\r\n    pm.response.to.have.status(201);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"driverNumber\": 3,\r\n  \"fullName\": \"Max Verstappen\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/races/{{raceId}}/driver",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "races",
+            "{{raceId}}",
+            "driver"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get drivers for the race",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/races/{{raceId}}/driver",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "races",
+            "{{raceId}}",
+            "driver"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create webhook",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Response status 201 Created', function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\npm.test('Got valid webhook id', function () {\r\n    pm.expect(json.id).to.be.a('string');\r\n    pm.environment.set(\"webhookId\", json.id);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"userID\": \"{{userId}}\", \r\n  \"webhookURL\": \"https://myapp.com/webhook/race-finished\",\r\n  \"webhookType\": \"PENDING\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/webhooks",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "webhooks"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update webhook",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Response status 200 OK', function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test('Response body contains expected data', function () {\r\n    const jsonData = pm.response.json();\r\n    pm.expect(jsonData.webhook_type).to.eql('BATCH_COMPLETED');\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"userID\": \"{{userId}}\", \r\n  \"webhookURL\": \"https://myapp.com/webhook/race-finished\",\r\n  \"webhookType\": \"BATCH_COMPLETED\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/webhooks/{{webhookId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "webhooks",
+            "{{webhookId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete webhook",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Response status 204 OK', function () {\r\n    pm.response.to.have.status(204);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/webhooks/{{webhookId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "webhooks",
+            "{{webhookId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get unexisting webhook",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Response status 404 Not Found', function () {\r\n    pm.response.to.have.status(404);\r\n});\r\nconst json = pm.response.json();\r\npm.test('Response body corresponds to the ProblemDetail format', function () {\r\n    pm.expect(json).to.have.property('title');\r\n    pm.expect(json).to.have.property('status', 404);\r\n    pm.expect(json).to.have.property('detail');\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/webhooks/{{webhookId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "webhooks",
+            "{{webhookId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  }
+}
