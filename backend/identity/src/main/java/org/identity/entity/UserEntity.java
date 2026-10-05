@@ -25,11 +25,11 @@ public class UserEntity {
     String email;
     @Column(nullable = false, length = 13)
     String phoneNumber;
-    @Column(nullable = false, length = 5)
+    @Column(nullable = false, length = 50)
     String role;
-    @Column(nullable = false, length = 60)
+    @Column(nullable = false)
     String password;
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 50)
     String userStatus;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
