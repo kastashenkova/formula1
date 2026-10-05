@@ -4,14 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+import formula1.notification.service.WhatsAppSender;
 import org.identity.entity.UserEntity;
 import org.identity.entity.VerificationToken;
 import org.identity.enums.Role;
@@ -21,32 +21,23 @@ import org.identity.exception.InvalidUserStateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClientResponseException;
-import org.springframework.web.client.RestTemplate;
 
 @ExtendWith(MockitoExtension.class)
 class PhoneVerificationStrategyTest {
 
     @Mock
-    private RestTemplate restTemplate;
+    private WhatsAppSender whatsAppSender;
 
     private PhoneVerificationStrategy strategy;
 
     @BeforeEach
     void setUp() {
-        strategy = new PhoneVerificationStrategy(restTemplate);
+        strategy = new PhoneVerificationStrategy(whatsAppSender);
         ReflectionTestUtils.setField(strategy, "expiryHours", 24L);
-        ReflectionTestUtils.setField(strategy, "whatsappToken", "whatsapp-token");
-        ReflectionTestUtils.setField(strategy, "phoneNumberId", "1111111111111111");
-        ReflectionTestUtils.setField(strategy, "whatsappApiUrl", "https://graph.facebook.com/v25.0");
     }
 
     @Test
@@ -91,36 +82,13 @@ class PhoneVerificationStrategyTest {
                 LocalDateTime.now());
 
         String phoneNumber = "+380980137037";
-        String expectedUrl = "https://graph.facebook.com/v25.0/1111111111111111/messages";
-
-        when(restTemplate.postForEntity(eq(expectedUrl), any(HttpEntity.class), eq(String.class)))
-                .thenReturn(ResponseEntity.ok().build());
 
         strategy.sendMessage(phoneNumber, token.getToken());
 
-        ArgumentCaptor<HttpEntity<Map<String, Object>>> entityCaptor = ArgumentCaptor.forClass(HttpEntity.class);
-
-        verify(restTemplate).postForEntity(eq(expectedUrl), entityCaptor.capture(), eq(String.class));
-
-        HttpEntity<Map<String, Object>> capturedEntity = entityCaptor.getValue();
-
-        HttpHeaders headers = capturedEntity.getHeaders();
-        assertEquals(MediaType.APPLICATION_JSON, headers.getContentType());
-        assertEquals("Bearer whatsapp-token", headers.getFirst(HttpHeaders.AUTHORIZATION));
-
-        Map<String, Object> payload = capturedEntity.getBody();
-        assertNotNull(payload);
-        assertEquals("whatsapp", payload.get("messaging_product"));
-        assertEquals("380980137037", payload.get("to"));
-        assertEquals("template", payload.get("type"));
-
-        Map<String, Object> template = (Map<String, Object>) payload.get("template");
-        assertEquals("verificaion_link", template.get("name"));
-
-        List<Map<String, Object>> components = (List<Map<String, Object>>) template.get("components");
-        List<Map<String, Object>> parameters = (List<Map<String, Object>>) components.get(0).get("parameters");
-
-        assertEquals("test-token", parameters.getFirst().get("text"));
+        verify(whatsAppSender, times(1))
+                .sendMessage(eq(testUser.getPhoneNumber()),
+                        anyString(),
+                        anyString());
     }
 
     @Test
@@ -139,16 +107,19 @@ class PhoneVerificationStrategyTest {
                 TokenType.PHONE_VERIFICATION.toString(),
                 LocalDateTime.now());
 
-        String expectedUrl = "https://graph.facebook.com/v25.0/1111111111111111/messages";
 
         RestClientResponseException mockException = new RestClientResponseException(
                 "Bad Request", 400, "Bad Request", null, "Invalid phone number".getBytes(), null);
 
-        when(restTemplate.postForEntity(eq(expectedUrl), any(HttpEntity.class), eq(String.class)))
-                .thenThrow(mockException);
+        doThrow(mockException)
+                .when(whatsAppSender)
+                .sendMessage(eq(testUser.getPhoneNumber()), anyString(), eq(token.getToken()));
 
         assertThrows(RestClientResponseException.class,
-                () -> strategy.sendMessage("+380980137037", token.getToken()));
+                () -> strategy.sendMessage(testUser.getPhoneNumber(), token.getToken()));
+
+        verify(whatsAppSender, times(1))
+                .sendMessage(eq(testUser.getPhoneNumber()), eq("verificaion_link"), eq(token.getToken()));
     }
 
     @Test

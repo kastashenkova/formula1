@@ -1,9 +1,8 @@
 package org.identity.service.internal;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import formula1.notification.service.WhatsAppSender;
 import org.identity.entity.UserEntity;
 import org.identity.entity.VerificationToken;
 import org.identity.enums.TokenType;
@@ -12,33 +11,19 @@ import org.identity.exception.InvalidUserStateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientResponseException;
-import org.springframework.web.client.RestTemplate;
 
 @Component
 public class PhoneVerificationStrategy implements VerificationStrategy {
     private static final Logger log = LoggerFactory.getLogger(PhoneVerificationStrategy.class);
 
-    @Value("${phone.token.expiry.date}")
+    @Value("${formula1.notification.phone-token-expiry-hours}")
     private long expiryHours;
 
-    @Value("${whatsapp.api.token}")
-    private String whatsappToken;
+    private final WhatsAppSender whatsAppSender;
 
-    @Value("${whatsapp.api.phone-number-id}")
-    private String phoneNumberId;
-
-    @Value("${whatsapp.api.url}")
-    private String whatsappApiUrl;
-
-    private final RestTemplate restTemplate;
-
-    public PhoneVerificationStrategy(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public PhoneVerificationStrategy(WhatsAppSender whatsAppSender) {
+        this.whatsAppSender = whatsAppSender;
     }
 
     @Override
@@ -49,7 +34,6 @@ public class PhoneVerificationStrategy implements VerificationStrategy {
     @Override
     public VerificationToken createVerificationToken(UserEntity user) {
         String token = UUID.randomUUID().toString();
-
         LocalDateTime expirationTime = LocalDateTime.now().plusHours(expiryHours);
 
         return new VerificationToken(
@@ -63,39 +47,9 @@ public class PhoneVerificationStrategy implements VerificationStrategy {
 
     @Override
     public void sendMessage(String to, String token) {
-        String url = String.format("%s/%s/messages", whatsappApiUrl, phoneNumberId);
+        whatsAppSender.sendMessage(to, "verificaion_link", token);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(whatsappToken);
-
-        String recipient = to.replaceAll("[^0-9]", "");
-
-        Map<String, Object> payload = Map.of(
-                "messaging_product", "whatsapp",
-                "to", recipient,
-                "type", "template",
-                "template", Map.of(
-                        "name", "verificaion_link",
-                        "language", Map.of("code", "en"),
-                        "components", List.of(Map.of(
-                                "type", "button",
-                                "sub_type", "url",
-                                "index", "0",
-                                "parameters", List.of(Map.of(
-                                        "type", "text",
-                                        "text", token
-                                ))
-                        ))
-                )
-        );
-
-        try {
-            restTemplate.postForEntity(url, new HttpEntity<>(payload, headers), String.class);
-        } catch (RestClientResponseException e) {
-            log.error("WhatsApp API error {}: {}", e.getStatusCode(), e.getResponseBodyAsString());
-            throw e;
-        }
+        log.info("Phone confirmation sent to {}", to);
     }
 
     @Override

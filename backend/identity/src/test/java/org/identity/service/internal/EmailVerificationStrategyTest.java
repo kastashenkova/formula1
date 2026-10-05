@@ -4,9 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
+import formula1.notification.service.EmailSender;
 import org.identity.entity.UserEntity;
 import org.identity.entity.VerificationToken;
 import org.identity.enums.Role;
@@ -16,18 +20,15 @@ import org.identity.exception.InvalidUserStateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class EmailVerificationStrategyTest {
 
     @Mock
-    private JavaMailSender mailSender;
+    private EmailSender mailSender;
 
     private EmailVerificationStrategy strategy;
 
@@ -79,16 +80,12 @@ class EmailVerificationStrategyTest {
                 TokenType.EMAIL_VERIFICATION.toString(),
                 LocalDateTime.now());
 
-        strategy.sendMessage("k.astashenkova@ukma.edu.ua", token.getToken());
+        strategy.sendMessage(testUser.getEmail(), token.getToken());
 
-        ArgumentCaptor<SimpleMailMessage> messageCaptor = ArgumentCaptor.forClass(SimpleMailMessage.class);
-        verify(mailSender).send(messageCaptor.capture());
-
-        SimpleMailMessage sentMessage = messageCaptor.getValue();
-        assert sentMessage.getTo() != null;
-        assertEquals("k.astashenkova@ukma.edu.ua", sentMessage.getTo()[0]);
-        assert sentMessage.getText() != null;
-        assertTrue(sentMessage.getText().contains("token=test-token"));
+        verify(mailSender, times(1))
+                .sendEmail(eq(testUser.getEmail()),
+                anyString(),
+                anyString());
     }
 
     @Test

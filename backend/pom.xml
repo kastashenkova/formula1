@@ -26,6 +26,7 @@
         <module>processing</module>
         <module>streaming</module>
         <module>application</module>
+        <module>custom-notifier-starter</module>
     </modules>
 
     <dependencyManagement>
