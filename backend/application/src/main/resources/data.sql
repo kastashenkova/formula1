@@ -1,0 +1,2 @@
+INSERT INTO users (id, email, phone_number, role, password, user_status)
+VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'astashenkova.katya@gmail.com', '+380980137037', 'ADMIN', '$2a$12$8qLKKfBGcVQ9ekqQgM6ekOtTnEmxd8jU8PSH1A5DNYrazldOHyVpm', 'ACTIVE'); /*password: admin123*/
