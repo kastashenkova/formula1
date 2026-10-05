@@ -1,6 +1,10 @@
 package org.example.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -10,6 +14,7 @@ import org.identity.validation.OnUpdate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -45,6 +50,10 @@ public class RaceController {
     @Operation(summary = "Race creation",
             description = "Create a new race")
     @PreAuthorize("hasRole('ADMIN')")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Race created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid data request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+    })
     public ResponseEntity<RaceResponseDto> create(@Validated(OnCreate.class)
                                                     @RequestBody RaceRequestDto requestDto) {
         RaceResponseDto created = raceService.addRace(requestDto);
@@ -62,6 +71,11 @@ public class RaceController {
     @Operation(summary = "Race update",
             description = "Update an existing race")
     @PreAuthorize("hasRole('ADMIN')")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Race updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid data request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "404", description = "Race not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+    })
     public ResponseEntity<RaceResponseDto> update(@PathVariable UUID id,
                                                   @Validated(OnUpdate.class)
                                                   @RequestBody RaceRequestDto requestDto) {
@@ -73,6 +87,10 @@ public class RaceController {
     @GetMapping("/{id}")
     @Operation(summary = "Get race",
             description = "Get an existing race by its id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Race found"),
+            @ApiResponse(responseCode = "404", description = "Race not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+    })
     public ResponseEntity<RaceResponseDto> getRace(@PathVariable UUID id) {
         RaceResponseDto race = raceService.getRace(id);
 
@@ -82,6 +100,9 @@ public class RaceController {
     @GetMapping
     @Operation(summary = "Get races",
             description = "Get all existing races")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Races list"),
+    })
     public ResponseEntity<Page<RaceResponseDto>> getRaces(Pageable pageable) {
         Page<RaceResponseDto> races = raceService.getRaces(pageable);
 
@@ -92,6 +113,10 @@ public class RaceController {
     @Operation(summary = "Delete a certain race",
             description = "Delete a race by its id")
     @PreAuthorize("hasRole('ADMIN')")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Race deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Race not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+    })
     public ResponseEntity<Void> deleteRace(@PathVariable UUID id) {
         raceService.deleteRace(id);
         return ResponseEntity.noContent().build();
@@ -101,6 +126,11 @@ public class RaceController {
     @Operation(summary = "Add driver",
             description = "Add driver to the existing race")
     @PreAuthorize("hasRole('ADMIN')")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Driver created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid data request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "404", description = "Race not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+    })
     public ResponseEntity<DriverResponseDto> addDriver(
             @PathVariable UUID id,
             @Valid @RequestBody DriverRequestDto request
@@ -112,6 +142,9 @@ public class RaceController {
     @GetMapping("/{id}/driver")
     @Operation(summary = "Get drivers",
             description = "Get drivers of the existing race")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Race drivers list"),
+    })
     public Page<DriverResponseDto> getDrivers(@PathVariable UUID id, Pageable pageable) {
         return raceService.getDrivers(id, pageable);
     }
@@ -121,6 +154,11 @@ public class RaceController {
             description = "Delete driver from the existing race")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Driver deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Driver not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "400", description = "Driver does not belong to the specified race", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+    })
     public void deleteDriver(@PathVariable UUID raceId, @PathVariable UUID driverId) {
         raceService.deleteDriver(raceId, driverId);
     }
