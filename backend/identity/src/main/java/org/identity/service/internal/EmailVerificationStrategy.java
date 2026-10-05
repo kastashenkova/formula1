@@ -1,5 +1,6 @@
 package org.identity.service.internal;
 
+import formula1.notification.service.EmailSender;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.identity.entity.UserEntity;
@@ -7,23 +8,25 @@ import org.identity.entity.VerificationToken;
 import org.identity.enums.TokenType;
 import org.identity.enums.UserStatus;
 import org.identity.exception.InvalidUserStateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EmailVerificationStrategy implements VerificationStrategy {
-    private final JavaMailSender mailSender;
+    private static final Logger log = LoggerFactory.getLogger(EmailVerificationStrategy.class);
 
-    @Value("${email.token.expiry.date}")
+    private final EmailSender emailSender;
+
+    @Value("${formula1.notification.email-token-expiry-hours}")
     private long expiryHours;
 
     @Value("${app.frontend.url}")
     private String frontendUrl;
 
-    public EmailVerificationStrategy(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
+    public EmailVerificationStrategy(EmailSender emailSender) {
+        this.emailSender = emailSender;
     }
 
     @Override
@@ -49,11 +52,12 @@ public class EmailVerificationStrategy implements VerificationStrategy {
     @Override
     public void sendMessage(String to, String token) {
         String confirmationUrl = frontendUrl + "/auth/confirm-email?token=" + token;
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject("Confirm your email to use account in Formula1 App");
-        message.setText("Click the link to confirm your email: " + confirmationUrl);
-        mailSender.send(message);
+        String subject = "Confirm your email to use account in Formula1 App";
+        String body = "Click the link to confirm your email: " + confirmationUrl;
+
+        emailSender.sendEmail(to, subject, body);
+
+        log.info("Email confirmation sent to {}", to);
     }
 
     @Override
