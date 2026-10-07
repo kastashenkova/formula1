@@ -18,5 +18,27 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build, Test, PMD Check and Install
+      - name: Build Project
         run: mvn --batch-mode install
+
+      - name: Check for Exception Swallowing
+        run: |
+          python3 -c "
+          import os, re, sys
+          pattern = re.compile(r'catch\s*\([^)]+\)\s*\{\s*\}', re.MULTILINE)
+          found = False
+          
+          for root, _, files in os.walk('.'):
+              for file in files:
+                  if file.endswith('.java'):
+                      path = os.path.join(root, file)
+                      with open(path, 'r', encoding='utf-8') as f:
+                          if pattern.search(f.read()):
+                              print(f'ERROR: Empty catch found in file {path}')
+                              found = True
+          if found:
+              print('Build ended. Add logging or fix exception!')
+              sys.exit(1)
+          
+          print('Audit complete')
+          "
