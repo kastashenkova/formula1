@@ -14,7 +14,6 @@ import org.streaming.dto.RaceRequestDto;
 import org.streaming.dto.RaceResponseDto;
 import org.streaming.entity.DriverEntity;
 import org.streaming.entity.RaceEntity;
-import org.streaming.exception.DuplicateRaceException;
 import org.streaming.repository.DriverRepository;
 import org.streaming.repository.RaceRepository;
 import org.streaming.service.RaceService;
