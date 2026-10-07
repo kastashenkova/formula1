@@ -18,8 +18,5 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Run PMD Static Code Analysis
-        run: mvn pmd:check
-
-      - name: Build with Maven
-        run: mvn --batch-mode --update-snapshots verify
+      - name: Build, Test, PMD Check and Install
+        run: mvn --batch-mode install
