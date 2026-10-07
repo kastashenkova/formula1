@@ -1,0 +1,227 @@
+package org.example.controller;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.identity.security.JwtUtil;
+import org.processing.dto.BatchRequestDto;
+import org.processing.dto.BatchResponseDto;
+import org.processing.exception.ProcessingExceptionHandler;
+import org.processing.service.BatchService;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+@WebMvcTest(BatchController.class)
+@Import(ProcessingExceptionHandler.class)
+@TestConstructor(autowireMode = ALL)
+public class BatchControllerTest {
+
+    private final MockMvc mockMvc;
+
+    @MockitoBean
+    private JwtUtil jwtUtil;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule());
+
+    @MockitoBean
+    private BatchService batchService;
+
+    public BatchControllerTest(MockMvc mockMvc) {
+        this.mockMvc = mockMvc;
+    }
+
+    @Test
+    @DisplayName("Should return list with with example race session")
+    void getBatches_filledPage_Success() throws Exception {
+        BatchResponseDto batchExample = new BatchResponseDto(
+                UUID.randomUUID(),
+                LocalDateTime.now(),
+                null
+        );
+
+        Pageable pageable = PageRequest.of(0, 10);
+        when(batchService.getBatches(pageable)).thenReturn(new PageImpl<>(List.of(batchExample)));
+
+        mockMvc.perform(get("/batches")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(1));
+
+        verify(batchService, times(1)).getBatches(pageable);
+    }
+
+    @Test
+    @DisplayName("Should return empty list")
+    void getBatches_emptyPage_Success() throws Exception {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(batchService.getBatches(pageable)).thenReturn(new PageImpl<>(List.of()));
+
+        mockMvc.perform(get("/batches")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content").isEmpty());
+
+        verify(batchService, times(1)).getBatches(pageable);
+    }
+
+    @Test
+    @DisplayName("Should return list paginated with default parameters")
+    void getBatches_defaultParameters_Success() throws Exception {
+        mockMvc.perform(get("/batches"))
+                .andExpect(status().isOk());
+
+        verify(batchService, times(1)).getBatches(any(Pageable.class));
+    }
+
+    @Test
+    @DisplayName("Should return list paginated with default parameters")
+    void uploadRace_relevantData_Success() throws Exception {
+        BatchRequestDto newBatchRequestDto = new BatchRequestDto(
+                "exampleRace",
+                2025
+        );
+
+        BatchResponseDto newBatchResponseDto = new BatchResponseDto(
+                UUID.randomUUID(),
+                LocalDateTime.now(),
+                null
+        );
+
+        when(batchService.uploadBatch(newBatchRequestDto)).thenReturn(newBatchResponseDto);
+
+        mockMvc.perform(post("/batches")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(newBatchRequestDto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.batch_id").value(newBatchResponseDto.batchId().toString()))
+                .andExpect(header().exists("Location"))
+                .andExpect(header().string("Location",
+                        org.hamcrest.Matchers.containsString("/batches/"
+                                + newBatchResponseDto.batchId())));
+
+        verify(batchService, times(1)).uploadBatch(newBatchRequestDto);
+    }
+
+    @Test
+    @DisplayName("Should return 400 Bad Request when year is more than expected maximum")
+    void uploadRace_tooBigYear_ReturnsBadRequest() throws Exception {
+        BatchRequestDto invalidRequest = new BatchRequestDto(
+                "exampleRace",
+                2027
+        );
+
+        mockMvc.perform(post("/batches")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(batchService);
+    }
+
+    @Test
+    @DisplayName("Should return 400 Bad Request when year is less than expected minimum")
+    void uploadRace_tooSmallYear_ReturnsBadRequest() throws Exception {
+        BatchRequestDto invalidRequest = new BatchRequestDto(
+                "exampleRace",
+                1949
+        );
+
+        mockMvc.perform(post("/batches")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(batchService);
+    }
+
+    @Test
+    @DisplayName("Should return 400 Bad Request when race name is too short")
+    void uploadRace_tooShortRaceName_ReturnsBadRequest() throws Exception {
+        BatchRequestDto invalidRequest = new BatchRequestDto(
+                "rc",
+                2025
+        );
+
+        mockMvc.perform(post("/batches")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(batchService);
+    }
+
+    @Test
+    @DisplayName("Should return 400 Bad Request when race name is too long")
+    void uploadRace_tooLongRaceName_ReturnsBadRequest() throws Exception {
+        BatchRequestDto invalidRequest = new BatchRequestDto(
+                "invalid-race-name-here-invalid-race-name-here-invalid-race-name-here-invalid-race-name-here-invalid-race-name-here",
+                2024
+        );
+
+        mockMvc.perform(post("/batches")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(batchService);
+    }
+
+    @Test
+    @DisplayName("Should return 400 Bad Request when race name is null")
+    void uploadRace_nullRaceName_ReturnsBadRequest() throws Exception {
+        BatchRequestDto invalidRequest = new BatchRequestDto(
+                null,
+                null
+        );
+
+        mockMvc.perform(post("/batches")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(batchService);
+    }
+
+    @Test
+    @DisplayName("Should return 400 Bad Request when request body is missing")
+    void uploadRace_missingBody_ReturnsBadRequest() throws Exception {
+        mockMvc.perform(post("/batches")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(batchService);
+    }
+}
