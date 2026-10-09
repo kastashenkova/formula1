@@ -1,4 +1,4 @@
-name: Java CI
+name: Java CI/CD
 
 on:
   - push
@@ -10,6 +10,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 25
         uses: actions/setup-java@v4
@@ -17,6 +19,13 @@ jobs:
           java-version: '25'
           distribution: 'temurin'
           cache: maven
+
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
 
       - name: Build Project
         run: mvn --batch-mode install
@@ -42,3 +51,13 @@ jobs:
           
           print('Audit complete')
           "
+
+      - name: Analyze with SonarQube
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=maven-scan
+
+      - name: Build Docker image for application
+        run: mvn spring-boot:build-image -pl backend/application

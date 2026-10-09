@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: 03-create-webhooks-table
+      author: formula1_team
+      changes:
+        - createSequence:
+            sequenceName: webhooks_seq
+            startValue: 1
+            incrementBy: 50
+        - createTable:
+            tableName: webhooks
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: webhook_url
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: webhook_type
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: webhooks
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_webhooks_users

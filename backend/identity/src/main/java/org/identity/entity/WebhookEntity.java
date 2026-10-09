@@ -46,6 +46,6 @@ public class WebhookEntity {
     @NonNull
     private LocalDateTime updatedAt;
 
-    protected  WebhookEntity() {
+    protected WebhookEntity() {
     }
 }

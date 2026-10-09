@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: 02-create-verification-tokens-table
+      author: formula1_team
+      changes:
+        - createTable:
+            tableName: verification_tokens
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: token
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: token_type
+                  type: varchar(18)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expiry_date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: verification_tokens
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_verification_tokens_users

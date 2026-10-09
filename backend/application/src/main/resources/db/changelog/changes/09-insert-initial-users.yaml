@@ -1,0 +1,93 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-initial-users
+      context: dev
+      author: k.astashenkova
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'
+              - column:
+                  name: email
+                  value: 'astashenkova.katya@gmail.com'
+              - column:
+                  name: phone_number
+                  value: '+380980137037'
+              - column:
+                  name: role
+                  value: 'ADMIN'
+              - column:
+                  name: password
+                  value: '$argon2id$v=19$m=16384,t=3,p=1$LQ+j5ohwx66QTcM6qV/1vw$68zT3t9X2EVBRtBNwVEWQrv6lX7kR7V1dUdyqmJka7k' # admin123
+              - column:
+                  name: user_status
+                  value: 'ACTIVE'
+
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12'
+              - column:
+                  name: email
+                  value: 'ast.katrya@gmail.com'
+              - column:
+                  name: phone_number
+                  value: '+358408587404'
+              - column:
+                  name: role
+                  value: 'USER'
+              - column:
+                  name: password
+                  value: '$argon2id$v=19$m=16384,t=3,p=1$+1A7MorgsgaN0a48bYKvYQ$SWz2NDyszKdyRLW8sb4t6w1eApz30evDAdoqw0mh8ww' # user123
+              - column:
+                  name: user_status
+                  value: 'ACTIVE'
+
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13'
+              - column:
+                  name: email
+                  value: 'k.astashenkova@ukma.edu.ua'
+              - column:
+                  name: phone_number
+                  value: '+358408587404'
+              - column:
+                  name: role
+                  value: 'USER'
+              - column:
+                  name: password
+                  value: '$argon2id$v=19$m=16384,t=3,p=1$wZBLTp/N0AfN3HtjiREjjg$WPLACiqE093+nZsfcRe+hWEv0EUIwAbSkF12pSR+wM0' # kateryna123
+              - column:
+                  name: user_status
+                  value: 'ACTIVE'
+
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14'
+              - column:
+                  name: email
+                  value: 'd.dzhos@ukma.edu.ua'
+              - column:
+                  name: phone_number
+                  value: '+380980137037'
+              - column:
+                  name: role
+                  value: 'ADMIN'
+              - column:
+                  name: password
+                  value: '$argon2id$v=19$m=16384,t=3,p=1$2oFCDdQPpDlWuR9aWS+s6A$UNgc+i3J00zVrTsgt6PngKQGpdTE8303x3xTIIOinTI' # dmytro123
+              - column:
+                  name: user_status
+                  value: 'ACTIVE'

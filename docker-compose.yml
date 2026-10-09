@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: formula1-db
+    environment:
+      POSTGRES_DB: formula1_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DOCKER_PASS}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d formula1_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - f1-network
+
+  backend:
+    build: .
+    container_name: formula1-backend
+    ports:
+      - "8081:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - DB_URL=jdbc:postgresql://postgres:5432/formula1_dev
+      - DB_USERNAME=${DOCKER_USERNAME}
+      - DB_PASSWORD=${DOCKER_PASS}
+      - FRONTEND_URL=http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - f1-network
+
+volumes:
+  postgres_data:
+
+networks:
+  f1-network:
+    driver: bridge

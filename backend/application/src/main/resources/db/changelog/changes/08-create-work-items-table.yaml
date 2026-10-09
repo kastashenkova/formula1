@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: 08-create-work-items-table
+      author: formula1_team
+      changes:
+        - createTable:
+            tableName: work_items
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: batch_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payload
+                  type: jsonb
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: work_items
+            baseColumnNames: batch_id
+            referencedTableName: batches
+            referencedColumnNames: batch_id
+            constraintName: fk_work_items_batches
