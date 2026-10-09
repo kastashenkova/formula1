@@ -1,0 +1,8 @@
+  .git
+  **/target
+  **/node_modules
+  frontend/node
+  backend-logs
+  container-logs*
+  *.txt
+  .idea
