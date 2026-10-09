@@ -20,13 +20,6 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
       - name: Build Project
         run: mvn --batch-mode install
 
@@ -51,12 +44,6 @@ jobs:
           
           print('Audit complete')
           "
-
-      - name: Analyze with SonarQube
-        if: env.SONAR_TOKEN != ''
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=kastashenkova_formula1 -Dsonar.organization=kastashenkova
 
       - name: Build Docker image for application
         run: mvn spring-boot:build-image -pl backend/application
