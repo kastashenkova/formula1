@@ -1,8 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: insert-initial-users
-      context: dev
-      author: k.astashenkova
+      author: formula1_team
       changes:
         - insert:
             tableName: users
