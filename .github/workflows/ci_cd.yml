@@ -1,4 +1,4 @@
-name: Java CI
+name: Java CI/CD
 
 on:
   - push
@@ -10,6 +10,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 25
         uses: actions/setup-java@v4
@@ -42,3 +44,6 @@ jobs:
           
           print('Audit complete')
           "
+
+      - name: Build Docker image for application
+        run: mvn spring-boot:build-image -pl backend/application

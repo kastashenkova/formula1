@@ -12,7 +12,6 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -20,7 +19,7 @@ import org.springframework.util.StringUtils;
 public class JwtUtil {
     private final SecretKey secretKey;
 
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
     @Value("${jwt.expiration}")
     private long expiration;
@@ -31,7 +30,7 @@ public class JwtUtil {
     @Value("${jwt.audience}")
     private String audience;
 
-    public JwtUtil(@Value("${jwt.secret}") String secret, UserDetailsService userDetailsService) {
+    public JwtUtil(@Value("${jwt.secret}") String secret, CustomUserDetailsService userDetailsService) {
         secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.userDetailsService = userDetailsService;
     }
