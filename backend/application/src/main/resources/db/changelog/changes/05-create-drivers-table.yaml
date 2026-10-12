@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: 05-create-drivers-table
+      author: formula1_team
+      changes:
+        - createTable:
+            tableName: drivers
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: driver_number
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: full_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: race_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: drivers
+            baseColumnNames: race_id
+            referencedTableName: races
+            referencedColumnNames: race_id
+            constraintName: fk_drivers_races

@@ -29,12 +29,12 @@ public class WorkItemEntity {
     @NonNull
     private BatchEntity batch;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     @NonNull
     private String status;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "jsonb", nullable = false)
     @NonNull
     private JsonNode payload; // each batch define it's JSON schema, can be reused for different operations
 

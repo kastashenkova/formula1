@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 07-create-batches-table
+      author: formula1_team
+      changes:
+        - createTable:
+            tableName: batches
+            columns:
+              - column:
+                  name: batch_id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_at
+                  type: timestamp
