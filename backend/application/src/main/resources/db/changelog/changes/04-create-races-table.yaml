@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 04-create-races-table
+      author: formula1_team
+      changes:
+        - createTable:
+            tableName: races
+            columns:
+              - column:
+                  name: race_id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: race_name
+                  type: varchar(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: race_date
+                  type: timestamp
+                  constraints:
+                    nullable: false

@@ -34,3 +34,4 @@ build/
 frontend/.firebase/
 frontend/node/
 /backend/application/logs/
+.env

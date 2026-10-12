@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: 01-create-users-table
+      author: formula1_team
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(254)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: phone_number
+                  type: varchar(13)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
