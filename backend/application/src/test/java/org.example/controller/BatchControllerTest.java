@@ -17,7 +17,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.identity.security.JwtUtil;
 import org.processing.dto.BatchRequestDto;
 import org.processing.dto.BatchResponseDto;
-import org.processing.exception.ProcessingExceptionHandler;
 import org.processing.service.BatchService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +24,6 @@ import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,7 +34,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(BatchController.class)
-@Import(ProcessingExceptionHandler.class)
 @TestConstructor(autowireMode = ALL)
 public class BatchControllerTest {
 

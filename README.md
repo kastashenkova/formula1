@@ -204,9 +204,6 @@ Response example
 ## Swagger
 http://localhost:8080/api/v1/swagger-ui/index.html
 
-## H2 Console
-http://localhost:8080/api/v1/h2-console
-
 ## Run
 ### MacOS/Linux
 ```bash
@@ -216,4 +213,9 @@ bash start
 ### Windows
 ```bash
 .\start.cmd
+```
+
+### Docker
+```bash
+docker-compose up --build
 ```

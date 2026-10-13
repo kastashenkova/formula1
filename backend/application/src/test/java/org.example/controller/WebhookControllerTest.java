@@ -21,9 +21,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import org.identity.exception.IdentityExceptionHandler;
 import org.identity.security.JwtUtil;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.identity.dto.WebhookRequestDto;
 import org.identity.dto.WebhookResponseDto;
@@ -38,7 +36,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(WebhookController.class)
-@Import(IdentityExceptionHandler.class)
 @TestConstructor(autowireMode = ALL)
 public class WebhookControllerTest {
 

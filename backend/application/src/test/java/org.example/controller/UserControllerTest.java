@@ -15,14 +15,12 @@ import org.identity.dto.UserRegistrationRequestDto;
 import org.identity.dto.UserResponseDto;
 import org.identity.enums.Role;
 import org.identity.enums.UserStatus;
-import org.identity.exception.IdentityExceptionHandler;
 import org.identity.security.JwtUtil;
 import org.identity.service.AuthenticationService;
 import org.identity.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.TestConstructor;
@@ -30,7 +28,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(UserController.class)
-@Import(IdentityExceptionHandler.class)
 @TestConstructor(autowireMode = ALL)
 public class UserControllerTest {
 

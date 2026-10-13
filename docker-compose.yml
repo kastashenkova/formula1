@@ -6,14 +6,14 @@ services:
     container_name: formula1-db
     environment:
       POSTGRES_DB: formula1_dev
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DOCKER_PASS}
+      POSTGRES_USER: ${DOCKER_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DOCKER_PASS:?DOCKER_PASS is required}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d formula1_dev"]
+      test: [ "CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\"" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -21,16 +21,18 @@ services:
       - f1-network
 
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: formula1-backend
     ports:
       - "8081:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
-      - DB_URL=jdbc:postgresql://postgres:5432/formula1_dev
-      - DB_USERNAME=${DOCKER_USERNAME}
-      - DB_PASSWORD=${DOCKER_PASS}
-      - FRONTEND_URL=http://localhost:3000
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://postgres:5432/formula1_dev
+      DB_USERNAME: ${DOCKER_USERNAME:-postgres}
+      DB_PASSWORD: ${DOCKER_PASS:?DOCKER_PASS is required}
+      FRONTEND_URL: http://localhost:3000
     depends_on:
       postgres:
         condition: service_healthy

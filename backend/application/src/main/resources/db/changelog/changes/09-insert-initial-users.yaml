@@ -42,7 +42,7 @@ databaseChangeLog:
                   value: 'USER'
               - column:
                   name: password
-                  value: '$argon2id$v=19$m=16384,t=3,p=1$+1A7MorgsgaN0a48bYKvYQ$SWz2NDyszKdyRLW8sb4t6w1eApz30evDAdoqw0mh8ww' # user123
+                  value: '$argon2id$v=19$m=16384,t=3,p=1$QnP8A0COqpjF+KtYP4ZXow$e+6tsZGcJ0lmPVrWDGGjF/JOxTmfXgU33ttGUxTZP/A' # kateryna123
               - column:
                   name: user_status
                   value: 'ACTIVE'
