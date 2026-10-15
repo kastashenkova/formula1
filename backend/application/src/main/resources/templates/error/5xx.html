@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
-<head th:replace="~{fragments/layout :: head(#{error.500.title})}"></head>
+<head th:replace="~{fragments/layout :: head(#{error.500.title})}">
+    <title th:text="${title}">Internal server error</title>
+</head>
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 

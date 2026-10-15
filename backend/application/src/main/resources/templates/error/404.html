@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
-<head th:replace="~{fragments/layout :: head(#{error.404.title})}"></head>
+<head th:replace="~{fragments/layout :: head(#{error.404.title})}">
+    <title th:text="${title}">404 Not Found</title>
+</head>
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 

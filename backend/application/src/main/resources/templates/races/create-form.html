@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:replace="~{fragments/layout :: head(#{form.title})}"></head>
+<head th:replace="~{fragments/layout :: head(#{form.title})}">
+    <title th:text="${title}">Race Form</title>
+</head>
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 <main class="container is-max-desktop mt-5">

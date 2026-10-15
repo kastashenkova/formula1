@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:replace="~{fragments/layout :: head(#{login.title})}"></head>
+<head th:replace="~{fragments/layout :: head(#{login.title})}">
+    <title th:text="${title}">Login</title>
+</head>
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 <main class="container is-max-desktop mt-5">
