@@ -67,7 +67,7 @@ public class BatchControllerTest {
         Pageable pageable = PageRequest.of(0, 10);
         when(batchService.getBatches(pageable)).thenReturn(new PageImpl<>(List.of(batchExample)));
 
-        mockMvc.perform(get("/batches")
+        mockMvc.perform(get("/api/batches")
                         .param("page", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())
@@ -84,7 +84,7 @@ public class BatchControllerTest {
 
         when(batchService.getBatches(pageable)).thenReturn(new PageImpl<>(List.of()));
 
-        mockMvc.perform(get("/batches")
+        mockMvc.perform(get("/api/batches")
                         .param("page", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())
@@ -97,7 +97,7 @@ public class BatchControllerTest {
     @Test
     @DisplayName("Should return list paginated with default parameters")
     void getBatches_defaultParameters_Success() throws Exception {
-        mockMvc.perform(get("/batches"))
+        mockMvc.perform(get("/api/batches"))
                 .andExpect(status().isOk());
 
         verify(batchService, times(1)).getBatches(any(Pageable.class));
@@ -119,14 +119,14 @@ public class BatchControllerTest {
 
         when(batchService.uploadBatch(newBatchRequestDto)).thenReturn(newBatchResponseDto);
 
-        mockMvc.perform(post("/batches")
+        mockMvc.perform(post("/api/batches")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newBatchRequestDto)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.batch_id").value(newBatchResponseDto.batchId().toString()))
                 .andExpect(header().exists("Location"))
                 .andExpect(header().string("Location",
-                        org.hamcrest.Matchers.containsString("/batches/"
+                        org.hamcrest.Matchers.containsString("/api/batches/"
                                 + newBatchResponseDto.batchId())));
 
         verify(batchService, times(1)).uploadBatch(newBatchRequestDto);
@@ -140,7 +140,7 @@ public class BatchControllerTest {
                 2027
         );
 
-        mockMvc.perform(post("/batches")
+        mockMvc.perform(post("/api/batches")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -156,7 +156,7 @@ public class BatchControllerTest {
                 1949
         );
 
-        mockMvc.perform(post("/batches")
+        mockMvc.perform(post("/api/batches")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -172,7 +172,7 @@ public class BatchControllerTest {
                 2025
         );
 
-        mockMvc.perform(post("/batches")
+        mockMvc.perform(post("/api/batches")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -188,7 +188,7 @@ public class BatchControllerTest {
                 2024
         );
 
-        mockMvc.perform(post("/batches")
+        mockMvc.perform(post("/api/batches")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -204,7 +204,7 @@ public class BatchControllerTest {
                 null
         );
 
-        mockMvc.perform(post("/batches")
+        mockMvc.perform(post("/api/batches")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -215,7 +215,7 @@ public class BatchControllerTest {
     @Test
     @DisplayName("Should return 400 Bad Request when request body is missing")
     void uploadRace_missingBody_ReturnsBadRequest() throws Exception {
-        mockMvc.perform(post("/batches")
+        mockMvc.perform(post("/api/batches")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 

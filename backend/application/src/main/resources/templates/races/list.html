@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+<head th:replace="~{fragments/layout :: head(#{races.title})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container mt-5">
+    <div th:if="${successMessage}" class="notification is-success is-light" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="notification is-danger is-light" th:text="${errorMessage}"></div>
+
+    <div class="is-flex is-justify-content-space-between is-align-items-center mb-5">
+        <h1 class="title is-3 mb-0" th:text="#{races.heading}"></h1>
+        <div>
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/races/new}" class="button is-primary" th:text="#{races.add}"></a>
+        </div>
+    </div>
+
+    <div class="box">
+        <p th:if="${#lists.isEmpty(races)}" class="has-text-grey" th:text="#{races.empty}"></p>
+
+        <table th:unless="${#lists.isEmpty(races)}" class="table is-fullwidth is-hoverable is-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th th:text="#{races.col.raceId}"></th>
+                <th th:text="#{races.col.raceName}"></th>
+                <th th:text="#{races.col.raceDate}"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="race, stat : ${races}">
+                <td th:text="${stat.count}"></td>
+                <td><strong th:text="${race.raceId}"></strong></td>
+                <td th:text="${race.raceName}"></td>
+                <td th:text="${race.raceDate}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

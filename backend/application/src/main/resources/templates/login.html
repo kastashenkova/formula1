@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head(#{login.title})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container is-max-desktop mt-5">
+    <h1 class="title is-3 mb-4" th:text="#{login.heading}">Login</h1>
+    <div class="box">
+        <form th:action="@{/login}" method="post">
+            <div th:if="${param.error}" class="notification is-danger is-light" th:text="#{login.error}"></div>
+            <div th:if="${param.logout}" class="notification is-info is-light" th:text="#{login.logout}"></div>
+
+            <div class="field">
+                <label for="username" class="label" th:text="#{login.username}"></label>
+                <div class="control">
+                    <input type="text" id="username" name="username" class="input"
+                           autocomplete="username" required/>
+                </div>
+            </div>
+
+            <div class="field mb-5">
+                <label for="password" class="label" th:text="#{login.password}"></label>
+                <div class="control">
+                    <input type="password" id="password" name="password" class="input"
+                           autocomplete="current-password" required/>
+                </div>
+            </div>
+
+            <div class="control">
+                <button type="submit" class="button is-primary is-fullwidth" th:text="#{login.submit}"></button>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

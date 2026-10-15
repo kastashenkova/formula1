@@ -73,7 +73,7 @@ public class UserControllerTest {
 
         when(userService.addUser(newUserRequestDto)).thenReturn(newUserResponseDto);
 
-        mockMvc.perform(post("/users/registration")
+        mockMvc.perform(post("/api/users/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newUserRequestDto)))
                 .andExpect(status().isCreated())
@@ -95,7 +95,7 @@ public class UserControllerTest {
                 "user1234"
         );
 
-        mockMvc.perform(post("/users/registration")
+        mockMvc.perform(post("/api/users/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -115,7 +115,7 @@ public class UserControllerTest {
                 "user1234"
         );
 
-        mockMvc.perform(post("/users/registration")
+        mockMvc.perform(post("/api/users/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -135,7 +135,7 @@ public class UserControllerTest {
                 "admin12"
         );
 
-        mockMvc.perform(post("/users/registration")
+        mockMvc.perform(post("/api/users/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -155,7 +155,7 @@ public class UserControllerTest {
                 "admin1234567890_admin1234567890_admin1234567890"
         );
 
-        mockMvc.perform(post("/users/registration")
+        mockMvc.perform(post("/api/users/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -166,7 +166,7 @@ public class UserControllerTest {
     @Test
     @DisplayName("Should return 400 Bad Request when role is not USER or ADMIN")
     void register_notExistingRole_ReturnsBadRequest() throws Exception {
-        mockMvc.perform(post("/users/registration")
+        mockMvc.perform(post("/api/users/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 { "email": "k.astashenkova@ukma.edu.ua",
