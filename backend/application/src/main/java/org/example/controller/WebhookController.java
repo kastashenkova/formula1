@@ -28,7 +28,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @Tag(name = "Webhook controller",
         description = "Webhook for upload race info")
 @RestController
-@RequestMapping("/webhooks")
+@RequestMapping("/api/webhooks")
 public class WebhookController {
 
     private final WebhookService webhookService;

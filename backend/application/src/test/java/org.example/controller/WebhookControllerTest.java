@@ -79,7 +79,7 @@ public class WebhookControllerTest {
         when(webhookService.create(newWebhookRequestDto))
                 .thenReturn(newWebhookResponseDto);
 
-        mockMvc.perform(post("/webhooks")
+        mockMvc.perform(post("/api/webhooks")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newWebhookRequestDto)))
                 .andExpect(status().isCreated())
@@ -99,7 +99,7 @@ public class WebhookControllerTest {
                 WebhookTypes.BATCH_COMPLETED.toString()
         );
 
-        mockMvc.perform(post("/webhooks")
+        mockMvc.perform(post("/api/webhooks")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
@@ -118,7 +118,7 @@ public class WebhookControllerTest {
                 }
                 """;
 
-        mockMvc.perform(post("/webhooks")
+        mockMvc.perform(post("/api/webhooks")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidJson))
                 .andExpect(status().isBadRequest());
@@ -131,7 +131,7 @@ public class WebhookControllerTest {
     void getWebhook_notExists_ReturnsNotFound() throws Exception {
         when(webhookService.getById(1L)).thenThrow(new EntityNotFoundException("Not found"));
 
-        mockMvc.perform(get("/webhooks/{id}", 1L)
+        mockMvc.perform(get("/api/webhooks/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
@@ -159,7 +159,7 @@ public class WebhookControllerTest {
 
         when(webhookService.getById(1L)).thenReturn(newWebhookResponseDto);
 
-        mockMvc.perform(get("/webhooks/{id}", 1L)
+        mockMvc.perform(get("/api/webhooks/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1));
 
@@ -171,7 +171,7 @@ public class WebhookControllerTest {
     void deleteWebhook_notExists_ReturnsNotFound() throws Exception {
         doThrow(new EntityNotFoundException("Not found")).when(webhookService).delete(1L);
 
-        mockMvc.perform(delete("/webhooks/{id}", 1L)
+        mockMvc.perform(delete("/api/webhooks/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
@@ -183,7 +183,7 @@ public class WebhookControllerTest {
     void deleteWebhook_existingEntity_Success() throws Exception {
         doNothing().when(webhookService).delete(1L);
 
-        mockMvc.perform(delete("/webhooks/{id}", 1L))
+        mockMvc.perform(delete("/api/webhooks/{id}", 1L))
                 .andExpect(status().isNoContent());
 
         verify(webhookService, times(1))
@@ -211,7 +211,7 @@ public class WebhookControllerTest {
 
         when(webhookService.update(1L, updateRequestDto)).thenReturn(newWebhookResponseDto);
 
-        mockMvc.perform(put("/webhooks/{id}", 1L)
+        mockMvc.perform(put("/api/webhooks/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequestDto)))
                 .andExpect(status().isOk())
@@ -234,7 +234,7 @@ public class WebhookControllerTest {
         when(webhookService.update(eq(1L), any(WebhookRequestDto.class)))
                 .thenThrow(new EntityNotFoundException("Not found"));
 
-        mockMvc.perform(put("/webhooks/{id}", 1L)
+        mockMvc.perform(put("/api/webhooks/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequestDto)))
                 .andExpect(status().isNotFound());
