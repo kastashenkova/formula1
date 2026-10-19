@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +27,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @Tag(name = "Batch controller",
         description = "Controller for upload race info")
 @RestController
-@RequestMapping("/batches")
+@RequestMapping("/api/batches")
 public class BatchController {
     private final BatchService batchService;
 
@@ -41,6 +42,7 @@ public class BatchController {
             @ApiResponse(responseCode = "201", description = "Batch created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid data request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
     })
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BatchResponseDto> uploadRace(@Validated(OnCreate.class)
                                                            @RequestBody BatchRequestDto requestDto) {
         var newBatch = batchService.uploadBatch(requestDto);
@@ -60,6 +62,7 @@ public class BatchController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Batches list"),
     })
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<BatchResponseDto>> getBatches(Pageable pageable) {
         Page<BatchResponseDto> page = batchService.getBatches(pageable);
         return ResponseEntity.ok(page);

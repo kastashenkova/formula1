@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head(#{form.title})}">
+    <title th:text="${title}">Race Form</title>
+</head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container is-max-desktop mt-5">
+    <h1 class="title is-3 mb-4" th:text="#{form.heading}"></h1>
+    <div class="box">
+        <form th:action="@{/races}" th:object="${form}" method="post" novalidate>
+            <div class="field">
+                <label for="raceName" class="label" th:text="#{form.raceName}"></label>
+                <div class="control">
+                    <input type="text" id="raceName" th:field="*{raceName}" class="input"
+                           th:classappend="${#fields.hasErrors('raceName')} ? 'is-danger'"/>
+                </div>
+                <p class="help is-danger" th:if="${#fields.hasErrors('raceName')}" th:errors="*{raceName}"></p>
+            </div>
+
+            <div class="field">
+                <label for="raceDate" class="label" th:text="#{form.raceDate}"></label>
+                <div class="control">
+                    <input type="text" id="raceDate" th:field="*{raceDate}" class="input"
+                           th:classappend="${#fields.hasErrors('raceDate')} ? 'is-danger'"/>
+                </div>
+                <p class="help is-danger" th:if="${#fields.hasErrors('raceDate')}" th:errors="*{raceDate}"></p>
+            </div>
+
+            <div class="field is-grouped is-grouped-right mt-5">
+                <div class="control">
+                    <a th:href="@{/races}" class="button is-light" th:text="#{form.cancel}"></a>
+                </div>
+                <div class="control">
+                    <button type="submit" class="button is-primary" th:text="#{form.submit}"></button>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

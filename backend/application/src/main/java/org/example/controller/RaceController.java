@@ -37,7 +37,7 @@ import org.streaming.service.RaceService;
 @RestController
 @Tag(name = "Race controller",
         description = "Endpoints for managing races")
-@RequestMapping("/races")
+@RequestMapping("/api/races")
 public class RaceController {
 
     private final RaceService raceService;

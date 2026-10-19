@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head th:replace="~{fragments/layout :: head(#{error.403.title})}">
+    <title th:text="${title}">403 Forbidden</title>
+</head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container narrow">
+    <div class="card p-4">
+        <h1 class="h3" th:text="#{error.403.title}">Access denied</h1>
+        <p class="text-muted" th:text="#{error.403.text}">Your role has not enough permissions to complete the action</p>
+        <a th:href="@{/races}" class="btn btn-outline-primary" th:text="#{error.back}">Return to the list</a>
+    </div>
+</main>
+</body>
+</html>
