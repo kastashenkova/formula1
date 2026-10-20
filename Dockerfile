@@ -9,7 +9,6 @@ COPY backend/identity/pom.xml backend/identity/pom.xml
 COPY backend/processing/pom.xml backend/processing/pom.xml
 COPY backend/streaming/pom.xml backend/streaming/pom.xml
 COPY backend/application/pom.xml backend/application/pom.xml
-COPY frontend/pom.xml frontend/pom.xml
 
 RUN ./mvnw dependency:go-offline -B
 
