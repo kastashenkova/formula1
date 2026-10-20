@@ -217,5 +217,5 @@ bash start
 
 ### Docker
 ```bash
-docker-compose up --build
+DOCKER_PASS={password} docker-compose up --build
 ```

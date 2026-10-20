@@ -21,7 +21,10 @@
             <div class="field">
                 <label for="raceDate" class="label" th:text="#{form.raceDate}"></label>
                 <div class="control">
-                    <input type="text" id="raceDate" th:field="*{raceDate}" class="input"
+                    <input type="datetime-local"
+                           id="raceDate"
+                           th:field="*{raceDate}"
+                           class="input"
                            th:classappend="${#fields.hasErrors('raceDate')} ? 'is-danger'"/>
                 </div>
                 <p class="help is-danger" th:if="${#fields.hasErrors('raceDate')}" th:errors="*{raceDate}"></p>
