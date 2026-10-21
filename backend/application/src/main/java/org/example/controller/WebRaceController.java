@@ -4,7 +4,6 @@ import jakarta.validation.groups.Default;
 import org.example.enums.RaceView;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -45,14 +44,12 @@ public class WebRaceController {
     }
 
     @GetMapping("/races/new")
-    @PreAuthorize("hasRole('ADMIN')")
     public String newRace(Model model) {
         model.addAttribute("form", new RaceRequestDto(null, null, null));
         return "races/create-form";
     }
 
     @PostMapping("/races")
-    @PreAuthorize("hasRole('ADMIN')")
     public String createRace(
             @Validated({Default.class, OnCreate.class})
             @ModelAttribute("form") RaceRequestDto form,
