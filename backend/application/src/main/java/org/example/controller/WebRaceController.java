@@ -52,6 +52,7 @@ public class WebRaceController {
     }
 
     @PostMapping("/races")
+    @PreAuthorize("hasRole('ADMIN')")
     public String createRace(
             @Validated({Default.class, OnCreate.class})
             @ModelAttribute("form") RaceRequestDto form,
