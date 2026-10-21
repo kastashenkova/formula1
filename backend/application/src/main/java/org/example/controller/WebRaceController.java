@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import jakarta.validation.groups.Default;
+import org.example.enums.RaceView;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
@@ -29,13 +30,17 @@ public class WebRaceController {
     public String races(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "TABLE") RaceView view,
             Model model) {
 
-        Page<RaceResponseDto> races =
-                raceService.getRaces(PageRequest.of(page, size));
+        Page<RaceResponseDto> races = raceService.getRaces(PageRequest.of(page, size));
 
         model.addAttribute("races", races);
-        return "races/races";
+
+        return switch (view) {
+            case TABLE -> "races/list";
+            case CARDS -> "races/cards";
+        };
     }
 
     @GetMapping("/races/new")
@@ -48,8 +53,7 @@ public class WebRaceController {
     public String createRace(
             @Validated({Default.class, OnCreate.class})
             @ModelAttribute("form") RaceRequestDto form,
-            BindingResult bindingResult,
-            Model model) {
+            BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return "races/create-form";

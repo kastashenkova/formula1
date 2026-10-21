@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:lang="${#locale.language}">
 <head th:replace="~{fragments/layout :: head(#{races.title})}">
-    <title th:text="${title}">Race Card</title>
+    <title th:text="${title}">Race Cards</title>
 </head>
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <main class="container mt-5">
     <div class="is-flex is-justify-content-space-between is-align-items-center mb-5">
-        <h1 class="title is-3 mb-0" th:text="#{races.heading}"></h1>
+        <h1 class="title is-3 mb-0" th:text="#{races.heading}">Registered races</h1>
         <div class="buttons">
-            <a th:href="@{/races}" class="button is-light" th:text="#{races.view.table}"></a>
-            <a sec:authorize="hasRole('ADMIN')" th:href="@{/races/new}" class="button is-primary"
-               th:text="#{races.add}"></a>
+            <a th:href="@{/races(view='TABLE')}" class="button is-light" th:text="#{races.view.table}"></a>
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/races/new}" class="button is-primary" th:text="#{races.add}"></a>
         </div>
     </div>
 

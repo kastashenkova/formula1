@@ -8,7 +8,6 @@
     <meta name="_csrf_header" th:if="${_csrf}" th:content="${_csrf.headerName}">
     <title th:text="${title}">Formula1</title>
     <link rel="stylesheet" th:href="@{/css/bulma.min.css}">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
 <nav th:fragment="navbar" class="navbar is-dark mb-4" role="navigation" aria-label="main navigation">
@@ -21,7 +20,7 @@
             <div class="navbar-end">
                 <div class="navbar-item is-flex is-align-items-center">
                     <span sec:authorize="isAuthenticated()" class="has-text-light mr-3">
-                        <span th:text="#{nav.user}">User</span>: <strong class="has-text-light" sec:authentication="name">Admin</strong>
+                        <span th:text="#{nav.user}">User</span>: <strong class="has-text-light" sec:authentication="name"></strong>
                     </span>
                     <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="m-0">
                         <button type="submit" class="button is-light is-outlined is-small" th:text="#{nav.logout}">Logout</button>
