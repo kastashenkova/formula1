@@ -1,8 +1,10 @@
 package org.example.controller;
 
 import jakarta.validation.groups.Default;
+import org.example.enums.RaceView;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,16 +31,21 @@ public class WebRaceController {
     public String races(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "TABLE") RaceView view,
             Model model) {
 
-        Page<RaceResponseDto> races =
-                raceService.getRaces(PageRequest.of(page, size));
+        Page<RaceResponseDto> races = raceService.getRaces(PageRequest.of(page, size));
 
         model.addAttribute("races", races);
-        return "races/races";
+
+        return switch (view) {
+            case TABLE -> "races/list";
+            case CARDS -> "races/cards";
+        };
     }
 
     @GetMapping("/races/new")
+    @PreAuthorize("hasRole('ADMIN')")
     public String newRace(Model model) {
         model.addAttribute("form", new RaceRequestDto(null, null, null));
         return "races/create-form";
@@ -48,8 +55,7 @@ public class WebRaceController {
     public String createRace(
             @Validated({Default.class, OnCreate.class})
             @ModelAttribute("form") RaceRequestDto form,
-            BindingResult bindingResult,
-            Model model) {
+            BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return "races/create-form";

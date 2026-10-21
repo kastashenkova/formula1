@@ -16,6 +16,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -29,7 +30,7 @@ import org.processing.exception.DuplicateBatchException;
 import org.streaming.exception.RaceNotFound;
 import org.streaming.exception.ExternalHTTPError;
 
-@RestControllerAdvice
+@RestControllerAdvice(annotations = RestController.class)
 public class AppExceptionHandler {
 
     private static final Logger log =

@@ -18,7 +18,7 @@ public record RaceRequestDto(
         UUID raceId,
         @Schema(description = "Race name", example = "Singapore Airlines Singapore GP")
         @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "{validation.raceName.not-blank}")
-        @Size(min = 3, max = 100, groups = {OnCreate.class, OnUpdate.class})
+        @Size(min = 3, max = 100, groups = {OnCreate.class, OnUpdate.class}, message = "{validation.raceName.size}")
         String raceName,
         @Schema(description = "Race date", example = "2026-10-11T15:00:00.000Z")
         @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "{validation.raceDate.not-blank}")
