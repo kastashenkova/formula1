@@ -13,10 +13,9 @@ import org.springframework.test.context.jdbc.Sql;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = "cctv.snapshots.dir=target/test-snapshots")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureRestTestClient
-@Import({TestcontainersConfiguration.class})
-@Sql(scripts = "/sql/reset-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Import({TestcontainersConfiguration.class, NotificationStubConfiguration.class})
+@Sql(scripts = "/sql/reset-race-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public @interface E2ETest {
 }
