@@ -6,11 +6,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.UUID;
-import org.identity.validation.OnCreate;
-import org.identity.validation.OnUpdate;
+import org.streaming.validation.OnCreate;
+import org.streaming.validation.OnUpdate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -122,7 +121,7 @@ public class RaceController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/driver")
+    @PostMapping("/{id}/drivers")
     @Operation(summary = "Add driver",
             description = "Add driver to the existing race")
     @PreAuthorize("hasRole('ADMIN')")
@@ -133,13 +132,13 @@ public class RaceController {
     })
     public ResponseEntity<DriverResponseDto> addDriver(
             @PathVariable UUID id,
-            @Valid @RequestBody DriverRequestDto request
+            @Validated(OnCreate.class) @RequestBody DriverRequestDto request
     ) {
         DriverResponseDto created = raceService.addDriver(id, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    @GetMapping("/{id}/driver")
+    @GetMapping("/{id}/drivers")
     @Operation(summary = "Get drivers",
             description = "Get drivers of the existing race")
     @ApiResponses({
@@ -149,7 +148,7 @@ public class RaceController {
         return raceService.getDrivers(id, pageable);
     }
 
-    @DeleteMapping("/{raceId}/driver/{driverId}")
+    @DeleteMapping("/{raceId}/drivers/{driverId}")
     @Operation(summary = "Delete driver",
             description = "Delete driver from the existing race")
     @PreAuthorize("hasRole('ADMIN')")
