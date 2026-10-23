@@ -59,9 +59,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers(
-                                        "/users/registration",
-                                        "/users/confirmation",
-                                        "/users/login",
+                                        "/api/users/registration",
+                                        "/api/users/confirmation",
+                                        "/api/users/login",
                                         "/error")
                                 .permitAll()
                                 .anyRequest()

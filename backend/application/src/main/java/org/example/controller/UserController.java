@@ -73,7 +73,8 @@ public class UserController {
             description = "Authenticate an existing user")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User logged in successfully"),
-            @ApiResponse(responseCode = "400", description = "Bad credentials", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "401", description = "Bad credentials", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "200", description = "User logged in successfully"),
     })
     public ResponseEntity<UserLoginResponseDto> login(@RequestBody @Valid UserLoginRequestDto request) {
         UserLoginResponseDto logged = authenticationService.authenticate(request);
@@ -89,7 +90,8 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User status updated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid data request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "403", description = "Access denied", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+            @ApiResponse(responseCode = "403", description = "Access denied", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "422", description = "Illegal state transition", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     public ResponseEntity<UserResponseDto> updateUserStatus(
             @PathVariable UUID id,
