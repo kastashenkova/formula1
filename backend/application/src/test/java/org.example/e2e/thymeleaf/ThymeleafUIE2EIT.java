@@ -14,10 +14,7 @@ class ThymeleafUIE2EIT extends BrowserTestSupport {
     // login/logout scenario
     @Test
     void correctPassword_ShouldRedirectToRacesPage() {
-        page.navigate("/login");
-        page.getByLabel("Username").fill("astashenkova.katya@gmail.com");
-        page.getByLabel("Password").fill("admin123");
-        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Submit")).click();
+        loginAs("astashenkova.katya@gmail.com", "admin123");
 
         assertThat(page.getByRole(AriaRole.HEADING, new Page.GetByRoleOptions().setName("Registered races"))).isVisible();
     }
@@ -34,10 +31,7 @@ class ThymeleafUIE2EIT extends BrowserTestSupport {
 
     @Test
     void logout_ShouldShowLogoutSuccessMessage() {
-        page.navigate("/login");
-        page.getByLabel("Username").fill("astashenkova.katya@gmail.com");
-        page.getByLabel("Password").fill("admin123");
-        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Submit")).click();
+        loginAs("astashenkova.katya@gmail.com", "admin123");
 
         page.getByText("Logout").click();
 
