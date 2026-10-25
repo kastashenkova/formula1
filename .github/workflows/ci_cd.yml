@@ -46,4 +46,4 @@ jobs:
           "
 
       - name: Build Docker image for application
-        run: mvn spring-boot:build-image -pl backend/application
+        run: mvn spring-boot:build-image -pl backend/application -Dspring-boot.build-image.builder=paketobuildpacks/builder-jammy-base

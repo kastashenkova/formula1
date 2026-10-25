@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.streaming.dto.RaceRequestDto;
 import org.streaming.dto.RaceResponseDto;
 import org.streaming.service.RaceService;
@@ -53,13 +54,17 @@ public class WebRaceController {
     public String createRace(
             @Validated({Default.class, OnCreate.class})
             @ModelAttribute("form") RaceRequestDto form,
-            BindingResult bindingResult) {
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
             return "races/create-form";
         }
 
         raceService.addRace(form);
+
+        redirectAttributes.addFlashAttribute("successMessage",
+                "Race " + form.raceName() + " created successfully");
 
         return "redirect:/races";
     }
