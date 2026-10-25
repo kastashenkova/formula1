@@ -22,6 +22,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.identity.security.JwtUtil;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.identity.dto.WebhookRequestDto;
 import org.identity.dto.WebhookResponseDto;
@@ -36,6 +37,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(WebhookController.class)
+@AutoConfigureMockMvc(addFilters = false)
 @TestConstructor(autowireMode = ALL)
 public class WebhookControllerTest {
 
