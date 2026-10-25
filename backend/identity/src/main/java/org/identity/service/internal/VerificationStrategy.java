@@ -1,5 +1,7 @@
 package org.identity.service.internal;
 
+import java.util.UUID;
+
 import org.identity.entity.UserEntity;
 import org.identity.entity.VerificationToken;
 import org.identity.enums.TokenType;

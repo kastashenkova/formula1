@@ -134,7 +134,7 @@ public class UserServiceImpl implements UserService {
 
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "User with id " + id + " not found"));
+                        "User with ID '" + id + "' not found"));
 
         UserStatus currentStatus = UserStatus.valueOf(user.getUserStatus());
         UserStatus targetStatus = command.userStatus();

@@ -1,1 +1,0 @@
-TRUNCATE TABLE verification_tokens, users CASCADE;
