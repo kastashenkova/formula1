@@ -20,6 +20,14 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Install Playwright Browser Dependencies
+        timeout-minutes: 5
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo rm -f /var/lib/man-db/auto-update
+          npx --yes playwright@1.64.0 install-deps chromium
+
       - name: Build Project
         run: mvn --batch-mode install
 
