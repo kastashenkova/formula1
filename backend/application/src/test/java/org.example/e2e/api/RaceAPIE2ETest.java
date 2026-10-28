@@ -1,4 +1,4 @@
-package org.example.e2e.thymeleaf;
+package org.example.e2e.api;
 
 import org.example.support.E2ETest;
 import org.identity.dto.UserLoginResponseDto;
