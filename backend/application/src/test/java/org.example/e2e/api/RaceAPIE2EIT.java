@@ -15,7 +15,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @E2ETest
-public class RaceAPIE2ETest {
+public class RaceAPIE2EIT {
 
     @Autowired
     private RestTestClient client;
