@@ -8,6 +8,7 @@ import com.microsoft.playwright.Tracing;
 import com.microsoft.playwright.options.AriaRole;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,14 +32,16 @@ public abstract class BrowserTestSupport {
     protected BrowserContext context;
     protected Page page;
     private boolean tracingSaved;
+    private String testName;
 
     @RegisterExtension
     final AfterTestExecutionCallback saveArtifactsOnFailure = extension -> {
+        testName = extension.getRequiredTestClass().getSimpleName() + "-" + extension.getDisplayName()
+                .replaceAll("[^\\p{L}\\p{N}_-]", "");
+
         if (extension.getExecutionException().isPresent() && page != null && context != null) {
-            String name = extension.getRequiredTestClass().getSimpleName() + "-" + extension.getDisplayName()
-                    .replaceAll("[^\\p{L}\\p{N}_-]", "");
-            page.screenshot(new Page.ScreenshotOptions().setPath(ARTIFACTS.resolve(name + ".png")).setFullPage(true));
-            context.tracing().stop(new Tracing.StopOptions().setPath(ARTIFACTS.resolve(name + "-trace.zip")));
+            page.screenshot(new Page.ScreenshotOptions().setPath(ARTIFACTS.resolve(testName + "-failed.png")).setFullPage(true));
+            context.tracing().stop(new Tracing.StopOptions().setPath(ARTIFACTS.resolve(testName + "-failed-trace.zip")));
             tracingSaved = true;
         }
     };
@@ -67,13 +70,15 @@ public abstract class BrowserTestSupport {
         context.tracing().start(new Tracing.StartOptions().setScreenshots(true).setSnapshots(true));
         page = context.newPage();
         tracingSaved = false;
+        testName = "unknown-test-" + UUID.randomUUID().toString().substring(0, 8);
     }
 
     @AfterEach
     void closePage() {
         if (context != null) {
             if (!tracingSaved) {
-                context.tracing().stop();
+                context.tracing().stop(new Tracing.StopOptions()
+                        .setPath(ARTIFACTS.resolve(testName + "-success-trace.zip")));
             }
             context.close();
         }
