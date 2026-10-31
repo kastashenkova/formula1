@@ -1,0 +1,55 @@
+x-podman:
+  in_pod: false
+
+services:
+  postgres:
+    image: docker.io/library/postgres:15-alpine
+    container_name: formula1-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: formula1_prod
+      POSTGRES_USER: formula1
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U formula1 -d formula1_prod"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - formula1
+
+  backend:
+    build: ./app
+    image: localhost/formula1-backend:latest
+    container_name: formula1-backend
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_SERVLET_CONTEXT_PATH: /formula1
+      SERVER_FORWARD_HEADERS_STRATEGY: native
+      FRONTEND_URL: ${FRONTEND_URL}
+      DB_URL: jdbc:postgresql://postgres:5432/formula1_prod
+      DB_USERNAME: formula1
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      FORMULA1_NOTIFICATION_ENABLED: ${FORMULA1_NOTIFICATION_ENABLED}
+      SPRINGDOC_API_DOCS_ENABLED: "false"
+      SPRINGDOC_SWAGGER_UI_ENABLED: "false"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - formula1
+      - web-proxy
+
+networks:
+  formula1:
+  web-proxy:
+    external: true
+
+volumes:
+  postgres_data:
