@@ -17,3 +17,5 @@ databaseChangeLog:
       file: db/changelog/changes/08-create-work-items-table.yaml
   - include:
       file: db/changelog/changes/09-insert-initial-users.yaml
+  - include:
+      file: db/changelog/changes/10-create-audit-logs-table.yaml

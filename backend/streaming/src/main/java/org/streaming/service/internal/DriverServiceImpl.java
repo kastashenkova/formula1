@@ -1,5 +1,6 @@
 package org.streaming.service.internal;
 
+import org.audit.AuditAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -48,6 +49,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
+    @AuditAction(action = "DRIVER_CREATION")
     public DriverResponseDto addDriver(DriverRequestDto driverRequestDto) {
         DriverEntity driver = DriverRequestDto.toEntity(driverRequestDto);
         DriverEntity saved = driverRepository.save(driver);
@@ -58,6 +60,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
+    @AuditAction(action = "DRIVER_UPDATE")
     public DriverResponseDto updateDriver(UUID id, DriverRequestDto driverRequestDto) {
         DriverEntity driver = driverRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new EntityNotFoundException("Driver with id " + id + " not found"));
@@ -73,6 +76,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
+    @AuditAction(action = "DRIVER_DELETE")
     public void deleteDriver(UUID id) {
         driverRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Driver with id " + id + " not found"));
@@ -81,6 +85,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
+    @AuditAction(action = "DRIVER_TELEMETRY_POINT_CREATION")
     public TelemetryPointResponseDto addTelemetryPoint(UUID driverId, TelemetryPointRequestDto request) {
         DriverEntity driver = driverRepository.findById(driverId)
                 .orElseThrow(() -> new EntityNotFoundException("Driver with id " + driverId + " not found"));
@@ -105,6 +110,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
+    @AuditAction(action = "DRIVER_TELEMETRY_POINT_DELETE")
     public void deleteTelemetryPoint(UUID driverId, UUID telemetryPointId) {
         DriverEntity driver = driverRepository.findById(driverId)
                 .orElseThrow(() -> new EntityNotFoundException("Driver with id " + driverId + " not found"));

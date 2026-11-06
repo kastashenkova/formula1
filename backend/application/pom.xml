@@ -28,6 +28,12 @@
         </dependency>
 
         <dependency>
+            <groupId>formula1</groupId>
+            <artifactId>audit-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
