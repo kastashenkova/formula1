@@ -2,6 +2,8 @@ package org.streaming.service.internal;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
+
+import org.audit.AuditAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -42,6 +44,7 @@ public class TelemetryPointServiceImpl implements TelemetryPointService {
     }
 
     @Override
+    @AuditAction(action = "TELEMETRY_POINT_UPDATE")
     public TelemetryPointResponseDto updateTelemetryPoint(UUID pointId, TelemetryPointRequestDto requestDto) {
         TelemetryPointEntity telemetryPointEntity = telemetryPointRepository.findByIdWithDetails(pointId)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -59,6 +62,7 @@ public class TelemetryPointServiceImpl implements TelemetryPointService {
     }
 
     @Override
+    @AuditAction(action = "TELEMETRY_POINT_DELETE")
     public void deleteTelemetryPoint(UUID pointId) {
         telemetryPointRepository.findById(pointId)
                 .orElseThrow(() -> new EntityNotFoundException(

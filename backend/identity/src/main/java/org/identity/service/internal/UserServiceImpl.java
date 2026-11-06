@@ -8,6 +8,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.audit.AuditAction;
 import org.identity.command.UpdateUserStatusCommand;
 import org.identity.dto.UserResponseDto;
 import org.identity.dto.UserRegistrationRequestDto;
@@ -60,6 +62,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @AuditAction(action = "USER_CREATION", logParameters = false)
     public UserResponseDto addUser(UserRegistrationRequestDto requestDto) {
         if (userRepository.existsByEmail(requestDto.email())) {
             String message = String.format("User with email %s already exists", requestDto.email());
@@ -121,6 +124,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @AuditAction(action = "USER_STATUS_UPDATE")
     public UserResponseDto updateStatus(UUID id, UpdateUserStatusCommand command) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()
@@ -156,6 +160,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @AuditAction(action = "TOKEN_CONFIRMATION", logParameters = false)
     public void confirmByToken(String token) {
         VerificationToken verificationToken = tokenRepository.findByToken(token)
                 .orElseThrow(() -> new InvalidTokenException("Invalid token"));

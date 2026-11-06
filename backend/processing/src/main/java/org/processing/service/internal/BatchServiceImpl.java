@@ -1,6 +1,8 @@
 package org.processing.service.internal;
 
 import java.time.LocalDateTime;
+
+import org.audit.AuditAction;
 import org.processing.dto.BatchRequestDto;
 import org.processing.dto.BatchResponseDto;
 import org.processing.entity.BatchEntity;
@@ -28,6 +30,7 @@ public class BatchServiceImpl implements BatchService {
 
     @Override
     @Transactional
+    @AuditAction(action = "BATCH_UPLOAD")
     public BatchResponseDto uploadBatch(BatchRequestDto requestDto) {
         var newBatch = new BatchEntity(
                 null,

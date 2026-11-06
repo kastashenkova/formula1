@@ -27,6 +27,7 @@
         <module>streaming</module>
         <module>application</module>
         <module>custom-notifier-starter</module>
+        <module>audit-core</module>
     </modules>
 
     <dependencyManagement>
