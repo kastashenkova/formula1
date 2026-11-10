@@ -2,6 +2,7 @@ package org.identity.service.internal;
 
 import formula1.notification.service.EmailSender;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 import org.identity.entity.UserEntity;
 import org.identity.entity.VerificationToken;
@@ -38,7 +39,7 @@ public class EmailVerificationStrategy implements VerificationStrategy {
     public VerificationToken createVerificationToken(UserEntity user) {
         String token = UUID.randomUUID().toString();
 
-        LocalDateTime expirationTime = LocalDateTime.now().plusHours(expiryHours);
+        LocalDateTime expirationTime = LocalDateTime.now(ZoneId.of("Europe/Kyiv")).plusHours(expiryHours);
 
         return new VerificationToken(
                 null,

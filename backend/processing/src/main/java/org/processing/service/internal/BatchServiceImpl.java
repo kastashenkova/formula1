@@ -1,6 +1,8 @@
 package org.processing.service.internal;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 import org.audit.AuditAction;
 import org.processing.dto.BatchRequestDto;
 import org.processing.dto.BatchResponseDto;
@@ -36,7 +38,7 @@ public class BatchServiceImpl implements BatchService {
     public BatchResponseDto uploadBatch(@Validated(OnCreate.class) BatchRequestDto requestDto) {
         var newBatch = new BatchEntity(
                 null,
-                LocalDateTime.now(),
+                LocalDateTime.now(ZoneId.of("Europe/Kyiv")),
                 null,
                 null
         );

@@ -2,6 +2,8 @@ package org.identity.service.internal;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 import org.audit.AuditAction;
 import org.identity.dto.WebhookRequestDto;
 import org.identity.dto.WebhookResponseDto;
@@ -69,7 +71,7 @@ public class WebhookServiceImpl implements WebhookService {
 
         webhookEntity.setWebhookUrl(request.webhookURL());
         webhookEntity.setWebhookType(request.webhookType());
-        webhookEntity.setUpdatedAt(LocalDateTime.now());
+        webhookEntity.setUpdatedAt(LocalDateTime.now(ZoneId.of("Europe/Kyiv")));
 
         webhookRepository.save(webhookEntity);
 

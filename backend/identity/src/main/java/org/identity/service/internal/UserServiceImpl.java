@@ -2,6 +2,7 @@ package org.identity.service.internal;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -168,7 +169,7 @@ public class UserServiceImpl implements UserService {
         VerificationToken verificationToken = tokenRepository.findByToken(token)
                 .orElseThrow(() -> new InvalidTokenException("Invalid token"));
 
-        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now(ZoneId.of("Europe/Kyiv")))) {
             String message = String.format("Token %s has expired", token);
             throw new InvalidTokenException(message);
         }

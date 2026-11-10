@@ -1,6 +1,7 @@
 package org.audit;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.UUID;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -59,7 +60,7 @@ public class UserAuditLoggingAspect {
             auditLog.setResult(isSuccess && result != null ? result.toString() : null);
             auditLog.setErrorMessage(errorMessage);
             auditLog.setSuccess(isSuccess);
-            auditLog.setTimestamp(LocalDateTime.now());
+            auditLog.setTimestamp(LocalDateTime.now(ZoneId.of("Europe/Kyiv")));
             auditLog.setUserId(currentUserId);
 
             try {
