@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Order(1)
 public class UserAuditLoggingAspect {
+    private static final Logger log = LoggerFactory.getLogger(UserAuditLoggingAspect.class);
     private final AuditLogService auditLogService;
     private final AuditUserIdProvider userIdProvider;
 
@@ -27,7 +30,13 @@ public class UserAuditLoggingAspect {
         String errorMessage = null;
         Object result = null;
 
-        UUID currentUserId = userIdProvider.getCurrentUserId();
+        UUID currentUserId = null;
+
+        try {
+            currentUserId = userIdProvider.getCurrentUserId();
+        } catch (Exception e) {
+            log.warn("Could not retrieve current user ID for audit logging. Proceeding with null. Reason: {}", e.getMessage());
+        }
 
         try {
             result = joinPoint.proceed();
@@ -53,7 +62,11 @@ public class UserAuditLoggingAspect {
             auditLog.setTimestamp(LocalDateTime.now());
             auditLog.setUserId(currentUserId);
 
-            auditLogService.save(auditLog);
+            try {
+                auditLogService.save(auditLog);
+            } catch (Exception e) {
+                log.error("Failed to save audit log for action: {}", auditAction.action(), e);
+            }
         }
     }
 }
