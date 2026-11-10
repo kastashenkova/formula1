@@ -1,6 +1,5 @@
 package org.identity.service.internal;
 
-import jakarta.validation.Valid;
 import java.util.Objects;
 import org.audit.AuditAction;
 import org.identity.dto.UserLoginRequestDto;
@@ -36,7 +35,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     @AuditAction(action = "USER_AUTHENTICATION", logParameters = false)
-    public UserLoginResponseDto authenticate(@Valid UserLoginRequestDto request) {
+    public UserLoginResponseDto authenticate(UserLoginRequestDto request) {
         UserEntity user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
 

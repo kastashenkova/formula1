@@ -19,8 +19,6 @@ import org.streaming.entity.RaceEntity;
 import org.streaming.repository.DriverRepository;
 import org.streaming.repository.RaceRepository;
 import org.streaming.service.RaceService;
-import org.streaming.validation.OnCreate;
-import org.streaming.validation.OnUpdate;
 
 @Service
 @Transactional
@@ -54,7 +52,7 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     @AuditAction(action = "RACE_CREATION")
-    public RaceResponseDto addRace(@Validated(OnCreate.class) RaceRequestDto raceRequestDto) {
+    public RaceResponseDto addRace(RaceRequestDto raceRequestDto) {
         RaceEntity race = RaceRequestDto.toEntity(raceRequestDto);
         RaceEntity saved = raceRepository.save(race);
 
@@ -65,7 +63,7 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     @AuditAction(action = "RACE_UPDATE")
-    public RaceResponseDto updateRace(UUID id, @Validated(OnUpdate.class) RaceRequestDto raceRequestDto) {
+    public RaceResponseDto updateRace(UUID id, RaceRequestDto raceRequestDto) {
         RaceEntity raceEntity = raceRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new EntityNotFoundException("Race with id: " + id + " not found"));
 
@@ -90,7 +88,7 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     @AuditAction(action = "RACE_DRIVER_CREATION")
-    public DriverResponseDto addDriver(UUID raceId, @Validated(OnCreate.class) DriverRequestDto request) {
+    public DriverResponseDto addDriver(UUID raceId, DriverRequestDto request) {
         RaceEntity raceEntity = raceRepository.findById(raceId)
                 .orElseThrow(() -> new EntityNotFoundException("Race with id: " + raceId + " not found"));
 

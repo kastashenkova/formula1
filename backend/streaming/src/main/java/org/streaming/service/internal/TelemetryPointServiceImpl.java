@@ -15,7 +15,6 @@ import org.streaming.dto.TelemetryPointResponseDto;
 import org.streaming.entity.TelemetryPointEntity;
 import org.streaming.repository.TelemetryPointRepository;
 import org.streaming.service.TelemetryPointService;
-import org.streaming.validation.OnUpdate;
 
 @Service
 @Transactional
@@ -47,7 +46,7 @@ public class TelemetryPointServiceImpl implements TelemetryPointService {
 
     @Override
     @AuditAction(action = "TELEMETRY_POINT_UPDATE")
-    public TelemetryPointResponseDto updateTelemetryPoint(UUID pointId, @Validated(OnUpdate.class) TelemetryPointRequestDto requestDto) {
+    public TelemetryPointResponseDto updateTelemetryPoint(UUID pointId, TelemetryPointRequestDto requestDto) {
         TelemetryPointEntity telemetryPointEntity = telemetryPointRepository.findByIdWithDetails(pointId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Telemetry Point with id: " + pointId + " not found"));

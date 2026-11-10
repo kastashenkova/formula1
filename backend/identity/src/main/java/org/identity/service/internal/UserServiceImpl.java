@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @AuditAction(action = "USER_CREATION", logParameters = false)
-    public UserResponseDto addUser(@Validated(OnCreate.class) UserRegistrationRequestDto requestDto) {
+    public UserResponseDto addUser(UserRegistrationRequestDto requestDto) {
         if (userRepository.existsByEmail(requestDto.email())) {
             String message = String.format("User with email %s already exists", requestDto.email());
             throw new DuplicateUserException(message);

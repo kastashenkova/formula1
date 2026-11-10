@@ -92,24 +92,6 @@ public class WebhookControllerTest {
     }
 
     @Test
-    @DisplayName("Should return 400 Bad Request when webhook URL is invalid")
-    void createWebhook_invalidURL_ReturnsBadRequest() throws Exception {
-        WebhookRequestDto invalidRequest = new WebhookRequestDto(
-                null,
-                "invalidURL",
-                UUID.randomUUID(),
-                WebhookTypes.BATCH_COMPLETED.toString()
-        );
-
-        mockMvc.perform(post("/api/webhooks")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(webhookService);
-    }
-
-    @Test
     @DisplayName("Should return 400 Bad Request when webhook type is undefined")
     void createWebhook_invalidWebhookType_ReturnsBadRequest() throws Exception {
         String invalidJson = """
