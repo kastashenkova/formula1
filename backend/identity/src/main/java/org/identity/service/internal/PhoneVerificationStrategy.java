@@ -1,6 +1,7 @@
 package org.identity.service.internal;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 import formula1.notification.service.WhatsAppSender;
 import org.identity.entity.UserEntity;
@@ -34,7 +35,7 @@ public class PhoneVerificationStrategy implements VerificationStrategy {
     @Override
     public VerificationToken createVerificationToken(UserEntity user) {
         String token = UUID.randomUUID().toString();
-        LocalDateTime expirationTime = LocalDateTime.now().plusHours(expiryHours);
+        LocalDateTime expirationTime = LocalDateTime.now(ZoneId.of("Europe/Kyiv")).plusHours(expiryHours);
 
         return new VerificationToken(
                 null,

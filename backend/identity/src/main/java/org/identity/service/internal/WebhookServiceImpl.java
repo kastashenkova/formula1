@@ -2,6 +2,8 @@ package org.identity.service.internal;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import org.audit.AuditAction;
 import org.identity.dto.WebhookRequestDto;
 import org.identity.dto.WebhookResponseDto;
 import org.identity.entity.UserEntity;
@@ -13,9 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service
 @Transactional
+@Validated
 public class WebhookServiceImpl implements WebhookService {
     private static final Logger log = LoggerFactory.getLogger(WebhookServiceImpl.class);
 
@@ -28,6 +32,7 @@ public class WebhookServiceImpl implements WebhookService {
     }
 
     @Override
+    @AuditAction(action = "WEBHOOK_CREATION")
     public WebhookResponseDto create(WebhookRequestDto request) {
         UserEntity user = userRepository.findById(request.userID())
                 .orElseThrow(() ->
@@ -56,13 +61,14 @@ public class WebhookServiceImpl implements WebhookService {
     }
 
     @Override
+    @AuditAction(action = "WEBHOOK_UPDATE")
     public WebhookResponseDto update(Long id, WebhookRequestDto request) {
         WebhookEntity webhookEntity = webhookRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new EntityNotFoundException("Webhook with id: " + id + " not found"));
 
         webhookEntity.setWebhookUrl(request.webhookURL());
         webhookEntity.setWebhookType(request.webhookType());
-        webhookEntity.setUpdatedAt(LocalDateTime.now());
+        webhookEntity.setUpdatedAt(LocalDateTime.now(ZoneId.of("Europe/Kyiv")));
 
         webhookRepository.save(webhookEntity);
 
@@ -72,6 +78,7 @@ public class WebhookServiceImpl implements WebhookService {
     }
 
     @Override
+    @AuditAction(action = "WEBHOOK_DELETE")
     public void delete(Long id) {
         webhookRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new EntityNotFoundException("Webhook with id: " + id + " not found"));

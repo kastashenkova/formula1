@@ -9,7 +9,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         "org.example",
         "org.processing",
         "org.identity",
-        "org.streaming"
+        "org.streaming",
+        "org.audit"
 })
 @EnableAsync
 @EnableScheduling

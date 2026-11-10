@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 import org.hibernate.validator.constraints.URL;
 
@@ -37,7 +38,7 @@ public record WebhookRequestDto(
                 return new WebhookEntity(
                         requestDto.webhookURL,
                         requestDto.webhookType,
-                        LocalDateTime.now(),
-                        LocalDateTime.now());
+                        LocalDateTime.now(ZoneId.of("Europe/Kyiv")),
+                        LocalDateTime.now(ZoneId.of("Europe/Kyiv")));
         }
 }

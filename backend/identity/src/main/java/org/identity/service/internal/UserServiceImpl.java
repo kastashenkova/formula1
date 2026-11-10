@@ -2,12 +2,14 @@ package org.identity.service.internal;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.audit.AuditAction;
 import org.identity.command.UpdateUserStatusCommand;
 import org.identity.dto.UserResponseDto;
 import org.identity.dto.UserRegistrationRequestDto;
@@ -23,6 +25,8 @@ import org.identity.exception.InvalidVerificationStrategyException;
 import org.identity.repository.TokenRepository;
 import org.identity.repository.UserRepository;
 import org.identity.service.UserService;
+import org.identity.validation.OnCreate;
+import org.identity.validation.OnUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -32,8 +36,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service
+@Validated
 public class UserServiceImpl implements UserService {
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     private final PasswordEncoder passwordEncoder;
@@ -60,6 +66,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @AuditAction(action = "USER_CREATION", logParameters = false)
     public UserResponseDto addUser(UserRegistrationRequestDto requestDto) {
         if (userRepository.existsByEmail(requestDto.email())) {
             String message = String.format("User with email %s already exists", requestDto.email());
@@ -121,6 +128,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @AuditAction(action = "USER_STATUS_UPDATE")
     public UserResponseDto updateStatus(UUID id, UpdateUserStatusCommand command) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()
@@ -156,11 +164,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @AuditAction(action = "TOKEN_CONFIRMATION", logParameters = false)
     public void confirmByToken(String token) {
         VerificationToken verificationToken = tokenRepository.findByToken(token)
                 .orElseThrow(() -> new InvalidTokenException("Invalid token"));
 
-        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now(ZoneId.of("Europe/Kyiv")))) {
             String message = String.format("Token %s has expired", token);
             throw new InvalidTokenException(message);
         }

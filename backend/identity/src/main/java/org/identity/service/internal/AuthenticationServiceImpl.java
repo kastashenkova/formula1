@@ -1,5 +1,7 @@
 package org.identity.service.internal;
 
+import java.util.Objects;
+import org.audit.AuditAction;
 import org.identity.dto.UserLoginRequestDto;
 import org.identity.dto.UserLoginResponseDto;
 import org.identity.entity.UserEntity;
@@ -13,10 +15,10 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
+import org.springframework.validation.annotation.Validated;
 
 @Service
+@Validated
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
@@ -32,6 +34,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    @AuditAction(action = "USER_AUTHENTICATION", logParameters = false)
     public UserLoginResponseDto authenticate(UserLoginRequestDto request) {
         UserEntity user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));

@@ -8,15 +8,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
 import java.util.UUID;
-import org.streaming.validation.OnCreate;
-import org.streaming.validation.OnUpdate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,8 +50,7 @@ public class RaceController {
             @ApiResponse(responseCode = "201", description = "Race created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid data request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
     })
-    public ResponseEntity<RaceResponseDto> create(@Validated(OnCreate.class)
-                                                    @RequestBody RaceRequestDto requestDto) {
+    public ResponseEntity<RaceResponseDto> create(@RequestBody RaceRequestDto requestDto) {
         RaceResponseDto created = raceService.addRace(requestDto);
 
         URI location = ServletUriComponentsBuilder
@@ -76,7 +72,6 @@ public class RaceController {
             @ApiResponse(responseCode = "404", description = "Race not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     public ResponseEntity<RaceResponseDto> update(@PathVariable UUID id,
-                                                  @Validated(OnUpdate.class)
                                                   @RequestBody RaceRequestDto requestDto) {
         RaceResponseDto updated = raceService.updateRace(id, requestDto);
 
@@ -132,7 +127,7 @@ public class RaceController {
     })
     public ResponseEntity<DriverResponseDto> addDriver(
             @PathVariable UUID id,
-            @Validated(OnCreate.class) @RequestBody DriverRequestDto request
+            @RequestBody DriverRequestDto request
     ) {
         DriverResponseDto created = raceService.addDriver(id, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);

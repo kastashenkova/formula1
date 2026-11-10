@@ -1,6 +1,8 @@
 package org.processing.service.internal;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import org.audit.AuditAction;
 import org.processing.dto.BatchRequestDto;
 import org.processing.dto.BatchResponseDto;
 import org.processing.entity.BatchEntity;
@@ -14,8 +16,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service
+@Validated
 public class BatchServiceImpl implements BatchService {
     private static final Logger log = LoggerFactory.getLogger(BatchServiceImpl.class);
     private final BatchRepository batchRepository;
@@ -28,10 +32,11 @@ public class BatchServiceImpl implements BatchService {
 
     @Override
     @Transactional
+    @AuditAction(action = "BATCH_UPLOAD")
     public BatchResponseDto uploadBatch(BatchRequestDto requestDto) {
         var newBatch = new BatchEntity(
                 null,
-                LocalDateTime.now(),
+                LocalDateTime.now(ZoneId.of("Europe/Kyiv")),
                 null,
                 null
         );

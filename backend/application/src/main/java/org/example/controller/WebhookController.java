@@ -8,13 +8,10 @@ import org.identity.dto.WebhookRequestDto;
 import org.identity.dto.WebhookResponseDto;
 import org.identity.service.WebhookService;
 import java.net.URI;
-import org.identity.validation.OnCreate;
-import org.identity.validation.OnUpdate;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,7 +43,6 @@ public class WebhookController {
             @ApiResponse(responseCode = "404", description = "User specified in request not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     public ResponseEntity<WebhookResponseDto> createWebhook(
-            @Validated({OnCreate.class})
             @RequestBody WebhookRequestDto request
     ) {
         WebhookResponseDto response = webhookService.create(request);
@@ -85,7 +81,6 @@ public class WebhookController {
     })
     public ResponseEntity<WebhookResponseDto> updateWebhook(
             @PathVariable Long id,
-            @Validated({OnUpdate.class})
             @RequestBody WebhookRequestDto request
     ) {
         return ResponseEntity.ok(

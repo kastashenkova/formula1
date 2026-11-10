@@ -1,8 +1,13 @@
 package org.identity.service;
 
+import jakarta.validation.Valid;
 import org.identity.dto.UserLoginRequestDto;
 import org.identity.dto.UserLoginResponseDto;
+import org.springframework.validation.annotation.Validated;
 
+@Validated
 public interface AuthenticationService {
-    UserLoginResponseDto authenticate(UserLoginRequestDto request);
+
+    @Validated
+    UserLoginResponseDto authenticate(@Valid UserLoginRequestDto request);
 }

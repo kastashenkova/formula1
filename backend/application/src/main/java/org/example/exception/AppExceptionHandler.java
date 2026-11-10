@@ -5,6 +5,8 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Map;
 import java.util.stream.Collectors;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -226,6 +228,31 @@ public class AppExceptionHandler {
                 "bad-request",
                 "The external provider is temporarily unavailable"
         );
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ProblemDetail handleConstraintViolation(ConstraintViolationException ex) {
+        ProblemDetail pd = buildProblemDetail(
+                HttpStatus.BAD_REQUEST,
+                "Validation failed",
+                "https://api.ukma.edu.ua/errors/validation-error",
+                "Validation failed for one or more fields"
+        );
+
+        Map<String, String> errors = ex.getConstraintViolations().stream()
+                .collect(Collectors.toMap(
+                        violation -> {
+                            String propertyPath = violation.getPropertyPath().toString();
+                            int lastDotIndex = propertyPath.lastIndexOf('.');
+                            return lastDotIndex == -1 ? propertyPath : propertyPath.substring(lastDotIndex + 1);
+                        },
+                        ConstraintViolation::getMessage,
+                        (first, second) -> first
+                ));
+
+        pd.setProperty("errors", errors);
+
+        return pd;
     }
 
     @ExceptionHandler(Exception.class)

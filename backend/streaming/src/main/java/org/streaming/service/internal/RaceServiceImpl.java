@@ -2,12 +2,14 @@ package org.streaming.service.internal;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
+import org.audit.AuditAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.streaming.dto.DriverRequestDto;
 import org.streaming.dto.DriverResponseDto;
 import org.streaming.dto.RaceRequestDto;
@@ -20,6 +22,7 @@ import org.streaming.service.RaceService;
 
 @Service
 @Transactional
+@Validated
 public class RaceServiceImpl implements RaceService {
     private static final Logger log = LoggerFactory.getLogger(RaceServiceImpl.class);
     private final RaceRepository raceRepository;
@@ -48,6 +51,7 @@ public class RaceServiceImpl implements RaceService {
     }
 
     @Override
+    @AuditAction(action = "RACE_CREATION")
     public RaceResponseDto addRace(RaceRequestDto raceRequestDto) {
         RaceEntity race = RaceRequestDto.toEntity(raceRequestDto);
         RaceEntity saved = raceRepository.save(race);
@@ -58,6 +62,7 @@ public class RaceServiceImpl implements RaceService {
     }
 
     @Override
+    @AuditAction(action = "RACE_UPDATE")
     public RaceResponseDto updateRace(UUID id, RaceRequestDto raceRequestDto) {
         RaceEntity raceEntity = raceRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new EntityNotFoundException("Race with id: " + id + " not found"));
@@ -73,6 +78,7 @@ public class RaceServiceImpl implements RaceService {
     }
 
     @Override
+    @AuditAction(action = "RACE_DELETE")
     public void deleteRace(UUID id) {
         raceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Race with id: " + id + " not found"));
@@ -81,6 +87,7 @@ public class RaceServiceImpl implements RaceService {
     }
 
     @Override
+    @AuditAction(action = "RACE_DRIVER_CREATION")
     public DriverResponseDto addDriver(UUID raceId, DriverRequestDto request) {
         RaceEntity raceEntity = raceRepository.findById(raceId)
                 .orElseThrow(() -> new EntityNotFoundException("Race with id: " + raceId + " not found"));
@@ -105,6 +112,7 @@ public class RaceServiceImpl implements RaceService {
     }
 
     @Override
+    @AuditAction(action = "RACE_DRIVER_DELETE")
     public void deleteDriver(UUID raceId, UUID driverId) {
         RaceEntity race = raceRepository.findById(raceId)
                 .orElseThrow(() -> new EntityNotFoundException("Race with id: " + raceId + " not found"));

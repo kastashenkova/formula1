@@ -72,6 +72,12 @@
             <version>1.18.48</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>formula1</groupId>
+            <artifactId>audit-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
