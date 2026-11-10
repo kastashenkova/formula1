@@ -19,6 +19,8 @@ import org.streaming.entity.TelemetryPointEntity;
 import org.streaming.repository.DriverRepository;
 import org.streaming.repository.TelemetryPointRepository;
 import org.streaming.service.DriverService;
+import org.streaming.validation.OnCreate;
+import org.streaming.validation.OnUpdate;
 
 @Service
 @Transactional
@@ -52,7 +54,7 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     @AuditAction(action = "DRIVER_CREATION")
-    public DriverResponseDto addDriver(DriverRequestDto driverRequestDto) {
+    public DriverResponseDto addDriver(@Validated(OnCreate.class) DriverRequestDto driverRequestDto) {
         DriverEntity driver = DriverRequestDto.toEntity(driverRequestDto);
         DriverEntity saved = driverRepository.save(driver);
 
@@ -63,7 +65,7 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     @AuditAction(action = "DRIVER_UPDATE")
-    public DriverResponseDto updateDriver(UUID id, DriverRequestDto driverRequestDto) {
+    public DriverResponseDto updateDriver(UUID id, @Validated(OnUpdate.class) DriverRequestDto driverRequestDto) {
         DriverEntity driver = driverRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new EntityNotFoundException("Driver with id " + id + " not found"));
 
@@ -88,7 +90,7 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     @AuditAction(action = "DRIVER_TELEMETRY_POINT_CREATION")
-    public TelemetryPointResponseDto addTelemetryPoint(UUID driverId, TelemetryPointRequestDto request) {
+    public TelemetryPointResponseDto addTelemetryPoint(UUID driverId, @Validated(OnCreate.class) TelemetryPointRequestDto request) {
         DriverEntity driver = driverRepository.findById(driverId)
                 .orElseThrow(() -> new EntityNotFoundException("Driver with id " + driverId + " not found"));
 
