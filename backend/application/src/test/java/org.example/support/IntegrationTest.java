@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Tag;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 @Target(ElementType.TYPE)
@@ -16,6 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 @Documented
 @Tag("integration")
 @SpringBootTest
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 @Import({TestcontainersConfiguration.class, NotificationStubConfiguration.class})
 @Sql(scripts = "/sql/reset-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
