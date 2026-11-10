@@ -2,6 +2,7 @@ package org.identity.service.internal;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import org.audit.AuditAction;
 import org.identity.dto.WebhookRequestDto;
 import org.identity.dto.WebhookResponseDto;
 import org.identity.entity.UserEntity;
@@ -9,13 +10,17 @@ import org.identity.entity.WebhookEntity;
 import org.identity.repository.UserRepository;
 import org.identity.repository.WebhookRepository;
 import org.identity.service.WebhookService;
+import org.identity.validation.OnCreate;
+import org.identity.validation.OnUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service
 @Transactional
+@Validated
 public class WebhookServiceImpl implements WebhookService {
     private static final Logger log = LoggerFactory.getLogger(WebhookServiceImpl.class);
 
@@ -28,7 +33,8 @@ public class WebhookServiceImpl implements WebhookService {
     }
 
     @Override
-    public WebhookResponseDto create(WebhookRequestDto request) {
+    @AuditAction(action = "WEBHOOK_CREATION")
+    public WebhookResponseDto create(@Validated(OnCreate.class) WebhookRequestDto request) {
         UserEntity user = userRepository.findById(request.userID())
                 .orElseThrow(() ->
                         new EntityNotFoundException(
@@ -56,7 +62,8 @@ public class WebhookServiceImpl implements WebhookService {
     }
 
     @Override
-    public WebhookResponseDto update(Long id, WebhookRequestDto request) {
+    @AuditAction(action = "WEBHOOK_UPDATE")
+    public WebhookResponseDto update(Long id, @Validated(OnUpdate.class) WebhookRequestDto request) {
         WebhookEntity webhookEntity = webhookRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new EntityNotFoundException("Webhook with id: " + id + " not found"));
 
@@ -72,6 +79,7 @@ public class WebhookServiceImpl implements WebhookService {
     }
 
     @Override
+    @AuditAction(action = "WEBHOOK_DELETE")
     public void delete(Long id) {
         webhookRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new EntityNotFoundException("Webhook with id: " + id + " not found"));

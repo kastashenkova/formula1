@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.UUID;
 import org.identity.command.UpdateUserStatusCommand;
@@ -17,12 +16,9 @@ import org.identity.dto.UserResponseDto;
 import org.identity.exception.RegistrationException;
 import org.identity.service.UserService;
 import org.identity.service.AuthenticationService;
-import org.identity.validation.OnCreate;
-import org.identity.validation.OnUpdate;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -54,8 +50,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid data request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "409", description = "User with such email or phone number already exists", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
-    public ResponseEntity<UserResponseDto> register(@Validated(OnCreate.class)
-                                        @RequestBody UserRegistrationRequestDto requestDto)
+    public ResponseEntity<UserResponseDto> register(@RequestBody UserRegistrationRequestDto requestDto)
             throws RegistrationException {
         UserResponseDto created = userService.addUser(requestDto);
 
@@ -76,7 +71,7 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Bad credentials", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "200", description = "User logged in successfully"),
     })
-    public ResponseEntity<UserLoginResponseDto> login(@RequestBody @Valid UserLoginRequestDto request) {
+    public ResponseEntity<UserLoginResponseDto> login(@RequestBody UserLoginRequestDto request) {
         UserLoginResponseDto logged = authenticationService.authenticate(request);
 
         return ResponseEntity.ok(logged);
@@ -95,7 +90,6 @@ public class UserController {
     })
     public ResponseEntity<UserResponseDto> updateUserStatus(
             @PathVariable UUID id,
-            @Validated(OnUpdate.class)
             @RequestBody UpdateUserStatusCommand updateUserStatusCommand) {
         UserResponseDto updatedUser = userService.updateStatus(id, updateUserStatusCommand);
 

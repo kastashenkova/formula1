@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.processing.dto.BatchRequestDto;
 import org.processing.dto.BatchResponseDto;
 import org.processing.service.BatchService;
-import org.processing.validation.OnCreate;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
@@ -16,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,8 +41,7 @@ public class BatchController {
             @ApiResponse(responseCode = "400", description = "Invalid data request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
     })
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BatchResponseDto> uploadRace(@Validated(OnCreate.class)
-                                                           @RequestBody BatchRequestDto requestDto) {
+    public ResponseEntity<BatchResponseDto> uploadRace(@RequestBody BatchRequestDto requestDto) {
         var newBatch = batchService.uploadBatch(requestDto);
 
         URI location = ServletUriComponentsBuilder

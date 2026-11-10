@@ -8,7 +8,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.audit.AuditAction;
 import org.identity.command.UpdateUserStatusCommand;
 import org.identity.dto.UserResponseDto;
@@ -25,6 +24,8 @@ import org.identity.exception.InvalidVerificationStrategyException;
 import org.identity.repository.TokenRepository;
 import org.identity.repository.UserRepository;
 import org.identity.service.UserService;
+import org.identity.validation.OnCreate;
+import org.identity.validation.OnUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -34,8 +35,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service
+@Validated
 public class UserServiceImpl implements UserService {
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     private final PasswordEncoder passwordEncoder;
@@ -63,7 +66,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @AuditAction(action = "USER_CREATION", logParameters = false)
-    public UserResponseDto addUser(UserRegistrationRequestDto requestDto) {
+    public UserResponseDto addUser(@Validated(OnCreate.class) UserRegistrationRequestDto requestDto) {
         if (userRepository.existsByEmail(requestDto.email())) {
             String message = String.format("User with email %s already exists", requestDto.email());
             throw new DuplicateUserException(message);

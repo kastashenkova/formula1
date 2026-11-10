@@ -2,7 +2,6 @@ package org.streaming.service.internal;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
-
 import org.audit.AuditAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,14 +9,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.streaming.dto.TelemetryPointRequestDto;
 import org.streaming.dto.TelemetryPointResponseDto;
 import org.streaming.entity.TelemetryPointEntity;
 import org.streaming.repository.TelemetryPointRepository;
 import org.streaming.service.TelemetryPointService;
+import org.streaming.validation.OnUpdate;
 
 @Service
 @Transactional
+@Validated
 public class TelemetryPointServiceImpl implements TelemetryPointService {
     private static final Logger log = LoggerFactory.getLogger(TelemetryPointServiceImpl.class);
     private final TelemetryPointRepository telemetryPointRepository;
@@ -45,7 +47,7 @@ public class TelemetryPointServiceImpl implements TelemetryPointService {
 
     @Override
     @AuditAction(action = "TELEMETRY_POINT_UPDATE")
-    public TelemetryPointResponseDto updateTelemetryPoint(UUID pointId, TelemetryPointRequestDto requestDto) {
+    public TelemetryPointResponseDto updateTelemetryPoint(UUID pointId, @Validated(OnUpdate.class) TelemetryPointRequestDto requestDto) {
         TelemetryPointEntity telemetryPointEntity = telemetryPointRepository.findByIdWithDetails(pointId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Telemetry Point with id: " + pointId + " not found"));
