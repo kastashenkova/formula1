@@ -11,7 +11,7 @@ import org.springframework.core.task.TaskExecutor;
 @Profile("test")
 public class SyncTaskExecutorConfiguration {
 
-    @Bean
+    @Bean(name = "syncTestTaskExecutor")
     @Primary
     public TaskExecutor taskExecutor() {
         return new SyncTaskExecutor();
