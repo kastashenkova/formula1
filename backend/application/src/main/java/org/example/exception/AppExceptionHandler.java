@@ -244,7 +244,7 @@ public class AppExceptionHandler {
                         violation -> {
                             String propertyPath = violation.getPropertyPath().toString();
                             int lastDotIndex = propertyPath.lastIndexOf('.');
-                            return lastDotIndex != -1 ? propertyPath.substring(lastDotIndex + 1) : propertyPath;
+                            return lastDotIndex == -1 ? propertyPath : propertyPath.substring(lastDotIndex + 1);
                         },
                         ConstraintViolation::getMessage,
                         (first, second) -> first
