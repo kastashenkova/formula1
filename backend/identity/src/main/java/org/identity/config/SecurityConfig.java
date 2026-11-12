@@ -1,14 +1,18 @@
 package org.identity.config;
 
 import java.util.List;
+import java.util.regex.Pattern;
 import org.identity.security.CustomUserDetailsService;
 import org.identity.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.endpoint.SanitizingFunction;
+import org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -43,6 +47,19 @@ public class SecurityConfig {
 
     @Bean
     @Order(1)
+    public SecurityFilterChain actuatorSecurityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .securityMatcher(EndpointRequest.toAnyEndpoint())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(EndpointRequest.to("health", "info")).permitAll()
+                        .requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole("ADMIN")
+                ).httpBasic(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .build();
+    }
+
+    @Bean
+    @Order(2)
     public SecurityFilterChain apiFilterChain(HttpSecurity http, AuthHandler authEntryPoint) throws Exception {
         return http
                 .securityMatcher("/api/**")
@@ -76,7 +93,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Order(2)
+    @Order(3)
     public SecurityFilterChain webFilterChain(HttpSecurity http)
             throws Exception {
         return http
@@ -128,5 +145,19 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
 
         return source;
+    }
+
+    @Bean
+    public SanitizingFunction sensitiveDataSanitizingFunction() {
+        Pattern sensitivePattern = Pattern.compile(
+                ".*(password|secret|key|token|credential).*",
+                Pattern.CASE_INSENSITIVE
+        );
+        return data -> {
+            if (sensitivePattern.matcher(data.getKey()).matches()) {
+                return data.withValue("******");
+            }
+            return data;
+        };
     }
 }
