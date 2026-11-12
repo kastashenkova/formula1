@@ -14,7 +14,7 @@ COPY backend/application/pom.xml backend/application/pom.xml
 RUN ./mvnw dependency:go-offline -B
 
 COPY . .
-RUN ./mvnw clean package -DskipTests -o
+RUN ./mvnw clean package -DskipTests
 
 FROM eclipse-temurin:25-jre-alpine
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
