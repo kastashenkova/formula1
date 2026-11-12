@@ -49,13 +49,11 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain actuatorSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher("/actuator/**")
+                .securityMatcher(EndpointRequest.toAnyEndpoint())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/actuator/health", "/actuator/info").permitAll()
-                        .anyRequest().hasRole("ADMIN")
-                )
-                .httpBasic(Customizer.withDefaults())
-                .userDetailsService(userDetailsService)
+                        .requestMatchers(EndpointRequest.to("health", "info")).permitAll()
+                        .requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole("ADMIN")
+                ).httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .build();
     }
