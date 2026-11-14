@@ -37,6 +37,9 @@ import org.streaming.exception.ExternalHTTPError;
 public class AppExceptionHandler {
 
     private static final String RESOURCE_CONFLICT_TITLE = "Resource conflict";
+    private static final String CONFLICT_ERROR = "conflict";
+    private static final String IDENTITY_MODULE = "identity";
+    private static final String STREAMING_MODULE = "streaming";
 
     private static final Logger log =
             LoggerFactory.getLogger(AppExceptionHandler.class);
@@ -126,7 +129,7 @@ public class AppExceptionHandler {
     public ProblemDetail handleBadRequest(Exception ex) {
         String module = ex instanceof InvalidTokenException
                 || ex instanceof InvalidVerificationStrategyException
-                ? "identity"
+                ? IDENTITY_MODULE
                 : "api";
 
         return buildProblemDetail(
@@ -146,8 +149,8 @@ public class AppExceptionHandler {
         return buildProblemDetail(
                 HttpStatus.CONFLICT,
                 RESOURCE_CONFLICT_TITLE,
-                "identity",
-                "conflict",
+                IDENTITY_MODULE,
+                CONFLICT_ERROR,
                 ex.getMessage()
         );
     }
@@ -160,7 +163,7 @@ public class AppExceptionHandler {
                 HttpStatus.CONFLICT,
                 RESOURCE_CONFLICT_TITLE,
                 "processing",
-                "conflict",
+                CONFLICT_ERROR,
                 ex.getMessage()
         );
     }
@@ -172,8 +175,8 @@ public class AppExceptionHandler {
         return buildProblemDetail(
                 HttpStatus.CONFLICT,
                 RESOURCE_CONFLICT_TITLE,
-                "streaming",
-                "conflict",
+                STREAMING_MODULE,
+                CONFLICT_ERROR,
                 ex.getMessage()
         );
     }
@@ -185,7 +188,7 @@ public class AppExceptionHandler {
         return buildProblemDetail(
                 HttpStatus.UNPROCESSABLE_CONTENT,
                 "Invalid business state",
-                "identity",
+                IDENTITY_MODULE,
                 "invalid-state",
                 ex.getMessage()
         );
@@ -199,7 +202,7 @@ public class AppExceptionHandler {
         return buildProblemDetail(
                 HttpStatus.UNAUTHORIZED,
                 "Bad credentials",
-                "identity",
+                IDENTITY_MODULE,
                 "bad-credentials",
                 ex.getMessage()
         );
@@ -212,7 +215,7 @@ public class AppExceptionHandler {
         return buildProblemDetail(
                 HttpStatus.FORBIDDEN,
                 "Access denied",
-                "identity",
+                IDENTITY_MODULE,
                 "access-denied",
                 ex.getMessage()
         );
@@ -225,7 +228,7 @@ public class AppExceptionHandler {
         return buildProblemDetail(
                 HttpStatus.NOT_FOUND,
                 "F1 race is not found for this info",
-                "streaming",
+                STREAMING_MODULE,
                 "bad-request",
                 ex.getMessage()
         );
@@ -240,7 +243,7 @@ public class AppExceptionHandler {
         return buildProblemDetail(
                 HttpStatus.BAD_GATEWAY,
                 "Provider API is not responding, try again later",
-                "streaming",
+                STREAMING_MODULE,
                 "bad-request",
                 "The external provider is temporarily unavailable"
         );
