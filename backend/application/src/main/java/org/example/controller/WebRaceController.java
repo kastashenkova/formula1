@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.streaming.dto.RaceRequestDto;
 import org.streaming.dto.RaceResponseDto;
+import org.streaming.exception.DomainException;
 import org.streaming.service.RaceService;
 import org.streaming.validation.OnCreate;
 
@@ -61,7 +62,12 @@ public class WebRaceController {
             return "races/create-form";
         }
 
-        raceService.addRace(form);
+        try {
+            raceService.addRace(form);
+        } catch (DomainException e) {
+            bindingResult.reject("race.import.failed", new Object[]{e.getMessage()}, e.getMessage());
+            return "races/create-form";
+        }
 
         redirectAttributes.addFlashAttribute("successMessage",
                 "Race " + form.raceName() + " created successfully");

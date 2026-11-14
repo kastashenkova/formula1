@@ -3,8 +3,6 @@ package org.example.e2e.thymeleaf;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 final class RacePages {
 
@@ -30,17 +28,16 @@ final class RacePages {
         return page.locator(".notification");
     }
 
-    void registerRace(String raceName, LocalDateTime raceDate) {
+    void registerRace(String raceName, Integer year) {
         addRaceLink().click();
-        submitForm(raceName, raceDate);
+        submitForm(raceName, year);
     }
 
-    void submitForm(String raceName, LocalDateTime raceDate) {
+    void submitForm(String raceName, Integer year) {
         page.getByLabel("Name").fill(raceName);
 
-        if (raceDate != null) {
-            String formattedDate = raceDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
-            page.getByLabel("Date").fill(formattedDate);
+        if (year != null) {
+            page.getByLabel("Year").fill(String.valueOf(year));
         }
 
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Add")).click();

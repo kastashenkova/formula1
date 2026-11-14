@@ -29,6 +29,7 @@ import org.identity.exception.InvalidVerificationStrategyException;
 import org.identity.exception.InvalidUserStateException;
 import org.identity.exception.DuplicateWebhookException;
 import org.processing.exception.DuplicateBatchException;
+import org.streaming.exception.DuplicateRaceException;
 import org.streaming.exception.RaceNotFound;
 import org.streaming.exception.ExternalHTTPError;
 
@@ -157,6 +158,19 @@ public class AppExceptionHandler {
                 HttpStatus.CONFLICT,
                 "Resource conflict",
                 "processing",
+                "conflict",
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(DuplicateRaceException.class)
+    public ProblemDetail handleDuplicateRace(
+            DuplicateRaceException ex
+    ) {
+        return buildProblemDetail(
+                HttpStatus.CONFLICT,
+                "Resource conflict",
+                "streaming",
                 "conflict",
                 ex.getMessage()
         );

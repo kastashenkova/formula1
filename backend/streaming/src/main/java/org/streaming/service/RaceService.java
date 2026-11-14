@@ -10,7 +10,6 @@ import org.streaming.dto.DriverResponseDto;
 import org.streaming.dto.RaceRequestDto;
 import org.streaming.dto.RaceResponseDto;
 import org.streaming.validation.OnCreate;
-import org.streaming.validation.OnUpdate;
 
 @Validated
 public interface RaceService {
@@ -20,8 +19,6 @@ public interface RaceService {
     @Validated(OnCreate.class)
     RaceResponseDto addRace(@Valid RaceRequestDto raceRequestDto);
 
-    @Validated(OnUpdate.class)
-    RaceResponseDto updateRace(UUID id, @Valid RaceRequestDto raceRequestDto);
     void deleteRace(UUID id);
 
     @Validated(OnCreate.class)

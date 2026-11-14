@@ -123,6 +123,19 @@ stateDiagram-v2
 |---|---|
 | `DuplicateBatchException` | Batch with the generated id already exists (not currently reachable) |
 
+### Race Creation
+
+- Request contains only `raceName` (country name, e.g. `Monaco`) and `year` (2023+).
+- The race date and `session_key` are taken from the OpenF1 sessions API (call 1), then drivers (call 2) and telemetry for every driver (call 3) are imported and saved.
+- Import runs synchronously in `RaceDataImporter` (one transaction per driver); it can be moved to background by marking `importRaceData` with `@Async`.
+- If the import fails, the created race is removed so the request can be retried.
+
+| Exception | Raised when |
+|---|---|
+| `RaceNotFound` (404) | OpenF1 has no race for this name and year |
+| `DuplicateRaceException` (409) | Race with the same `session_key` already exists |
+| `ExternalHTTPError` (502) | OpenF1 returned 429/5xx or another unexpected error |
+
 ### 3-Party APIs
 
 **1. Fetch info about race by name and year:**

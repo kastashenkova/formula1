@@ -19,16 +19,15 @@
             </div>
 
             <div class="field">
-                <label for="raceDate" class="label" th:text="#{form.raceDate}"></label>
+                <label for="year" class="label" th:text="#{form.year}"></label>
                 <div class="control">
-                    <input type="datetime-local"
-                           id="raceDate"
-                           th:field="*{raceDate}"
-                           class="input"
-                           th:classappend="${#fields.hasErrors('raceDate')} ? 'is-danger'"/>
+                    <input type="number" id="year" th:field="*{year}" class="input" min="2023"
+                           th:classappend="${#fields.hasErrors('year')} ? 'is-danger'"/>
                 </div>
-                <p class="help is-danger" th:if="${#fields.hasErrors('raceDate')}" th:errors="*{raceDate}"></p>
+                <p class="help is-danger" th:if="${#fields.hasErrors('year')}" th:errors="*{year}"></p>
             </div>
+
+            <p class="help is-danger" th:if="${#fields.hasGlobalErrors()}" th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
 
             <div class="field is-grouped is-grouped-right mt-5">
                 <div class="control">

@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -47,8 +46,10 @@ public class RaceController {
             description = "Create a new race")
     @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Race created successfully"),
+            @ApiResponse(responseCode = "201", description = "Race created with drivers and telemetry imported from OpenF1"),
             @ApiResponse(responseCode = "400", description = "Invalid data request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "404", description = "Race is not found in OpenF1", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "409", description = "Race already exists", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
     })
     public ResponseEntity<RaceResponseDto> create(@RequestBody RaceRequestDto requestDto) {
         RaceResponseDto created = raceService.addRace(requestDto);
@@ -60,22 +61,6 @@ public class RaceController {
                 .toUri();
 
         return ResponseEntity.created(location).body(created);
-    }
-
-    @PutMapping("/{id}")
-    @Operation(summary = "Race update",
-            description = "Update an existing race")
-    @PreAuthorize("hasRole('ADMIN')")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Race updated successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid data request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "404", description = "Race not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
-    })
-    public ResponseEntity<RaceResponseDto> update(@PathVariable UUID id,
-                                                  @RequestBody RaceRequestDto requestDto) {
-        RaceResponseDto updated = raceService.updateRace(id, requestDto);
-
-        return ResponseEntity.ok(updated);
     }
 
     @GetMapping("/{id}")

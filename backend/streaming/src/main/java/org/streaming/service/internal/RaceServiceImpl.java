@@ -1,6 +1,8 @@
 package org.streaming.service.internal;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 import org.audit.AuditAction;
 import org.slf4j.Logger;
@@ -8,14 +10,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.streaming.clients.RaceHTTPClient;
 import org.streaming.dto.DriverRequestDto;
 import org.streaming.dto.DriverResponseDto;
+import org.streaming.dto.RaceApiResponseDto;
 import org.streaming.dto.RaceRequestDto;
 import org.streaming.dto.RaceResponseDto;
 import org.streaming.entity.DriverEntity;
 import org.streaming.entity.RaceEntity;
+import org.streaming.exception.DuplicateRaceException;
+import org.streaming.exception.RaceNotFound;
 import org.streaming.repository.DriverRepository;
 import org.streaming.repository.RaceRepository;
 import org.streaming.service.RaceService;
@@ -29,9 +36,18 @@ public class RaceServiceImpl implements RaceService {
 
     private final DriverRepository driverRepository;
 
-    public RaceServiceImpl(RaceRepository raceRepository, DriverRepository driverRepository) {
+    private final RaceHTTPClient raceHTTPClient;
+
+    private final RaceDataImporter raceDataImporter;
+
+    public RaceServiceImpl(RaceRepository raceRepository,
+                           DriverRepository driverRepository,
+                           RaceHTTPClient raceHTTPClient,
+                           RaceDataImporter raceDataImporter) {
         this.raceRepository = raceRepository;
         this.driverRepository = driverRepository;
+        this.raceHTTPClient = raceHTTPClient;
+        this.raceDataImporter = raceDataImporter;
     }
 
     @Override
@@ -52,29 +68,32 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     @AuditAction(action = "RACE_CREATION")
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public RaceResponseDto addRace(RaceRequestDto raceRequestDto) {
-        RaceEntity race = RaceRequestDto.toEntity(raceRequestDto);
-        RaceEntity saved = raceRepository.save(race);
+        RaceApiResponseDto session = raceHTTPClient.fetchSession(raceRequestDto.year(), raceRequestDto.raceName())
+                .orElseThrow(() -> new RaceNotFound(String.format("Race in %s in %d is not found",
+                        raceRequestDto.raceName(), raceRequestDto.year())));
 
-        log.info("Created race {}", saved.getRaceId());
+        if (raceRepository.existsBySessionKey(session.sessionKey())) {
+            throw new DuplicateRaceException(String.format("Race in %s in %d already exists",
+                    raceRequestDto.raceName(), raceRequestDto.year()));
+        }
+
+        LocalDateTime raceDate = session.startDate().withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime();
+        RaceEntity saved = raceRepository.save(
+                new RaceEntity(raceRequestDto.raceName(), raceDate, session.sessionKey()));
+
+        log.info("Created race {}, importing data for session {}", saved.getRaceId(), session.sessionKey());
+
+        try {
+            raceDataImporter.importRaceData(saved.getRaceId(), session.sessionKey());
+        } catch (RuntimeException e) {
+            log.warn("Import of race {} failed, removing it", saved.getRaceId(), e);
+            raceRepository.deleteById(saved.getRaceId());
+            throw e;
+        }
 
         return RaceResponseDto.fromEntity(saved);
-    }
-
-    @Override
-    @AuditAction(action = "RACE_UPDATE")
-    public RaceResponseDto updateRace(UUID id, RaceRequestDto raceRequestDto) {
-        RaceEntity raceEntity = raceRepository.findByIdWithDetails(id)
-                .orElseThrow(() -> new EntityNotFoundException("Race with id: " + id + " not found"));
-
-        raceEntity.setRaceName(raceRequestDto.raceName());
-        raceEntity.setRaceDate(raceRequestDto.raceDate());
-
-        raceRepository.save(raceEntity);
-
-        log.info("Updated race {}", raceEntity.getRaceId());
-
-        return RaceResponseDto.fromEntity(raceEntity);
     }
 
     @Override
