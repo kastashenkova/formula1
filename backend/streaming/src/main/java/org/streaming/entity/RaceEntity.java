@@ -27,15 +27,19 @@ public class RaceEntity {
     @Column(nullable = false)
     private LocalDateTime raceDate;
 
+    @Column(unique = true)
+    private Integer sessionKey;
+
     @OneToMany(mappedBy = "race", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DriverEntity> drivers = new ArrayList<>();
 
     protected RaceEntity() {
     }
 
-    public RaceEntity(String raceName, LocalDateTime raceDate) {
+    public RaceEntity(String raceName, LocalDateTime raceDate, Integer sessionKey) {
         this.raceName = raceName;
         this.raceDate = raceDate;
+        this.sessionKey = sessionKey;
     }
 
     public UUID getRaceId() {
@@ -60,6 +64,10 @@ public class RaceEntity {
 
     public void setRaceDate(LocalDateTime raceDate) {
         this.raceDate = raceDate;
+    }
+
+    public Integer getSessionKey() {
+        return sessionKey;
     }
 
     public List<DriverEntity> getDrivers() {

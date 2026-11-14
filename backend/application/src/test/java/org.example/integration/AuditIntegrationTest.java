@@ -55,8 +55,8 @@ public class AuditIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                    "raceName": "Audit Grand Prix",
-                                    "raceDate": "2026-10-23T15:00:00Z"
+                                    "raceName": "Monaco",
+                                    "year": 2024
                                 }
                                 """))
                 .andExpect(status().isCreated());
@@ -66,8 +66,8 @@ public class AuditIntegrationTest {
         assertThat(audit.get("success")).isEqualTo(true);
         assertThat(audit.get("user_id")).isEqualTo(adminId);
         assertThat((String) audit.get("method_name")).contains("addRace");
-        assertThat((String) audit.get("arguments")).contains("Audit Grand Prix");
-        assertThat((String) audit.get("result")).contains("Audit Grand Prix");
+        assertThat((String) audit.get("arguments")).contains("Monaco");
+        assertThat((String) audit.get("result")).contains("Monaco");
         assertThat(audit.get("error_message")).isNull();
         assertThat(audit.get("timestamp")).isNotNull();
     }
@@ -100,7 +100,7 @@ public class AuditIntegrationTest {
                         .content("""
                                 {
                                     "raceName": "F1",
-                                    "raceDate": "2028-10-23T15:00:00Z"
+                                    "year": 2020
                                 }
                                 """))
                 .andExpect(status().isBadRequest());

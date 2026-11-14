@@ -51,8 +51,8 @@ public class RaceAPIE2EIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body("""
                         {
-                           "raceName": "Monaco Grand Prix 2026",
-                           "raceDate": "2026-06-07T16:00:00Z"
+                           "raceName": "Monaco",
+                           "year": 2024
                         }
                       """)
                 .exchange()
@@ -80,8 +80,8 @@ public class RaceAPIE2EIT {
         assertThat(raceResponseDto)
                 .isEqualTo(new RaceResponseDto(
                         newRaceId,
-                        "Monaco Grand Prix 2026",
-                        LocalDateTime.of(2026, 6, 7, 16, 0,0)));
+                        "Monaco",
+                        LocalDateTime.of(2024, 5, 26, 13, 0, 0)));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class RaceAPIE2EIT {
                 .body("""
                         {
                            "raceName": "",
-                           "raceDate": "2027-06-07T16:00:00Z"
+                           "year": 2027
                         }
                       """)
                 .exchange()
@@ -113,8 +113,8 @@ public class RaceAPIE2EIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body("""
                         {
-                           "raceName": "Monaco Grand Prix 2026",
-                           "raceDate": "2026-06-07T16:00:00Z"
+                           "raceName": "Monaco",
+                           "year": 2024
                         }
                         """)
                 .exchange()

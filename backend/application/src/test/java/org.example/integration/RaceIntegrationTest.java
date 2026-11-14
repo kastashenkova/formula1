@@ -1,8 +1,10 @@
 package org.example.integration;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import org.example.support.IntegrationTest;
+import org.example.support.OpenF1StubConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,23 +62,120 @@ public class RaceIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void create_ShouldStoreRow() throws Exception {
+    void create_ShouldStoreRaceWithDriversAndTelemetryFromProvider() throws Exception {
         mockMvc.perform(post("/api/races")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                    "raceName": "Singapore Airlines Singapore GP",
-                                    "raceDate": "2026-10-23T15:00:00Z"
+                                    "raceName": "Monaco",
+                                    "year": 2024
                                 }
                                 """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.race_date").value("2024-05-26T13:00:00"));
+
+        UUID raceId = raceIdByName("Monaco");
+
+        Integer sessionKey = jdbc.sql("select session_key from races where race_id = ?")
+                .param(1, raceId)
+                .query(Integer.class)
+                .single();
+        assertThat(sessionKey).isEqualTo(OpenF1StubConfiguration.MONACO_SESSION_KEY);
+
+        List<String> drivers = jdbc.sql("select full_name from drivers where race_id = ? order by driver_number")
+                .param(1, raceId)
+                .query(String.class)
+                .list();
+        assertThat(drivers).containsExactly("Max VERSTAPPEN", "Charles LECLERC");
+
+        Integer points = jdbc.sql("""
+                        select count(*) from telemetry_points p
+                        join drivers d on d.id = p.driver_id
+                        where d.race_id = ?
+                        """)
+                .param(1, raceId)
+                .query(Integer.class)
+                .single();
+        assertThat(points).isEqualTo(3);
+
+        LocalDateTime firstPoint = jdbc.sql("""
+                        select min(p.timestamp) from telemetry_points p
+                        join drivers d on d.id = p.driver_id
+                        where d.driver_number = 1
+                        """)
+                .query(LocalDateTime.class)
+                .single();
+        assertThat(firstPoint).isEqualTo(LocalDateTime.of(2024, 5, 26, 13, 0, 0, 143_000_000));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void createDuplicateRace_ShouldReturnConflict() throws Exception {
+        String body = """
+                {
+                    "raceName": "Monaco",
+                    "year": 2024
+                }
+                """;
+
+        mockMvc.perform(post("/api/races").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
                 .andExpect(status().isCreated());
 
-        String raceDate = jdbc.sql("select race_date from races where race_name = ? limit 1")
-                .param(1, "Singapore Airlines Singapore GP")
-                .query(String.class)
+        mockMvc.perform(post("/api/races").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isConflict())
+                .andExpect(content().string(containsString("Race in Monaco in 2024 already exists")));
+
+        Integer races = jdbc.sql("select count(*) from races where race_name = ?")
+                .param(1, "Monaco")
+                .query(Integer.class)
                 .single();
-        assertThat(raceDate).startsWith("2026-10-23");
+        assertThat(races).isEqualTo(1);
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void createRaceUnknownToProvider_ShouldReturnNotFound() throws Exception {
+        mockMvc.perform(post("/api/races").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "raceName": "Atlantis",
+                                    "year": 2024
+                                }
+                                """))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString("Race in Atlantis in 2024 is not found")));
+
+        Integer races = jdbc.sql("select count(*) from races where race_name = ?")
+                .param(1, "Atlantis")
+                .query(Integer.class)
+                .single();
+        assertThat(races).isZero();
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void createRaceWhenImportFails_ShouldReturnBadGatewayAndNotStoreRace() throws Exception {
+        mockMvc.perform(post("/api/races").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "raceName": "Imola",
+                                    "year": 2024
+                                }
+                                """))
+                .andExpect(status().isBadGateway());
+
+        Integer races = jdbc.sql("select count(*) from races where race_name = ?")
+                .param(1, "Imola")
+                .query(Integer.class)
+                .single();
+        assertThat(races).isZero();
     }
 
     @Test
@@ -92,7 +190,7 @@ public class RaceIntegrationTest {
                         .content("""
                                 {
                                     "raceName": "F1",
-                                    "raceDate": "2028-10-23T15:00:00Z"
+                                    "year": 2020
                                 }
                                 """))
                 .andExpect(status().isBadRequest())
@@ -116,8 +214,8 @@ public class RaceIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                    "raceName": "Singapore Airlines Singapore GP",
-                                    "raceDate": "2026-10-23T15:00:00.000Z"
+                                    "raceName": "Monaco",
+                                    "year": 2024
                                 }
                                 """))
                 .andExpect(status().isForbidden())
@@ -184,89 +282,6 @@ public class RaceIntegrationTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString(
                         String.format("Race with id: %s not found", invalidId))));
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void update_ShouldUpdateRaceSuccessfully() throws Exception {
-        UUID raceId = raceIdByName("New York 2025");
-
-        mockMvc.perform(put("/api/races/{id}", raceId)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                    "raceId": "%s",
-                                    "raceName": "New York 2025 Updated",
-                                    "raceDate": "2025-10-23T15:00:00.000Z"
-                                }
-                                """.formatted(raceId)))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("New York 2025 Updated")));
-
-        LocalDateTime raceDate = jdbc.sql("select race_date from races where race_name = ?")
-                .param(1, "New York 2025 Updated")
-                .query(LocalDateTime.class)
-                .single();
-        assertThat(raceDate).isEqualTo(LocalDateTime.of(2025, 10, 23, 15, 0));
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void updateUnexistingRace_ShouldShowError() throws Exception {
-        Integer rowsBefore = jdbc.sql("select count(*) from races")
-                .query(Integer.class)
-                .single();
-
-        UUID invalidId = UUID.randomUUID();
-
-        mockMvc.perform(put("/api/races/{id}", invalidId)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                    "raceId": "%s",
-                                    "raceName": "New York 2025 Updated",
-                                    "raceDate": "2025-10-23T15:00:00.000Z"
-                                }
-                                """.formatted(invalidId)))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string(containsString(String.format("Race with id: %s not found", invalidId))));
-
-        int rowsChanged = jdbc.sql("select count(*) from races")
-                .query(Integer.class)
-                .single();
-
-        assertThat(rowsChanged).isEqualTo(rowsBefore);
-    }
-
-    @Test
-    @WithMockUser(roles = "USER")
-    void updateRaceByNotAdmin_ShouldShowError() throws Exception {
-        Integer rowsBefore = jdbc.sql("select count(*) from races")
-                .query(Integer.class)
-                .single();
-
-        UUID raceId = raceIdByName("New York 2025");
-
-        mockMvc.perform(put("/api/races/{id}", raceId)
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                    "raceId": "%s",
-                                    "raceName": "New York 2025 Updated",
-                                    "raceDate": "2025-10-23T15:00:00.000Z"
-                                }
-                                """.formatted(raceId)))
-                .andExpect(status().isForbidden())
-                .andExpect(content().string(containsString("Access denied")));
-
-        int rowsChanged = jdbc.sql("select count(*) from races")
-                .query(Integer.class)
-                .single();
-
-        assertThat(rowsChanged).isEqualTo(rowsBefore);
     }
 
     @Test

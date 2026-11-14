@@ -19,3 +19,5 @@ databaseChangeLog:
       file: db/changelog/changes/09-insert-initial-users.yaml
   - include:
       file: db/changelog/changes/10-create-audit-logs-table.yaml
+  - include:
+      file: db/changelog/changes/11-add-session-key-to-races.yaml

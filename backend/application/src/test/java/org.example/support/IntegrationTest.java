@@ -17,7 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 @Tag("integration")
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import({TestcontainersConfiguration.class, NotificationStubConfiguration.class, SyncTaskExecutorConfiguration.class})
+@Import({TestcontainersConfiguration.class, NotificationStubConfiguration.class, OpenF1StubConfiguration.class, SyncTaskExecutorConfiguration.class})
 @Sql(scripts = "/sql/reset-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = "/sql/reset-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public @interface IntegrationTest {

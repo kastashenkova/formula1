@@ -2,7 +2,6 @@ package org.example.e2e.thymeleaf;
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
-import java.time.LocalDateTime;
 import org.example.support.E2ETest;
 import org.junit.jupiter.api.Test;
 
@@ -44,10 +43,19 @@ class ThymeleafUIE2EIT extends BrowserTestSupport {
         loginAs("d.dzhos@ukma.edu.ua", "dmytro123");
         RacePages races = new RacePages(page);
 
-        races.registerRace("New York 2026", LocalDateTime.of(2026, 10, 22, 15, 0));
+        races.registerRace("Monaco", 2024);
 
-        assertThat(page.locator(".notification.is-success")).containsText("New York 2026");
-        assertThat(page.locator("body")).containsText("New York 2026");
+        assertThat(page.locator(".notification.is-success")).containsText("Monaco");
+        assertThat(races.row("Monaco")).containsText("2024-05-26");
+    }
+
+    @Test
+    void raceUnknownToProvider_ShouldShowErrorOnForm() {
+        loginAs("d.dzhos@ukma.edu.ua", "dmytro123");
+
+        new RacePages(page).registerRace("Atlantis", 2024);
+
+        assertThat(page.getByText("Could not import race: Race in Atlantis in 2024 is not found")).isVisible();
     }
 
     @Test
@@ -57,7 +65,7 @@ class ThymeleafUIE2EIT extends BrowserTestSupport {
         new RacePages(page).registerRace("F1", null);
 
         assertThat(page.getByText("Race name must be from 3 to 100 characters")).isVisible();
-        assertThat(page.getByText("Race date is required")).isVisible();
+        assertThat(page.getByText("Race year is required")).isVisible();
     }
 
     @Test

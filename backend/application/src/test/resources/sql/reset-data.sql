@@ -1,1 +1,1 @@
-TRUNCATE TABLE verification_tokens, users, drivers, races, audit_log CASCADE;
+TRUNCATE TABLE verification_tokens, users, telemetry_points, drivers, races, audit_log CASCADE;

@@ -25,4 +25,6 @@ public interface RaceRepository extends JpaRepository<RaceEntity, UUID> {
     Page<RaceEntity> findAllWithDetails(Pageable pageable);
 
     boolean existsByRaceName(String raceName);
+
+    boolean existsBySessionKey(Integer sessionKey);
 }

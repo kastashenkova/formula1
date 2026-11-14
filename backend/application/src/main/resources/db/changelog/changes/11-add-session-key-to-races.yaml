@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 11-add-session-key-to-races
+      author: formula1_team
+      changes:
+        - addColumn:
+            tableName: races
+            columns:
+              - column:
+                  name: session_key
+                  type: integer
+                  constraints:
+                    unique: true
+                    uniqueConstraintName: uk_races_session_key

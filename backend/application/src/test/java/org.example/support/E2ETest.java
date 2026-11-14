@@ -17,7 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 @Tag("e2e")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureRestTestClient
-@Import({TestcontainersConfiguration.class, NotificationStubConfiguration.class})
+@Import({TestcontainersConfiguration.class, NotificationStubConfiguration.class, OpenF1StubConfiguration.class})
 @Sql(scripts = "/sql/reset-race-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public @interface E2ETest {
 }

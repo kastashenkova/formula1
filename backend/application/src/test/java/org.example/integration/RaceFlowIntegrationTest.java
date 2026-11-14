@@ -34,14 +34,14 @@ class RaceFlowIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                    "raceName": "Monaco Grand Prix 2026",
-                                    "raceDate": "2026-06-07T16:00:00Z"
+                                    "raceName": "Monaco",
+                                    "year": 2024
                                 }
                                 """))
                 .andExpect(status().isCreated());
 
         UUID newRaceId = jdbc.sql("select race_id from races where race_name = ?")
-                .param(1, "Monaco Grand Prix 2026")
+                .param(1, "Monaco")
                 .query(UUID.class)
                 .single();
 
@@ -73,15 +73,15 @@ class RaceFlowIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                    "raceName": "Monaco Grand Prix 2026",
-                                    "raceDate": "2026-06-07T16:00:00Z"
+                                    "raceName": "Monaco",
+                                    "year": 2024
                                 }
                                 """))
                 .andExpect(status().isForbidden())
                 .andExpect(content().string(containsString("Access denied")));
 
         Integer hackersFound = jdbc.sql("select count(*) from races where race_name = ?")
-                .param(1, "Monaco Grand Prix 2026")
+                .param(1, "Monaco")
                 .query(Integer.class)
                 .single();
 
