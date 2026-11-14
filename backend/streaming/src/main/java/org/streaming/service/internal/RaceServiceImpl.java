@@ -90,7 +90,7 @@ public class RaceServiceImpl implements RaceService {
         RaceEntity saved;
         try {
             saved = raceRepository.save(new RaceEntity(raceRequestDto.raceName(), raceDate, session.sessionKey()));
-        } catch (DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException _) {
             // Concurrent request saved the same session between the check and the insert
             throw new DuplicateRaceException(duplicateMessage);
         }
