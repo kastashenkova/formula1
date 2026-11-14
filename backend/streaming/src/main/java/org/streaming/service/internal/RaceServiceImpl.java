@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.audit.AuditAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,14 +41,18 @@ public class RaceServiceImpl implements RaceService {
 
     private final RaceDataImporter raceDataImporter;
 
+    private final RaceDataCleaner raceDataCleaner;
+
     public RaceServiceImpl(RaceRepository raceRepository,
                            DriverRepository driverRepository,
                            RaceHTTPClient raceHTTPClient,
-                           RaceDataImporter raceDataImporter) {
+                           RaceDataImporter raceDataImporter,
+                           RaceDataCleaner raceDataCleaner) {
         this.raceRepository = raceRepository;
         this.driverRepository = driverRepository;
         this.raceHTTPClient = raceHTTPClient;
         this.raceDataImporter = raceDataImporter;
+        this.raceDataCleaner = raceDataCleaner;
     }
 
     @Override
@@ -74,14 +79,21 @@ public class RaceServiceImpl implements RaceService {
                 .orElseThrow(() -> new RaceNotFound(String.format("Race in %s in %d is not found",
                         raceRequestDto.raceName(), raceRequestDto.year())));
 
+        String duplicateMessage = String.format("Race in %s in %d already exists",
+                raceRequestDto.raceName(), raceRequestDto.year());
+
         if (raceRepository.existsBySessionKey(session.sessionKey())) {
-            throw new DuplicateRaceException(String.format("Race in %s in %d already exists",
-                    raceRequestDto.raceName(), raceRequestDto.year()));
+            throw new DuplicateRaceException(duplicateMessage);
         }
 
         LocalDateTime raceDate = session.startDate().withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime();
-        RaceEntity saved = raceRepository.save(
-                new RaceEntity(raceRequestDto.raceName(), raceDate, session.sessionKey()));
+        RaceEntity saved;
+        try {
+            saved = raceRepository.save(new RaceEntity(raceRequestDto.raceName(), raceDate, session.sessionKey()));
+        } catch (DataIntegrityViolationException e) {
+            // Concurrent request saved the same session between the check and the insert
+            throw new DuplicateRaceException(duplicateMessage);
+        }
 
         log.info("Created race {}, importing data for session {}", saved.getRaceId(), session.sessionKey());
 
@@ -89,7 +101,7 @@ public class RaceServiceImpl implements RaceService {
             raceDataImporter.importRaceData(saved.getRaceId(), session.sessionKey());
         } catch (RuntimeException e) {
             log.warn("Import of race {} failed, removing it", saved.getRaceId(), e);
-            raceRepository.deleteById(saved.getRaceId());
+            raceDataCleaner.deleteRace(saved.getRaceId());
             throw e;
         }
 
@@ -99,10 +111,11 @@ public class RaceServiceImpl implements RaceService {
     @Override
     @AuditAction(action = "RACE_DELETE")
     public void deleteRace(UUID id) {
-        raceRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Race with id: " + id + " not found"));
+        if (!raceRepository.existsById(id)) {
+            throw new EntityNotFoundException("Race with id: " + id + " not found");
+        }
 
-        raceRepository.deleteById(id);
+        raceDataCleaner.deleteRace(id);
     }
 
     @Override
@@ -145,6 +158,6 @@ public class RaceServiceImpl implements RaceService {
             throw new IllegalArgumentException(message);
         }
 
-        race.removeDriver(driver);
+        raceDataCleaner.deleteDriver(driverId);
     }
 }

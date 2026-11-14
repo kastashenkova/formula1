@@ -3,10 +3,12 @@ package org.streaming.clients;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withException;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -106,6 +108,14 @@ class RaceHTTPClientTest {
     void serverError_ShouldThrowExternalHTTPError() {
         server.expect(requestTo(BASE_URL + "/location?session_key=1&driver_number=1"))
                 .andRespond(withServerError());
+
+        assertThrows(ExternalHTTPError.class, () -> client.fetchLocations(1, 1L));
+    }
+
+    @Test
+    void timeout_ShouldThrowExternalHTTPError() {
+        server.expect(requestTo(BASE_URL + "/location?session_key=1&driver_number=1"))
+                .andRespond(withException(new SocketTimeoutException("Read timed out")));
 
         assertThrows(ExternalHTTPError.class, () -> client.fetchLocations(1, 1L));
     }
