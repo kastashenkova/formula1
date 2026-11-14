@@ -1,17 +1,21 @@
 package org.example.support;
 
+import java.util.concurrent.Executor;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.task.SyncTaskExecutor;
-import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.annotation.AsyncConfigurer;
 
 @TestConfiguration(proxyBeanMethods = false)
 public class SyncTaskExecutorConfiguration {
 
-    @Bean(name = "syncTestTaskExecutor")
-    @Primary
-    public TaskExecutor taskExecutor() {
-        return new SyncTaskExecutor();
+    @Bean
+    public AsyncConfigurer syncAsyncConfigurer() {
+        return new AsyncConfigurer() {
+            @Override
+            public Executor getAsyncExecutor() {
+                return new SyncTaskExecutor();
+            }
+        };
     }
 }
