@@ -22,6 +22,8 @@ import org.streaming.validation.OnCreate;
 @Controller
 public class WebRaceController {
 
+    private static final String CREATE_FORM_VIEW = "races/create-form";
+
     private final RaceService raceService;
 
     public WebRaceController(RaceService raceService) {
@@ -48,7 +50,7 @@ public class WebRaceController {
     @GetMapping("/races/new")
     public String newRace(Model model) {
         model.addAttribute("form", new RaceRequestDto(null, null, null));
-        return "races/create-form";
+        return CREATE_FORM_VIEW;
     }
 
     @PostMapping("/races")
@@ -59,14 +61,14 @@ public class WebRaceController {
             RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
-            return "races/create-form";
+            return CREATE_FORM_VIEW;
         }
 
         try {
             raceService.addRace(form);
         } catch (DomainException e) {
             bindingResult.reject("race.import.failed", new Object[]{e.getMessage()}, e.getMessage());
-            return "races/create-form";
+            return CREATE_FORM_VIEW;
         }
 
         redirectAttributes.addFlashAttribute("successMessage",

@@ -73,7 +73,7 @@ public class RaceDataImporter {
     private void pause() {
         try {
             Thread.sleep(requestDelayMs);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
             throw new ExternalHTTPError("Race data import was interrupted");
         }

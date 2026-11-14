@@ -36,6 +36,8 @@ import org.streaming.exception.ExternalHTTPError;
 @RestControllerAdvice(annotations = RestController.class)
 public class AppExceptionHandler {
 
+    private static final String RESOURCE_CONFLICT_TITLE = "Resource conflict";
+
     private static final Logger log =
             LoggerFactory.getLogger(AppExceptionHandler.class);
 
@@ -143,7 +145,7 @@ public class AppExceptionHandler {
     public ProblemDetail handleIdentityConflict(RuntimeException ex) {
         return buildProblemDetail(
                 HttpStatus.CONFLICT,
-                "Resource conflict",
+                RESOURCE_CONFLICT_TITLE,
                 "identity",
                 "conflict",
                 ex.getMessage()
@@ -156,7 +158,7 @@ public class AppExceptionHandler {
     ) {
         return buildProblemDetail(
                 HttpStatus.CONFLICT,
-                "Resource conflict",
+                RESOURCE_CONFLICT_TITLE,
                 "processing",
                 "conflict",
                 ex.getMessage()
@@ -169,7 +171,7 @@ public class AppExceptionHandler {
     ) {
         return buildProblemDetail(
                 HttpStatus.CONFLICT,
-                "Resource conflict",
+                RESOURCE_CONFLICT_TITLE,
                 "streaming",
                 "conflict",
                 ex.getMessage()
