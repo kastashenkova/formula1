@@ -89,7 +89,7 @@ class RaceServiceImplTest {
         assertThat(response).isEqualTo(new RaceResponseDto(raceId, "Monaco", LocalDateTime.of(2024, 5, 26, 13, 0)));
         verify(raceDataImporter).importRaceData(raceId, 9523);
         verify(eventPublisher).publishEvent(
-                new RaceImportedEvent(raceId, "Monaco", LocalDateTime.of(2024, 5, 26, 13, 0), REQUESTED_BY));
+                RaceImportedEvent.success(raceId, "Monaco", LocalDateTime.of(2024, 5, 26, 13, 0), REQUESTED_BY));
     }
 
     @Test
@@ -125,7 +125,8 @@ class RaceServiceImplTest {
         assertThrows(ExternalHTTPError.class, () -> service.addRace(REQUEST, REQUESTED_BY));
 
         verify(raceDataCleaner).deleteRace(raceId);
-        verify(eventPublisher, never()).publishEvent(any(Object.class));
+        verify(eventPublisher).publishEvent(
+                RaceImportedEvent.failed(raceId, "Monaco", LocalDateTime.of(2024, 5, 26, 13, 0), REQUESTED_BY, "boom"));
     }
 
     @Test

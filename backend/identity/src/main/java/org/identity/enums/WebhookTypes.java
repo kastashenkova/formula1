@@ -1,5 +1,5 @@
 package org.identity.enums;
 
 public enum WebhookTypes {
-    RACE_IMPORTED
+    RACE_IMPORTED_SUCCESS, RACE_IMPORTED_FAILED
 }

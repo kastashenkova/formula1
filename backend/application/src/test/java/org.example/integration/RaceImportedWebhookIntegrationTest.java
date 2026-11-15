@@ -44,15 +44,13 @@ class RaceImportedWebhookIntegrationTest {
         jdbc.sql("INSERT INTO users (id, email, phone_number, password, role, user_status) VALUES (?, ?, ?, ?, ?, ?)")
                 .params(adminId, ADMIN_EMAIL, "+380980137098", "password", "ADMIN", "ACTIVE")
                 .update();
-        jdbc.sql("INSERT INTO webhooks (id, webhook_url, user_id, webhook_type, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)")
-                .params(1L, openF1Server.baseUrl() + WEBHOOK_PATH, adminId, "RACE_IMPORTED",
-                        LocalDateTime.now(), LocalDateTime.now())
-                .update();
+        insertWebhook(1L, adminId, "RACE_IMPORTED_SUCCESS");
+        insertWebhook(2L, adminId, "RACE_IMPORTED_FAILED");
     }
 
     @Test
     @WithMockUser(username = ADMIN_EMAIL, roles = "ADMIN")
-    void createRace_ShouldSendRaceImportedWebhookToCreator() throws Exception {
+    void createRace_ShouldSendOnlySuccessWebhookToCreator() throws Exception {
         mockMvc.perform(post("/api/races").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -65,13 +63,14 @@ class RaceImportedWebhookIntegrationTest {
 
         await().atMost(Duration.ofSeconds(5)).untilAsserted(() ->
                 openF1Server.verify(1, WireMock.postRequestedFor(WireMock.urlPathEqualTo(WEBHOOK_PATH))
-                        .withRequestBody(WireMock.matchingJsonPath("$.type", WireMock.equalTo("RACE_IMPORTED")))
+                        .withRequestBody(WireMock.matchingJsonPath("$.type", WireMock.equalTo("RACE_IMPORTED_SUCCESS")))
                         .withRequestBody(WireMock.matchingJsonPath("$.race_name", WireMock.equalTo("Monaco")))));
+        openF1Server.verify(1, WireMock.postRequestedFor(WireMock.urlPathEqualTo(WEBHOOK_PATH)));
     }
 
     @Test
     @WithMockUser(username = ADMIN_EMAIL, roles = "ADMIN")
-    void createRaceWhenImportFails_ShouldNotSendWebhook() throws Exception {
+    void createRaceWhenImportFails_ShouldSendOnlyFailedWebhook() throws Exception {
         mockMvc.perform(post("/api/races").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -82,6 +81,17 @@ class RaceImportedWebhookIntegrationTest {
                                 """))
                 .andExpect(status().isBadGateway());
 
-        openF1Server.verify(0, WireMock.postRequestedFor(WireMock.urlPathEqualTo(WEBHOOK_PATH)));
+        await().atMost(Duration.ofSeconds(5)).untilAsserted(() ->
+                openF1Server.verify(1, WireMock.postRequestedFor(WireMock.urlPathEqualTo(WEBHOOK_PATH))
+                        .withRequestBody(WireMock.matchingJsonPath("$.type", WireMock.equalTo("RACE_IMPORTED_FAILED")))
+                        .withRequestBody(WireMock.matchingJsonPath("$.race_name", WireMock.equalTo("Imola")))
+                        .withRequestBody(WireMock.matchingJsonPath("$.error"))));
+        openF1Server.verify(1, WireMock.postRequestedFor(WireMock.urlPathEqualTo(WEBHOOK_PATH)));
+    }
+
+    private void insertWebhook(Long id, UUID userId, String type) {
+        jdbc.sql("INSERT INTO webhooks (id, webhook_url, user_id, webhook_type, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)")
+                .params(id, openF1Server.baseUrl() + WEBHOOK_PATH, userId, type, LocalDateTime.now(), LocalDateTime.now())
+                .update();
     }
 }

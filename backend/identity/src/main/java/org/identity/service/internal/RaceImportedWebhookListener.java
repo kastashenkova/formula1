@@ -27,9 +27,13 @@ public class RaceImportedWebhookListener {
 
     @ApplicationModuleListener
     void sendRaceImportedWebhooks(RaceImportedEvent event) {
+        WebhookTypes type = switch (event.status()) {
+            case SUCCESS -> WebhookTypes.RACE_IMPORTED_SUCCESS;
+            case FAILED -> WebhookTypes.RACE_IMPORTED_FAILED;
+        };
         List<WebhookEntity> webhooks = webhookRepository.findAllByUserEmailAndWebhookType(
-                event.requestedBy(), WebhookTypes.RACE_IMPORTED.name());
-        RaceImportedWebhookDto payload = RaceImportedWebhookDto.fromEvent(event);
+                event.requestedBy(), type.name());
+        RaceImportedWebhookDto payload = RaceImportedWebhookDto.fromEvent(event, type);
         int failed = 0;
 
         for (WebhookEntity webhook : webhooks) {

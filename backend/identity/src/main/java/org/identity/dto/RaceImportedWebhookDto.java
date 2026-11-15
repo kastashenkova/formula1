@@ -14,14 +14,17 @@ public record RaceImportedWebhookDto(
         @JsonProperty("race_name")
         String raceName,
         @JsonProperty("race_date")
-        LocalDateTime raceDate
+        LocalDateTime raceDate,
+        @JsonProperty("error")
+        String error
 ) {
-    public static RaceImportedWebhookDto fromEvent(RaceImportedEvent event) {
+    public static RaceImportedWebhookDto fromEvent(RaceImportedEvent event, WebhookTypes type) {
         return new RaceImportedWebhookDto(
-                WebhookTypes.RACE_IMPORTED.name(),
+                type.name(),
                 event.raceId(),
                 event.raceName(),
-                event.raceDate()
+                event.raceDate(),
+                event.error()
         );
     }
 }

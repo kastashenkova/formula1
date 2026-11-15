@@ -66,7 +66,7 @@ public class WebhookControllerTest {
                 null,
                 "https://example-url.com",
                 UUID.randomUUID(),
-                WebhookTypes.RACE_IMPORTED.toString()
+                WebhookTypes.RACE_IMPORTED_SUCCESS.toString()
         );
 
         WebhookResponseDto newWebhookResponseDto = new WebhookResponseDto(
@@ -129,7 +129,7 @@ public class WebhookControllerTest {
                 null,
                 "https://example-url.com",
                 UUID.randomUUID(),
-                WebhookTypes.RACE_IMPORTED.toString()
+                WebhookTypes.RACE_IMPORTED_SUCCESS.toString()
         );
 
         WebhookResponseDto newWebhookResponseDto = new WebhookResponseDto(
@@ -181,7 +181,7 @@ public class WebhookControllerTest {
                 null,
                 "https://example-url.com",
                 UUID.randomUUID(),
-                WebhookTypes.RACE_IMPORTED.toString()
+                WebhookTypes.RACE_IMPORTED_SUCCESS.toString()
         );
 
         WebhookResponseDto newWebhookResponseDto = new WebhookResponseDto(
@@ -212,7 +212,7 @@ public class WebhookControllerTest {
                 null,
                 "https://example-url.com",
                 UUID.randomUUID(),
-                WebhookTypes.RACE_IMPORTED.toString()
+                WebhookTypes.RACE_IMPORTED_SUCCESS.toString()
         );
 
         when(webhookService.update(eq(1L), any(WebhookRequestDto.class)))

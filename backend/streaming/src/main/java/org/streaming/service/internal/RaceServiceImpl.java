@@ -111,14 +111,19 @@ public class RaceServiceImpl implements RaceService {
         } catch (RuntimeException e) {
             log.warn("Import of race {} failed, removing it", saved.getRaceId(), e);
             raceDataCleaner.deleteRace(saved.getRaceId());
+            publish(RaceImportedEvent.failed(saved.getRaceId(), saved.getRaceName(), raceDate, requestedBy,
+                    e.getMessage()));
             throw e;
         }
 
-        // Module listeners run only after commit, and the publication is stored in the same transaction
-        RaceImportedEvent event = new RaceImportedEvent(saved.getRaceId(), saved.getRaceName(), raceDate, requestedBy);
-        transactionTemplate.executeWithoutResult(status -> eventPublisher.publishEvent(event));
+        publish(RaceImportedEvent.success(saved.getRaceId(), saved.getRaceName(), raceDate, requestedBy));
 
         return RaceResponseDto.fromEntity(saved);
+    }
+
+    // Module listeners run only after commit, and the publication is stored in the same transaction
+    private void publish(RaceImportedEvent event) {
+        transactionTemplate.executeWithoutResult(status -> eventPublisher.publishEvent(event));
     }
 
     @Override
