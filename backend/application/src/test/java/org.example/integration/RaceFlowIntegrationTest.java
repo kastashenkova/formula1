@@ -29,7 +29,7 @@ class RaceFlowIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void admin_ShouldCreateRaceAndAddDriver_AndStoreInDatabase() throws Exception {
+    void admin_ShouldCreateRaceWithImportedDrivers_AndStoreInDatabase() throws Exception {
         mockMvc.perform(post("/api/races").with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -47,23 +47,13 @@ class RaceFlowIntegrationTest {
 
         assertThat(newRaceId).isNotNull();
 
-        mockMvc.perform(post("/api/races/{id}/drivers", newRaceId).with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                    "driverNumber": "3",
-                                    "fullName": "Max Verstappen"
-                                }
-                                """))
-                .andExpect(status().isCreated());
-
         String driverName = jdbc.sql("select full_name from drivers where race_id = ? and driver_number = ?")
                 .param(1, newRaceId)
-                .param(2, 3)
+                .param(2, 1)
                 .query(String.class)
                 .single();
 
-        assertThat(driverName).isEqualTo("Max Verstappen");
+        assertThat(driverName).isEqualTo("Max VERSTAPPEN");
     }
 
     @Test

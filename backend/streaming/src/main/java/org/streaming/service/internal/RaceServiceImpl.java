@@ -15,12 +15,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.streaming.clients.RaceHTTPClient;
-import org.streaming.dto.DriverRequestDto;
 import org.streaming.dto.DriverResponseDto;
 import org.streaming.dto.RaceApiResponseDto;
 import org.streaming.dto.RaceRequestDto;
 import org.streaming.dto.RaceResponseDto;
-import org.streaming.entity.DriverEntity;
 import org.streaming.entity.RaceEntity;
 import org.streaming.exception.DuplicateRaceException;
 import org.streaming.exception.RaceNotFound;
@@ -119,21 +117,6 @@ public class RaceServiceImpl implements RaceService {
     }
 
     @Override
-    @AuditAction(action = "RACE_DRIVER_CREATION")
-    public DriverResponseDto addDriver(UUID raceId, DriverRequestDto request) {
-        RaceEntity raceEntity = raceRepository.findById(raceId)
-                .orElseThrow(() -> new EntityNotFoundException("Race with id: " + raceId + " not found"));
-
-        DriverEntity driverEntity = DriverRequestDto.toEntity(request);
-        raceEntity.addDriver(driverEntity);
-        DriverEntity savedDriver = driverRepository.save(driverEntity);
-
-        log.info("Added driver {}", savedDriver.getId());
-
-        return DriverResponseDto.fromEntity(savedDriver);
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public Page<DriverResponseDto> getDrivers(UUID raceId, Pageable pageable) {
         RaceEntity raceEntity = raceRepository.findById(raceId)
@@ -141,23 +124,5 @@ public class RaceServiceImpl implements RaceService {
 
         return driverRepository.findByRaceOrderByFullName(raceEntity, pageable)
                 .map(DriverResponseDto::fromEntity);
-    }
-
-    @Override
-    @AuditAction(action = "RACE_DRIVER_DELETE")
-    public void deleteDriver(UUID raceId, UUID driverId) {
-        RaceEntity race = raceRepository.findById(raceId)
-                .orElseThrow(() -> new EntityNotFoundException("Race with id: " + raceId + " not found"));
-
-        DriverEntity driver = driverRepository.findById(driverId)
-                .orElseThrow(() -> new EntityNotFoundException("Driver with id: " + driverId + " not found"));
-
-        if (!driver.getRace().equals(race)) {
-            String message = String.format("Driver with id %s does not belong to the Race with id %s",
-                    driverId, raceId);
-            throw new IllegalArgumentException(message);
-        }
-
-        raceDataCleaner.deleteDriver(driverId);
     }
 }

@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
-import org.streaming.dto.DriverRequestDto;
 import org.streaming.dto.DriverResponseDto;
 import org.streaming.dto.RaceRequestDto;
 import org.streaming.dto.RaceResponseDto;
@@ -21,9 +20,5 @@ public interface RaceService {
 
     void deleteRace(UUID id);
 
-    @Validated(OnCreate.class)
-    DriverResponseDto addDriver(UUID raceId, @Valid DriverRequestDto request);
-
     Page<DriverResponseDto> getDrivers(UUID raceId, Pageable pageable);
-    void deleteDriver(UUID raceId, UUID driverId);
 }

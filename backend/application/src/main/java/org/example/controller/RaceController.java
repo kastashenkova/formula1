@@ -10,7 +10,6 @@ import java.net.URI;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,10 +19,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.streaming.dto.DriverRequestDto;
 import org.streaming.dto.DriverResponseDto;
 import org.streaming.dto.RaceRequestDto;
 import org.streaming.dto.RaceResponseDto;
@@ -101,23 +98,6 @@ public class RaceController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/drivers")
-    @Operation(summary = "Add driver",
-            description = "Add driver to the existing race")
-    @PreAuthorize("hasRole('ADMIN')")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Driver created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid data request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "404", description = "Race not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
-    })
-    public ResponseEntity<DriverResponseDto> addDriver(
-            @PathVariable UUID id,
-            @RequestBody DriverRequestDto request
-    ) {
-        DriverResponseDto created = raceService.addDriver(id, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    }
-
     @GetMapping("/{id}/drivers")
     @Operation(summary = "Get drivers",
             description = "Get drivers of the existing race")
@@ -126,19 +106,5 @@ public class RaceController {
     })
     public Page<DriverResponseDto> getDrivers(@PathVariable UUID id, Pageable pageable) {
         return raceService.getDrivers(id, pageable);
-    }
-
-    @DeleteMapping("/{raceId}/drivers/{driverId}")
-    @Operation(summary = "Delete driver",
-            description = "Delete driver from the existing race")
-    @PreAuthorize("hasRole('ADMIN')")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Driver deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Driver not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "400", description = "Driver does not belong to the specified race", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
-    })
-    public void deleteDriver(@PathVariable UUID raceId, @PathVariable UUID driverId) {
-        raceService.deleteDriver(raceId, driverId);
     }
 }
