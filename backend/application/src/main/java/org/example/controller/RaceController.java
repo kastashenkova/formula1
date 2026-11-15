@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
+import java.security.Principal;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,8 +49,8 @@ public class RaceController {
             @ApiResponse(responseCode = "404", description = "Race is not found in OpenF1", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "409", description = "Race already exists", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
     })
-    public ResponseEntity<RaceResponseDto> create(@RequestBody RaceRequestDto requestDto) {
-        RaceResponseDto created = raceService.addRace(requestDto);
+    public ResponseEntity<RaceResponseDto> create(@RequestBody RaceRequestDto requestDto, Principal principal) {
+        RaceResponseDto created = raceService.addRace(requestDto, principal.getName());
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

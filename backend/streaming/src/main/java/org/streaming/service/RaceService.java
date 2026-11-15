@@ -16,7 +16,7 @@ public interface RaceService {
     Page<RaceResponseDto> getRaces(Pageable pageable);
 
     @Validated(OnCreate.class)
-    RaceResponseDto addRace(@Valid RaceRequestDto raceRequestDto);
+    RaceResponseDto addRace(@Valid RaceRequestDto raceRequestDto, String requestedBy);
 
     void deleteRace(UUID id);
 

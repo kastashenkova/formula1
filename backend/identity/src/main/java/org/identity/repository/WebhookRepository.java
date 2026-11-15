@@ -1,5 +1,6 @@
 package org.identity.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.identity.entity.WebhookEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,6 @@ public interface WebhookRepository extends JpaRepository<WebhookEntity, Long> {
             WHERE w.id = :id
             """)
     Optional<WebhookEntity> findByIdWithDetails(@Param("id") Long id);
+
+    List<WebhookEntity> findAllByUserEmailAndWebhookType(String email, String webhookType);
 }
