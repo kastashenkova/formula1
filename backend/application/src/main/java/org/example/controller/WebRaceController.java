@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import jakarta.validation.groups.Default;
+import java.security.Principal;
 import org.example.enums.RaceView;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -58,6 +59,7 @@ public class WebRaceController {
             @Validated({Default.class, OnCreate.class})
             @ModelAttribute("form") RaceRequestDto form,
             BindingResult bindingResult,
+            Principal principal,
             RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
@@ -65,7 +67,7 @@ public class WebRaceController {
         }
 
         try {
-            raceService.addRace(form);
+            raceService.addRace(form, principal.getName());
         } catch (DomainException e) {
             bindingResult.reject("race.import.failed", new Object[]{e.getMessage()}, e.getMessage());
             return CREATE_FORM_VIEW;

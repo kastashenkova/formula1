@@ -1,5 +1,5 @@
 package org.identity.enums;
 
 public enum WebhookTypes {
-    PENDING, BATCH_COMPLETED
+    RACE_IMPORTED_SUCCESS, RACE_IMPORTED_FAILED
 }

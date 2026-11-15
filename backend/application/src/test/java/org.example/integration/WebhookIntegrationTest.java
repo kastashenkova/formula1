@@ -52,7 +52,7 @@ public class WebhookIntegrationTest {
                         """)
                 .param(1, "https://example.com/hooks/pending")
                 .param(2, userId)
-                .param(3, "PENDING")
+                .param(3, "RACE_IMPORTED_SUCCESS")
                 .param(4, LocalDateTime.parse("2025-09-23T17:00:00"))
                 .param(5, LocalDateTime.parse("2025-09-23T17:00:00"))
                 .update();
@@ -68,7 +68,7 @@ public class WebhookIntegrationTest {
                                 {
                                     "webhookURL": "https://example.com/hooks/batch",
                                     "userID": "%s",
-                                    "webhookType": "BATCH_COMPLETED"
+                                    "webhookType": "RACE_IMPORTED_SUCCESS"
                                 }
                                 """.formatted(userId)))
                 .andExpect(status().isCreated())
@@ -79,7 +79,7 @@ public class WebhookIntegrationTest {
                 .param(1, "https://example.com/hooks/batch")
                 .query(String.class)
                 .single();
-        assertThat(webhookType).isEqualTo("BATCH_COMPLETED");
+        assertThat(webhookType).isEqualTo("RACE_IMPORTED_SUCCESS");
     }
 
     @Test
@@ -91,7 +91,7 @@ public class WebhookIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(webhookId.toString()))
                 .andExpect(jsonPath("$.webhook_url").value("https://example.com/hooks/pending"))
-                .andExpect(jsonPath("$.webhook_type").value("PENDING"))
+                .andExpect(jsonPath("$.webhook_type").value("RACE_IMPORTED_SUCCESS"))
                 .andExpect(jsonPath("$.user_id").value(userId.toString()));
     }
 
@@ -118,7 +118,7 @@ public class WebhookIntegrationTest {
                                 {
                                     "webhookURL": "https://example.com/hooks/updated",
                                     "userID": "%s",
-                                    "webhookType": "BATCH_COMPLETED"
+                                    "webhookType": "RACE_IMPORTED_SUCCESS"
                                 }
                                 """.formatted(userId)))
                 .andExpect(status().isOk())
@@ -128,7 +128,7 @@ public class WebhookIntegrationTest {
                 .param(1, webhookId)
                 .query(String.class)
                 .single();
-        assertThat(webhookType).isEqualTo("BATCH_COMPLETED");
+        assertThat(webhookType).isEqualTo("RACE_IMPORTED_SUCCESS");
 
         String webhookUrl = jdbc.sql("select webhook_url from webhooks where id = ?")
                 .param(1, webhookId)
@@ -153,7 +153,7 @@ public class WebhookIntegrationTest {
                                 {
                                     "webhookURL": "https://example.com/hooks/updated",
                                     "userID": "%s",
-                                    "webhookType": "BATCH_COMPLETED"
+                                    "webhookType": "RACE_IMPORTED_SUCCESS"
                                 }
                                 """.formatted(userId)))
                 .andExpect(status().isNotFound())

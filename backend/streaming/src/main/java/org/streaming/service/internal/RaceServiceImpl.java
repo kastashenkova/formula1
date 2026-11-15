@@ -7,16 +7,19 @@ import java.util.UUID;
 import org.audit.AuditAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.streaming.clients.RaceHTTPClient;
 import org.streaming.dto.DriverResponseDto;
 import org.streaming.dto.RaceApiResponseDto;
+import org.streaming.dto.RaceImportedEvent;
 import org.streaming.dto.RaceRequestDto;
 import org.streaming.dto.RaceResponseDto;
 import org.streaming.entity.RaceEntity;
@@ -41,16 +44,24 @@ public class RaceServiceImpl implements RaceService {
 
     private final RaceDataCleaner raceDataCleaner;
 
+    private final ApplicationEventPublisher eventPublisher;
+
+    private final TransactionTemplate transactionTemplate;
+
     public RaceServiceImpl(RaceRepository raceRepository,
                            DriverRepository driverRepository,
                            RaceHTTPClient raceHTTPClient,
                            RaceDataImporter raceDataImporter,
-                           RaceDataCleaner raceDataCleaner) {
+                           RaceDataCleaner raceDataCleaner,
+                           ApplicationEventPublisher eventPublisher,
+                           TransactionTemplate transactionTemplate) {
         this.raceRepository = raceRepository;
         this.driverRepository = driverRepository;
         this.raceHTTPClient = raceHTTPClient;
         this.raceDataImporter = raceDataImporter;
         this.raceDataCleaner = raceDataCleaner;
+        this.eventPublisher = eventPublisher;
+        this.transactionTemplate = transactionTemplate;
     }
 
     @Override
@@ -72,7 +83,7 @@ public class RaceServiceImpl implements RaceService {
     @Override
     @AuditAction(action = "RACE_CREATION")
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public RaceResponseDto addRace(RaceRequestDto raceRequestDto) {
+    public RaceResponseDto addRace(RaceRequestDto raceRequestDto, String requestedBy) {
         RaceApiResponseDto session = raceHTTPClient.fetchSession(raceRequestDto.year(), raceRequestDto.raceName())
                 .orElseThrow(() -> new RaceNotFound(String.format("Race in %s in %d is not found",
                         raceRequestDto.raceName(), raceRequestDto.year())));
@@ -100,10 +111,19 @@ public class RaceServiceImpl implements RaceService {
         } catch (RuntimeException e) {
             log.warn("Import of race {} failed, removing it", saved.getRaceId(), e);
             raceDataCleaner.deleteRace(saved.getRaceId());
+            publish(RaceImportedEvent.failed(saved.getRaceId(), saved.getRaceName(), raceDate, requestedBy,
+                    e.getMessage()));
             throw e;
         }
 
+        publish(RaceImportedEvent.success(saved.getRaceId(), saved.getRaceName(), raceDate, requestedBy));
+
         return RaceResponseDto.fromEntity(saved);
+    }
+
+    // Module listeners run only after commit, and the publication is stored in the same transaction
+    private void publish(RaceImportedEvent event) {
+        transactionTemplate.executeWithoutResult(status -> eventPublisher.publishEvent(event));
     }
 
     @Override
