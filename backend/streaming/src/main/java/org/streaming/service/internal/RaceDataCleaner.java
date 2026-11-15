@@ -8,7 +8,7 @@ import org.streaming.repository.RaceRepository;
 import org.streaming.repository.TelemetryPointRepository;
 
 /**
- * Removes races and drivers with bulk queries, so telemetry (~1M rows per race)
+ * Removes races with bulk queries, so telemetry (~1M rows per race)
  * is not loaded into the persistence context by cascade removal.
  */
 @Component
@@ -30,10 +30,5 @@ public class RaceDataCleaner {
         telemetryPointRepository.deleteAllByRaceId(raceId);
         driverRepository.deleteAllByRaceId(raceId);
         raceRepository.deleteRaceById(raceId);
-    }
-
-    public void deleteDriver(UUID driverId) {
-        telemetryPointRepository.deleteAllByDriverId(driverId);
-        driverRepository.deleteDriverById(driverId);
     }
 }
