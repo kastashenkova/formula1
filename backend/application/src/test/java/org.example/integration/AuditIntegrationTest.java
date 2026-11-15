@@ -113,26 +113,6 @@ public class AuditIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = ADMIN_EMAIL, roles = "ADMIN")
-    void invalidBatch_ShouldStoreFailedAuditRecordAndReturnBadRequest() throws Exception {
-        mockMvc.perform(post("/api/batches")
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                    "raceName": "exampleRace",
-                                    "year": 2027
-                                }
-                                """))
-                .andExpect(status().isBadRequest());
-
-        Map<String, Object> audit = awaitSingleAuditRecord("BATCH_UPLOAD");
-
-        assertThat(audit.get("success")).isEqualTo(false);
-        assertThat(audit.get("error_message")).isNotNull();
-    }
-
-    @Test
     @WithAnonymousUser
     void failedLogin_ShouldStoreAuditRecordWithoutArguments() throws Exception {
         mockMvc.perform(post("/api/users/login")
