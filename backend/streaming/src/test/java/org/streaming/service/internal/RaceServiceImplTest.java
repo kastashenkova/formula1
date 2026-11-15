@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.streaming.clients.RaceHTTPClient;
 import org.streaming.dto.RaceApiResponseDto;
 import org.streaming.dto.RaceRequestDto;
@@ -48,11 +49,14 @@ class RaceServiceImplTest {
     @Mock
     private RaceDataImporter raceDataImporter;
 
+    @Mock
+    private RaceDataCleaner raceDataCleaner;
+
     private RaceServiceImpl service;
 
     @BeforeEach
     void setUp() {
-        service = new RaceServiceImpl(raceRepository, driverRepository, raceHTTPClient, raceDataImporter);
+        service = new RaceServiceImpl(raceRepository, driverRepository, raceHTTPClient, raceDataImporter, raceDataCleaner);
     }
 
     @Test
@@ -106,6 +110,17 @@ class RaceServiceImplTest {
 
         assertThrows(ExternalHTTPError.class, () -> service.addRace(REQUEST));
 
-        verify(raceRepository).deleteById(raceId);
+        verify(raceDataCleaner).deleteRace(raceId);
+    }
+
+    @Test
+    void addRace_ShouldThrowDuplicate_WhenConcurrentRequestInsertedSameSession() {
+        when(raceHTTPClient.fetchSession(2024, "Monaco")).thenReturn(Optional.of(SESSION));
+        when(raceRepository.save(any(RaceEntity.class)))
+                .thenThrow(new DataIntegrityViolationException("uk_races_session_key"));
+
+        assertThrows(DuplicateRaceException.class, () -> service.addRace(REQUEST));
+
+        verify(raceDataImporter, never()).importRaceData(any(), any());
     }
 }

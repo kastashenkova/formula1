@@ -304,6 +304,58 @@ public class RaceIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
+    void deleteImportedRace_ShouldRemoveDriversAndTelemetry() throws Exception {
+        importMonaco();
+        UUID raceId = raceIdByName("Monaco");
+
+        mockMvc.perform(delete("/api/races/{id}", raceId).with(csrf()))
+                .andExpect(status().isNoContent());
+
+        assertThat(count("select count(*) from races where race_id = ?", raceId)).isZero();
+        assertThat(count("select count(*) from drivers where race_id = ?", raceId)).isZero();
+        assertThat(count("select count(*) from telemetry_points")).isZero();
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void deleteImportedDriver_ShouldRemoveOnlyItsTelemetry() throws Exception {
+        importMonaco();
+        UUID raceId = raceIdByName("Monaco");
+        UUID driverId = jdbc.sql("select id from drivers where race_id = ? and driver_number = 1")
+                .param(1, raceId)
+                .query(UUID.class)
+                .single();
+
+        mockMvc.perform(delete("/api/races/{raceId}/drivers/{driverId}", raceId, driverId).with(csrf()))
+                .andExpect(status().isNoContent());
+
+        assertThat(count("select count(*) from drivers where race_id = ?", raceId)).isEqualTo(1);
+        assertThat(count("select count(*) from telemetry_points where driver_id = ?", driverId)).isZero();
+        assertThat(count("select count(*) from telemetry_points")).isEqualTo(1);
+    }
+
+    private void importMonaco() throws Exception {
+        mockMvc.perform(post("/api/races").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "raceName": "Monaco",
+                                    "year": 2024
+                                }
+                                """))
+                .andExpect(status().isCreated());
+    }
+
+    private int count(String sql, Object... params) {
+        var spec = jdbc.sql(sql);
+        for (int i = 0; i < params.length; i++) {
+            spec = spec.param(i + 1, params[i]);
+        }
+        return spec.query(Integer.class).single();
+    }
+
+    @Test
     @WithMockUser(roles = "USER")
     void deleteRaceByNotAdmin_ShouldShowError() throws Exception {
         Integer rowsBefore = jdbc.sql("select count(*) from races")

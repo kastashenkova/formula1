@@ -27,11 +27,14 @@ public class DriverServiceImpl implements DriverService {
     private static final Logger log = LoggerFactory.getLogger(DriverServiceImpl.class);
     private final DriverRepository driverRepository;
     private final TelemetryPointRepository telemetryPointRepository;
+    private final RaceDataCleaner raceDataCleaner;
 
     public DriverServiceImpl(DriverRepository driverRepository,
-                             TelemetryPointRepository telemetryPointRepository) {
+                             TelemetryPointRepository telemetryPointRepository,
+                             RaceDataCleaner raceDataCleaner) {
         this.driverRepository = driverRepository;
         this.telemetryPointRepository = telemetryPointRepository;
+        this.raceDataCleaner = raceDataCleaner;
     }
 
     @Override
@@ -80,10 +83,11 @@ public class DriverServiceImpl implements DriverService {
     @Override
     @AuditAction(action = "DRIVER_DELETE")
     public void deleteDriver(UUID id) {
-        driverRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Driver with id " + id + " not found"));
+        if (!driverRepository.existsById(id)) {
+            throw new EntityNotFoundException("Driver with id " + id + " not found");
+        }
 
-        driverRepository.deleteById(id);
+        raceDataCleaner.deleteDriver(id);
     }
 
     @Override
@@ -93,7 +97,8 @@ public class DriverServiceImpl implements DriverService {
                 .orElseThrow(() -> new EntityNotFoundException("Driver with id " + driverId + " not found"));
 
         TelemetryPointEntity telemetryPointEntity = TelemetryPointRequestDto.toEntity(request);
-        driver.addTelemetryPoint(telemetryPointEntity);
+        // Setting the owning side only: adding to driver's collection would load all its points
+        telemetryPointEntity.setDriver(driver);
         TelemetryPointEntity savedPoint = telemetryPointRepository.save(telemetryPointEntity);
 
         log.info("Added telemetry point {}", savedPoint.getId());
@@ -127,6 +132,6 @@ public class DriverServiceImpl implements DriverService {
             throw new IllegalArgumentException(message);
         }
 
-        driver.removeTelemetryPoint(telemetryPointEntity);
+        telemetryPointRepository.delete(telemetryPointEntity);
     }
 }

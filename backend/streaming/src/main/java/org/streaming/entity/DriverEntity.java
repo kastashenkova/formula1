@@ -86,11 +86,6 @@ public class DriverEntity {
         telemetryPointEntity.setDriver(this);
     }
 
-    public void removeTelemetryPoint(TelemetryPointEntity telemetryPointEntity) {
-        telemetryPoints.remove(telemetryPointEntity);
-        telemetryPointEntity.setDriver(null);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

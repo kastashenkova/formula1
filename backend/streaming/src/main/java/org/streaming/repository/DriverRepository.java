@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -16,7 +17,6 @@ public interface DriverRepository extends JpaRepository<DriverEntity, UUID> {
     @Query("""
             SELECT d FROM DriverEntity d
             JOIN FETCH d.race
-            LEFT JOIN FETCH d.telemetryPoints
             WHERE d.id = :id
             """)
     Optional<DriverEntity> findByIdWithDetails(@Param("id") UUID id);
@@ -32,4 +32,12 @@ public interface DriverRepository extends JpaRepository<DriverEntity, UUID> {
                     """)
     Page<DriverEntity> findAllWithDetails(Pageable pageable);
     Page<DriverEntity> findByRaceOrderByFullName(RaceEntity race, Pageable pageable);
+
+    @Modifying
+    @Query("DELETE FROM DriverEntity d WHERE d.race.raceId = :raceId")
+    void deleteAllByRaceId(@Param("raceId") UUID raceId);
+
+    @Modifying
+    @Query("DELETE FROM DriverEntity d WHERE d.id = :id")
+    void deleteDriverById(@Param("id") UUID id);
 }

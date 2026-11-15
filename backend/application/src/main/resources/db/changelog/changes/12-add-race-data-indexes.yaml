@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 12-add-race-data-indexes
+      author: formula1_team
+      changes:
+        - createIndex:
+            tableName: drivers
+            indexName: idx_drivers_race_id
+            columns:
+              - column:
+                  name: race_id
+        - createIndex:
+            tableName: telemetry_points
+            indexName: idx_telemetry_points_driver_id_timestamp
+            columns:
+              - column:
+                  name: driver_id
+              - column:
+                  name: timestamp

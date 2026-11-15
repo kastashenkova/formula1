@@ -83,11 +83,6 @@ public class RaceEntity {
         driver.setRace(this);
     }
 
-    public void removeDriver(DriverEntity driver) {
-        drivers.remove(driver);
-        driver.setRace(null);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

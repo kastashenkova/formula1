@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -50,4 +51,15 @@ public interface TelemetryPointRepository extends JpaRepository<TelemetryPointEn
     )
     Page<TelemetryPointEntity> findAllWithDetailsByDriverOrderByTimestamp(@Param("driver") DriverEntity driver,
                                                                           Pageable pageable);
+
+    @Modifying
+    @Query("""
+            DELETE FROM TelemetryPointEntity p
+            WHERE p.driver.id IN (SELECT d.id FROM DriverEntity d WHERE d.race.raceId = :raceId)
+            """)
+    void deleteAllByRaceId(@Param("raceId") UUID raceId);
+
+    @Modifying
+    @Query("DELETE FROM TelemetryPointEntity p WHERE p.driver.id = :driverId")
+    void deleteAllByDriverId(@Param("driverId") UUID driverId);
 }

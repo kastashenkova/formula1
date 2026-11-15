@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriBuilder;
 import org.streaming.dto.DriverApiResponseDto;
@@ -70,16 +71,22 @@ public class RaceHTTPClient {
     private <T> List<T> get(Function<UriBuilder, URI> uri,
                             String notFoundMessage,
                             ParameterizedTypeReference<List<T>> type) {
-        List<T> responseList = this.restClient.get()
-                .uri(uri)
-                .retrieve()
-                .onStatus(status -> status.isSameCodeAs(HttpStatus.NOT_FOUND), (request, response) -> {
-                    throw new RaceNotFound(notFoundMessage);
-                })
-                .onStatus(status -> status.is5xxServerError() || status.is4xxClientError(), (request, response) -> {
-                    throw new ExternalHTTPError(String.format("Receive unexpected error from api, status %s", response.getStatusCode()));
-                })
-                .body(type);
+        List<T> responseList;
+        try {
+            responseList = this.restClient.get()
+                    .uri(uri)
+                    .retrieve()
+                    .onStatus(status -> status.isSameCodeAs(HttpStatus.NOT_FOUND), (request, response) -> {
+                        throw new RaceNotFound(notFoundMessage);
+                    })
+                    .onStatus(status -> status.is5xxServerError() || status.is4xxClientError(), (request, response) -> {
+                        throw new ExternalHTTPError(String.format("Receive unexpected error from api, status %s", response.getStatusCode()));
+                    })
+                    .body(type);
+        } catch (ResourceAccessException e) {
+            // Connection failures and timeouts
+            throw new ExternalHTTPError(String.format("Api is unreachable: %s", e.getMessage()));
+        }
 
         return responseList != null ? responseList : List.of();
     }
