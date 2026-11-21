@@ -25,8 +25,6 @@ import org.identity.exception.InvalidVerificationStrategyException;
 import org.identity.repository.TokenRepository;
 import org.identity.repository.UserRepository;
 import org.identity.service.UserService;
-import org.identity.validation.OnCreate;
-import org.identity.validation.OnUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
