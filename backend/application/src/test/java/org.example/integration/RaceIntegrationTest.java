@@ -8,6 +8,7 @@ import org.example.support.OpenF1StubConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.security.test.context.support.WithAnonymousUser;
@@ -33,8 +34,19 @@ public class RaceIntegrationTest {
     @Autowired
     private JdbcClient jdbc;
 
+    @Autowired
+    private CacheManager cacheManager;
+
+
     @BeforeEach
     void setUp() {
+        cacheManager.getCacheNames().forEach(name -> {
+            var cache = cacheManager.getCache(name);
+            if (cache != null) {
+                cache.clear();
+            }
+        });
+
         jdbc.sql("INSERT INTO races (race_id, race_name, race_date) VALUES (?, ?, ?)")
                 .param(1, UUID.randomUUID())
                 .param(2, "New York 2025")

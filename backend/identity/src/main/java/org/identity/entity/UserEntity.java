@@ -8,13 +8,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "users")
 public class UserEntity {
@@ -37,6 +43,12 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     List<VerificationToken> verificationTokens = new ArrayList<>();
+
+    @Column(nullable = false)
+    boolean verificationReminderSent = false;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Kyiv"));
 
     protected UserEntity() {
     }
@@ -67,73 +79,9 @@ public class UserEntity {
         this.userStatus = userStatus;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getUserStatus() {
-        return userStatus;
-    }
-
-    public void setUserStatus(String userStatus) {
-        this.userStatus = userStatus;
-    }
-
-    public List<VerificationToken> getVerificationTokens() {
-        return verificationTokens;
-    }
-
-    public void setVerificationTokens(List<VerificationToken> verificationTokens) {
-        this.verificationTokens = verificationTokens;
-    }
-
     public void removeVerificationToken(VerificationToken token) {
         verificationTokens.remove(token);
         token.setUser(null);
-    }
-
-    public Set<WebhookEntity> getWebhooks() {
-        return webhooks;
-    }
-
-    public void setWebhooks(Set<WebhookEntity> webhooks) {
-        this.webhooks = webhooks;
     }
 
     public void addWebhook(WebhookEntity webhook) {
