@@ -7,9 +7,6 @@ import java.util.UUID;
 import org.audit.AuditAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -69,7 +66,6 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "races", key = "#raceId", sync = true)
     public RaceResponseDto getRace(UUID raceId) {
         RaceEntity raceEntity = raceRepository.findByIdWithDetails(raceId)
                 .orElseThrow(() -> new EntityNotFoundException("Race with id: " + raceId + " not found"));
@@ -79,7 +75,6 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "races_list", key = "#pageable", sync = true)
     public Page<RaceResponseDto> getRaces(Pageable pageable) {
         return raceRepository.findAllWithDetails(pageable)
                 .map(RaceResponseDto::fromEntity);
@@ -88,7 +83,6 @@ public class RaceServiceImpl implements RaceService {
     @Override
     @AuditAction(action = "RACE_CREATION")
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    @CacheEvict(value = "races_list", allEntries = true)
     public RaceResponseDto addRace(RaceRequestDto raceRequestDto, String requestedBy) {
         RaceApiResponseDto session = raceHTTPClient.fetchSession(raceRequestDto.year(), raceRequestDto.raceName())
                 .orElseThrow(() -> new RaceNotFound(String.format("Race in %s in %d is not found",
@@ -134,11 +128,6 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     @AuditAction(action = "RACE_DELETE")
-    @Caching(evict = {
-            @CacheEvict(value = "races", key = "#id"),
-            @CacheEvict(value = "races_list", allEntries = true),
-            @CacheEvict(value = "race_drivers", allEntries = true),
-    })
     public void deleteRace(UUID id) {
         if (!raceRepository.existsById(id)) {
             throw new EntityNotFoundException("Race with id: " + id + " not found");
@@ -149,7 +138,6 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "race_drivers", key = "{#raceId, #pageable}", sync = true)
     public Page<DriverResponseDto> getDrivers(UUID raceId, Pageable pageable) {
         RaceEntity raceEntity = raceRepository.findById(raceId)
                 .orElseThrow(() -> new EntityNotFoundException("Race with id: " + raceId + " not found"));

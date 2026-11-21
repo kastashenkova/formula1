@@ -5,8 +5,6 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.streaming.clients.RaceHTTPClient;
@@ -43,11 +41,6 @@ public class RaceDataImporter {
         this.requestDelayMs = requestDelayMs;
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = "races", key = "#raceId"),
-            @CacheEvict(value = "race_drivers", allEntries = true),
-            @CacheEvict(value = "races_list", allEntries = true)
-    })
     public void importRaceData(UUID raceId, Integer sessionKey) {
         List<DriverApiResponseDto> drivers = raceHTTPClient.fetchDrivers(sessionKey);
         long totalPoints = 0;
