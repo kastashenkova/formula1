@@ -3,7 +3,6 @@ package org.example.config;
 import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import javax.sql.DataSource;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,20 +18,5 @@ public class ShedLockConfig {
                         .usingDbTime()
                         .build()
         );
-    }
-
-    @Bean
-    public CommandLineRunner initShedLockTable(JdbcTemplate jdbcTemplate) {
-        return args -> {
-            jdbcTemplate.execute("""
-                CREATE TABLE IF NOT EXISTS shedlock (
-                    name VARCHAR(64) NOT NULL,
-                    lock_until TIMESTAMP NOT NULL,
-                    locked_at TIMESTAMP NOT NULL,
-                    locked_by VARCHAR(255) NOT NULL,
-                    PRIMARY KEY (name)
-                )
-            """);
-        };
     }
 }

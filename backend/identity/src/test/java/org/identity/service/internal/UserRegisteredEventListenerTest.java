@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import java.util.UUID;
 import org.identity.dto.UserRegisteredEvent;
 import org.identity.entity.UserEntity;
-import org.identity.entity.VerificationToken;
 import org.identity.enums.Role;
 import org.identity.enums.UserStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,13 +25,13 @@ class UserRegisteredEventListenerTest {
     @Mock
     private PhoneVerificationStrategy phoneVerificationStrategy;
 
-    private UserRegisteredEventListener listener;
+    private UserEventListener listener;
     private UserRegisteredEvent testEvent;
     private UserEntity testUser;
 
     @BeforeEach
     void setUp() {
-        listener = new UserRegisteredEventListener(
+        listener = new UserEventListener(
                 emailVerificationStrategy, phoneVerificationStrategy);
 
         testUser = new UserEntity(
