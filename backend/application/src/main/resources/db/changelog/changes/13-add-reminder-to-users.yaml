@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 13-add-reminder-to-users
+      author: formula1_team
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: verification_reminder_sent
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false

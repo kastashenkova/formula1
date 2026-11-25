@@ -33,6 +33,7 @@ public class RaceIntegrationTest {
     @Autowired
     private JdbcClient jdbc;
 
+
     @BeforeEach
     void setUp() {
         jdbc.sql("INSERT INTO races (race_id, race_name, race_date) VALUES (?, ?, ?)")
